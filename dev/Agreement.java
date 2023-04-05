@@ -11,14 +11,16 @@ public class Agreement
     private Map<Integer, ArrayList<Discount>> discountProducts;
     private Map<Integer, Discount> totalOrderDiscount;
     private boolean selfSupply;
+    private int daysAmountToSupply;
     private ArrayList<DaysOfWeek> supplyDays;
 
-    public Agreement(String paymentType, boolean selfSupply, ArrayList<DaysOfWeek> supplyDays) {
+    public Agreement(String paymentType, boolean selfSupply, int daysAmountToSupply, ArrayList<DaysOfWeek> supplyDays) {
         this.agreementID = id++;
         this.paymentType = paymentType;
         this.discountProducts = new HashMap<Integer, ArrayList<Discount>>();
         this.totalOrderDiscount = new HashMap<Integer, Discount>();
         this.selfSupply = selfSupply;
+        this.daysAmountToSupply = daysAmountToSupply;
         this.supplyDays = supplyDays;
     }
 
@@ -28,6 +30,14 @@ public class Agreement
 
     public void setPaymentType(String paymentType) {
         this.paymentType = paymentType;
+    }
+
+    public int getDaysAmountToSupply() {
+        return daysAmountToSupply;
+    }
+
+    public void setDaysAmountToSupply(int daysAmountToSupply) {
+        this.daysAmountToSupply = daysAmountToSupply;
     }
 
     public boolean isSelfSupply() {
