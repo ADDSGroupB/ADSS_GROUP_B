@@ -6,8 +6,26 @@ public class PercentDiscount extends Discount
         super(quantity);
         this.discountPercent = discountValue;
     }
-    public double getDiscount(double price)
+    @Override
+    public double calcDiscount(double price)
     {
         return price - (discountPercent / 100 * price);
+    }
+
+    @Override
+    public double getDiscountValue() {
+        return discountPercent;
+    }
+
+    @Override
+    public void setDiscountValue(double value) {
+        this.discountPercent = value;
+    }
+
+    @Override
+    public String toString() {
+        return "Percent Discount:\nDiscount ID: " + this.discountID +
+                "Quantity: " + this.quantity + "\nDiscount Percent: "
+                + this.discountPercent + "%";
     }
 }
