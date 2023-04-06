@@ -1,3 +1,9 @@
+package BusinessLayer;
+
+import BusinessLayer.Agreement;
+import BusinessLayer.DaysOfWeek;
+import BusinessLayer.Order;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +21,7 @@ public class Supplier
     private ArrayList<String> domains;
     private boolean isActive;
     private Map<Integer, Integer> productsMap;
-    private Map<Integer, ArrayList<SupplierProduct>> products;
+    private Map<Integer, SupplierProduct> products;
     private Map<LocalDate, ArrayList<Order>> orderHistory;
     private Agreement agreement;
 
@@ -27,7 +33,7 @@ public class Supplier
         this.manufacturers = manufacturers;
         this.domains = domains;
         this.isActive = true;
-        this.products = new HashMap<Integer, ArrayList<SupplierProduct>>();;
+        this.products = new HashMap<Integer, SupplierProduct>();;
         this.orderHistory = new HashMap<LocalDate, ArrayList<Order>>();
         this.agreement = null;
     }
@@ -111,7 +117,7 @@ public class Supplier
         isActive = active;
     }
 
-    public Map<Integer, ArrayList<SupplierProduct>> getProducts() {
+    public Map<Integer, SupplierProduct> getProduct() {
         return products;
     }
 
@@ -126,27 +132,21 @@ public class Supplier
         return productsMap.get(productID);
     }
     public int getProductAmount(int catalogID) {
-        return products.get(catalogID).size();
+        return products.get(catalogID).getQuantity();
     }
 
-    public ArrayList<SupplierProduct> getProductListByCatalogID(int catalogID)
-    {
-        return products.get(catalogID);
-    }
-
-    public void addProduct(String name, int productID, double price, String manufacturer) {
+    public void addProduct(String name, int productID, int quantity, double price, String manufacturer) {
         if(!productsMap.containsKey(productID))
         {
             productsMap.put(productID, cid++);
-            products.put(cid, new ArrayList<SupplierProduct>());
+            products.put(cid, new SupplierProduct(name, cid, productID, supplierID, quantity, price, manufacturer));
         }
-        SupplierProduct product = new SupplierProduct(name, productID, cid, price, manufacturer);
-        products.get(productsMap.get(productID)).add(product);
+        // else : "This Product already exists for this supplier
     }
     public boolean removeProduct(int catalogID)
     {
-        if(products.containsKey(catalogID) && !products.get(catalogID).isEmpty()) {
-            products.get(catalogID).remove(0);
+        if(products.containsKey(catalogID)) {
+            products.remove(catalogID);
             return true;
         }
         return false;
@@ -154,7 +154,7 @@ public class Supplier
     public boolean removeProductFromSupplier(int catalogID)
     {
         if(products.containsKey(catalogID)) {
-            products.get(catalogID).clear();
+            products.remove(catalogID);
             products.remove(catalogID);
             for (int productID : productsMap.keySet()) {
                 if (productsMap.get(productID) == catalogID) {

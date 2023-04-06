@@ -1,4 +1,6 @@
-public class ValueDiscount extends Discount{
+package BusinessLayer;
+
+public class ValueDiscount extends Discount {
     private double discountValue;
     public ValueDiscount(int quantity, int discountValue)
     {

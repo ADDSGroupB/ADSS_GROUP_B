@@ -1,3 +1,5 @@
+package BusinessLayer;
+
 public enum DaysOfWeek {
     Sunday,
     Monday,

@@ -1,3 +1,5 @@
+package BusinessLayer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -137,7 +139,7 @@ public class Agreement
     public boolean updateTotalDiscount(int discountID, String type, int newQuantity, int newValue)
     {
 
-        if(((type == "Percent" && this.totalOrderDiscount.get(discountID) instanceof ValueDiscount ) ||
+        if(((type == "Percent" && this.totalOrderDiscount.get(discountID) instanceof ValueDiscount) ||
                 (type == "Value" && this.totalOrderDiscount.get(discountID) instanceof PercentDiscount))) {
             System.out.println("There is not total order discount with the id " + discountID + " and the type " + type);
             return false;

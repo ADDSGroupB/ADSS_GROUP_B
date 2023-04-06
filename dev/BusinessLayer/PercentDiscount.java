@@ -1,3 +1,5 @@
+package BusinessLayer;
+
 public class PercentDiscount extends Discount
 {
     private double discountPercent;
