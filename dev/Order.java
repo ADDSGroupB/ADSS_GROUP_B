@@ -4,9 +4,9 @@ import java.time.LocalDate;
 public class Order
 {
     private static int id = 0;
-    private int orderID;
+    private final int orderID;
     private int supplierID;
-    private LocalDate orderDate;
+    private final LocalDate orderDate;
     private ArrayList<Integer> products;
     private double price;
 
