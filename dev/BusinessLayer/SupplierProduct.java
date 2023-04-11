@@ -1,83 +1,71 @@
 package BusinessLayer;
 
+import java.util.HashMap;
+import java.util.NavigableMap;
+
 public class SupplierProduct
 {
+    private static int id = 0;
     private String name;
+    private int supplierId;
     private int catalogID;
     private int productID;
-    private int supplierID;
-    private int quantity;
     private double price;
-    private String manufacturer;
+    //private String manufacturer;
+    private HashMap<Integer, Double> discountPerAmount; // product amount, discount in percentage
+    private int ammount;
 
-    public SupplierProduct(String name, int catalogID, int productID, int supplierID, int quantity, double price, String manufacturer) {
+    public SupplierProduct(String name, int productID,int catalogID, double price, int amount,  HashMap<Integer, Double> discountPerAmount) {
         this.name = name;
-        this.catalogID = catalogID;
         this.productID = productID;
-        this.supplierID = supplierID;
-        this.quantity = quantity;
+        this.catalogID = catalogID;
         this.price = price;
-        this.manufacturer = manufacturer;
+        this.ammount = amount;
+        //this.manufacturer = manufacturer;
+        this.discountPerAmount = discountPerAmount;
+    }
+
+    public SupplierProduct(){
+    }
+
+    public int getProductID() {
+        return productID;
+    }
+    public void setCatalogID(int newCatalogNumber){
+        this.catalogID=newCatalogNumber;
+    }
+    public HashMap<Integer, Double> getDiscountPerAmount(){
+        return discountPerAmount;
+    }
+
+    public void addDiscount(int ammount, double discount){
+        discountPerAmount.put(ammount, discount);
+        System.out.println(discountPerAmount.get(ammount));
+    }
+
+    public void removeDiscount(int ammount){
+        discountPerAmount.remove(ammount);
+
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCatalogID() {
+    public int getCatalogId() {
         return catalogID;
     }
 
-    public void setCatalogID(int catalogID) {
-        this.catalogID = catalogID;
-    }
-
-    public int getProductID() {
-        return productID;
-    }
-
-    public void setProductID(int productID) {
-        this.productID = productID;
-    }
-
-    public int getSupplierID() {
-        return supplierID;
-    }
-
-    public void setSupplierID(int supplierID) {
-        this.supplierID = supplierID;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public void addQuantity(int quantityToAdd) {
-        this.quantity += quantityToAdd;
+    public int getAmount() {
+        return ammount;
     }
 
     public double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setAmount(int amount) {
+        this.ammount= amount;
     }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
 }
+
