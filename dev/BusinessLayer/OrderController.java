@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OrderController {
-    private HashMap<Integer, Order> supplierOrders; //supplierId, Order
+    private HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
 
     public OrderController(){
         supplierOrders = new HashMap<>();
@@ -44,16 +44,21 @@ public class OrderController {
             double priceBeforeDiscount = currSupplier.calculatePriceBeforeDiscount(suuplierProductsToCalculate);
             Order newOrderForSupplier = new Order(supplierName, supplierAdress, supplierId, contactPhoneNumber, productsToOrder, priceBeforeDiscount, priceAfterDiscount);
             //System.out.println(newOrderForSupplier);
-            supplierOrders.put(supplierId, newOrderForSupplier);
+
+            // TODO - להוסיף מקום לספק בעת היצירה
+            if(!supplierOrders.containsKey(supplierId)){
+                supplierOrders.put(supplierId, new ArrayList<>());
+            }
+            supplierOrders.get(supplierId).add(newOrderForSupplier);
 
         }
     }
 
     public void PrintOrders() {
         if(!supplierOrders.isEmpty()){
-            for (Map.Entry<Integer, Order> entry : supplierOrders.entrySet()) {
-                Integer supplierId = entry.getKey();
-                Order order = entry.getValue();
+            for (Map.Entry<Integer, ArrayList<Order>> entry : supplierOrders.entrySet()) {
+                ArrayList<Order> orderArrayList = entry.getValue();
+                for(Order order: orderArrayList)
                 System.out.println(order);
                 System.out.println("\n");
             }

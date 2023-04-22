@@ -50,6 +50,7 @@ public class Cli {
                 print("For scenario one press 1- create an order from one supplier (only one supplier can supply all the products)\n");
                 print("For scenario two press 2- The order will be split into several orders according to different suppliers\n");
                 print("For scenario three press 3- the order can't be created\n");
+                print("Press 0- back to the menu");
                 int choose = reader.nextInt();
                 if (choose == 1) {
                     valid = true;
@@ -82,11 +83,11 @@ public class Cli {
         //if the user pressed 2 we play the next section
         if (n == 2) {
             while (true) {
-                    print("Which module are you interested in?  \n1. Supplier\n2. EXIT");
+                    print("Which module are you interested in?  \n1. Supplier\n2. EXIT\n3. Back");
                     userInput = reader.nextInt();
                     reader.nextLine();
                     if (userInput < 1 || userInput > 2) {
-                        print("Please choose one of the following options:\n1. Supplier\n2. EXIT");
+                        print("Please choose one of the following options:\n1. Supplier\n2. EXIT\n3. Back");
                         userInput = reader.nextInt();
                         reader.nextLine();
                 }
@@ -96,6 +97,9 @@ public class Cli {
                 if (userInput == 2) {
                     print("Hope you enjoyed, see you next time :)");
                     return;
+                }
+                else {
+                    start();
                 }
             }
         }
@@ -111,8 +115,9 @@ public class Cli {
         productsToOrder1.put(11, 30);//cafe
 
         HashMap <Integer,Integer> productsToOrder2 = new HashMap<>();//order 2(split)
+
         productsToOrder2.put(5, 40);//bamba
-        productsToOrder2.put(11, 50);//cafe
+        // productsToOrder2.put(11, 20);//cafe
         //productsToOrder2.put(29, 5);//shoko
 
         HashMap <Integer,Integer> productsToOrder3=new HashMap<>();//fail
@@ -603,7 +608,7 @@ public class Cli {
 //            printAllProducts();
         while (keepAdding == 1) {
             SupplierProductService newProduct = createProduct();
-            items.put(newProduct.getCatalogNumber(), newProduct);
+            items.put(newProduct.getProductId(), newProduct);
             print("Would you like to add another Item? \n1. Yes\n2. No");
             keepAdding = reader.nextInt();
             reader.nextLine();
@@ -632,7 +637,7 @@ public class Cli {
         print("Please enter product's id");
         int productId = reader.nextInt();
         print("Please enter product's price");
-        int price = reader.nextInt();
+        double price = reader.nextDouble();
         print("Please enter product's catalog number");
         int catalogNumber = reader.nextInt();
         print("Please enter product's amount");

@@ -42,7 +42,7 @@ public class FacadeSupplier {
         Response res1 = supplierController.removeSupplier(id);
         if(!res1.errorOccurred()){
             Response res2 = productController.removeSupplierProducts(id);
-            if(res2.getErrorMessage().equals("The user doesn't have any products yet")){
+            if(res2.getErrorMessage()!= null && res2.getErrorMessage().equals("The user doesn't have any products yet")){
                 return new Response("The user with id: " + id + " deleted successfully and he doesn't have any products");
             }
             return res1;

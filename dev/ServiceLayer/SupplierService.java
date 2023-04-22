@@ -60,7 +60,6 @@ public class SupplierService {
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {
         return facadeSupplier.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
-
     }
 
     public void printSuppliers() {

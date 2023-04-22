@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="ADSS_GROUP_B:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/ADSS_GROUP_B_jar</output-path>
-    <root id="archive" name="ADSS_GROUP_B.jar">
-      <element id="module-output" name="ADSS_GROUP_B" />
-    </root>
-  </artifact>
-</component>

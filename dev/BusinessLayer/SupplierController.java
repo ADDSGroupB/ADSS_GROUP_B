@@ -23,7 +23,7 @@ public class SupplierController {
             //System.out.println("new bank account is " + bankAccount);
             //System.out.println("previous supplier bank account is " + supplier.getBankAccount());
             if (Objects.equals(supplier.getBankAccount(), bankAccount)) {
-                System.out.println("equals bankAccounts");
+                System.out.println("Supplier with the same bank account is already exist in the system");
                 return new Response("cannot add supplier, bankAccount is already exist");
             }
         }
@@ -273,13 +273,14 @@ public class SupplierController {
     }
 
     public Response findSuppliersForOrder(HashMap<Integer, Integer> products){
+        HashMap<Integer, Supplier> copyOfSuppliers = new HashMap<>(suppliers);
         ArrayList<Supplier> suppliersInOrder = new ArrayList<>();
         ArrayList<ArrayList<Pair<Integer, Integer>>> supplyLists = new ArrayList<>();
         while(products.entrySet().size() > 0){
             Supplier currentSupplier = null;
             ArrayList<Pair<Integer, Integer>> supplyList = null;
             int currentMax = 0;
-            for (Map.Entry<Integer, Supplier> entry : suppliers.entrySet()) {
+            for (Map.Entry<Integer, Supplier> entry : copyOfSuppliers.entrySet()) {
                 Supplier supplier = entry.getValue();
                 ArrayList<Pair<Integer, Integer>> canSupply = supplier.getItemsToCreateOrder(products);
                 if (currentSupplier == null){
@@ -292,6 +293,7 @@ public class SupplierController {
                     supplyList = canSupply;
                     currentMax = amount;
                 }
+                //אם הספקים מספקים את אותה הכמות לפי מוצר ספציפי, ניקח את הזול מביניהם
                 if (amount == currentMax){
                     double currentBest = currentSupplier.calculatePriceAfterDiscount(supplyList);
                     double maybeNewBest = supplier.calculatePriceAfterDiscount(canSupply);
@@ -306,12 +308,13 @@ public class SupplierController {
                 return new Response("order can't be created"); // can't complete order
             }
             suppliersInOrder.add(currentSupplier);
+            copyOfSuppliers.remove(currentSupplier.getSupplierId());
             //
             supplyLists.add(supplyList);
             for (Pair<Integer, Integer> pair : supplyList){
                 int id = pair.getFirst();
                 int prevAmount = products.get(id);
-                currentSupplier.getProductById(id).setAmount(currentSupplier.getProductById(id).getAmount()-prevAmount);
+                //currentSupplier.getProductById(id).setAmount(currentSupplier.getProductById(id).getAmount()-prevAmount);
                 products.put(id, prevAmount-pair.getSecond());
                 if (products.get(id) == 0){
                     products.remove(id);
@@ -326,6 +329,7 @@ public class SupplierController {
             for (Pair<Integer,Integer> p: prod){
                 int productID= p.getFirst();
                 SupplierProduct sp = sup.getProductById(productID);
+                sp.setAmount(sp.getAmount() - p.getSecond());
                 Pair<SupplierProduct,Integer> supplierProductPair= new Pair<>(sp, p.getSecond());//supplierProduct, amount
                 supplierProducts.add(supplierProductPair);
             }//(supplierProduct) הוספנו את כל המוצרים של ספק 1
