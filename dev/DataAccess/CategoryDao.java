@@ -9,5 +9,5 @@ public interface CategoryDao {
 
     public List<Category> getAllCategories() throws SQLException;
     public Category getCategoryByID(int categoryID) throws SQLException;
-    public void addCategory(Category category) throws SQLException;
+    public Category addCategory(String categoryName) throws SQLException;
 }

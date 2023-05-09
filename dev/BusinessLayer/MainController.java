@@ -1,5 +1,11 @@
 package BusinessLayer;
 
+import DataAccess.BranchesDao;
+import DataAccess.BranchesDaoImpl;
+import DataAccess.CategoryDao;
+import DataAccess.CategoryDaoImpl;
+
+import java.sql.SQLException;
 import java.util.*;
 
 public class MainController {
@@ -9,6 +15,9 @@ public class MainController {
     private CategoryController categoryController;
     private ProductController productController;
     private BranchController branchController;
+    private BranchesDao branchesDao;
+    private CategoryDao categoryDao;
+
 
     public MainController() {
         this.categoryMap = new HashMap<>();
@@ -17,8 +26,21 @@ public class MainController {
         this.branchController = new BranchController();
         this.categoryController = new CategoryController(this);
         this.productController = new ProductController(this);
+        try {
+            this.branchesDao = new BranchesDaoImpl();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            this.categoryDao = new CategoryDaoImpl();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
+
+    public BranchesDao getBranchesDao() {return branchesDao;}
+
     public BranchController getBranchController() {
         return branchController;
     }

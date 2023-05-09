@@ -20,7 +20,7 @@ public class Category {
     {
         this.CategoryID = categoryID;
         this.CategoryName = name;
-//        this.productInCategory = new ArrayList<>();
+        this.productInCategory = new ArrayList<>();
 
     }
 

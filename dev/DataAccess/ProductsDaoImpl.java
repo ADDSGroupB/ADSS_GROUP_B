@@ -8,17 +8,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductsDaoImpl implements ProductsDao {
-    private Connection conn;
+    private Connection connection;
+    private CategoryDao categoryDao;
 
-    public ProductsDaoImpl() throws SQLException {conn = DBConnector.connect();}
+    public ProductsDaoImpl() throws SQLException {
+        connection = DBConnector.connect();
+        categoryDao = new CategoryDaoImpl();
+
+    }
     @Override
     public List<Product> getAllProducts() throws SQLException {
         List<Product> products = new ArrayList<>();
-        Statement stmt =conn.createStatement();
+        Statement stmt =connection.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM Products");
         while (rs.next())
         {
-            Product product = new Product(rs.getInt("ProductID"),rs.getString("ProductName"),rs.getString("Manufacturer"),rs.getDouble("Weight"), rs.getInt("ParentCategory"), rs.getInt("SubCategory"),rs.getInt("SubSubCategory"));
+            Statement stmt2 =connection.createStatement();
+            ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Products WHERE ParentCategory = ?");
+            int parentID = rs.getInt("ParentCategory");
+            Category parent = categoryDao.getCategoryByID(parentID);
+            ResultSet rs3 = stmt2.executeQuery("SELECT * FROM Products WHERE SubCategory = ?");
+            int subID = rs.getInt("SubCategory");
+            Category sub = categoryDao.getCategoryByID(subID);
+            ResultSet rs4 = stmt2.executeQuery("SELECT * FROM Products WHERE SubSubCategory = ?");
+            int subSubID = rs.getInt("SubSubCategory");
+            Category subSub = categoryDao.getCategoryByID(subSubID);
+            Product product = new Product(rs.getInt("ProductID"),rs.getString("ProductName"),rs.getString("Manufacturer"),rs.getDouble("Weight"), parent,sub,subSub);
             products.add(product);
         }
         return products;
@@ -26,21 +41,31 @@ public class ProductsDaoImpl implements ProductsDao {
 
     @Override
     public Product getProductByID(int productID) throws SQLException {
-        PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM Products WHERE ProductID = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Products WHERE ProductID = ?");
         preparedStatement.setInt(1,productID);
         ResultSet rs = preparedStatement.executeQuery();
         if (rs.next())
         {
-            Product product = new Product(rs.getInt("ProductID"),rs.getString("ProductName"),rs.getString("Manufacturer"),rs.getDouble("Weight"), rs.getInt("ParentCategory"), rs.getInt("SubCategory"),rs.getInt("SubSubCategory"));
+            Statement stmt2 =connection.createStatement();
+            ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Products WHERE ParentCategory = ?");
+            int parentID = rs.getInt("ParentCategory");
+            Category parent = categoryDao.getCategoryByID(parentID);
+            ResultSet rs3 = stmt2.executeQuery("SELECT * FROM Products WHERE SubCategory = ?");
+            int subID = rs.getInt("SubCategory");
+            Category sub = categoryDao.getCategoryByID(subID);
+            ResultSet rs4 = stmt2.executeQuery("SELECT * FROM Products WHERE SubSubCategory = ?");
+            int subSubID = rs.getInt("SubSubCategory");
+            Category subSub = categoryDao.getCategoryByID(subSubID);
+            Product product = new Product(rs.getInt("ProductID"),rs.getString("ProductName"),rs.getString("Manufacturer"),rs.getDouble("Weight"), parent,sub,subSub);
             return product;
         }
         else {return null;}
     }
-
+    // TODO : CHANGE -->   public void addProduct(Product product) throws SQLException
     @Override
     public void addProduct(Product product) throws SQLException
     {
-        PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO Products (ProductID, ProductName, Manufacturer, Weight, ParentCategory, SubCategory, SubSubCategory) VALUES(?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Products (ProductID, ProductName, Manufacturer, Weight, ParentCategory, SubCategory, SubSubCategory) VALUES(?, ?, ?, ?, ?, ?, ?)");
         preparedStatement.setString(2, product.getProductName());
         preparedStatement.setString(3, product.getManufacturer());
         preparedStatement.setDouble(4,product.getProductWeight());

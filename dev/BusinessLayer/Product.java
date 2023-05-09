@@ -8,9 +8,9 @@ public class Product
     private String manufacturer;
     private double productWeight;
 
-    private int parentCategoryS;
-    private int subCategoryS;
-    private int subSubCategoryS;
+//    private int parentCategoryS;
+//    private int subCategoryS;
+//    private int subSubCategoryS;
 
     private Category parentCategory;
     private Category subCategory;
@@ -30,15 +30,15 @@ public class Product
     // Constructor for retrieving a product from a database - without increasing the lastAssignedId .
     // Should be in place -----Category parentCategory, Category subCategory, Category subSubCategory -- > int parentCategory, int subCategory, int subSubCategory
     //TODO: check how can i get for the constructor the categories and not their ids
-    public Product(int productID, String name, String manufacturer, double productWeight, int parentCategory, int subCategory, int subSubCategory) {
+    public Product(int productID, String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
         this.productID = productID;
         this.productName = name;
         this.manufacturer = manufacturer;
         this.productWeight = productWeight;
         // TODO: check if from here with the ids of the categories i can pull category object
-        this.parentCategoryS = parentCategory;
-        this.subCategoryS = subCategory;
-        this.subSubCategoryS = subSubCategory;
+        this.parentCategory = parentCategory;
+        this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
     }
 
     public Category getParentCategory() {return parentCategory;}

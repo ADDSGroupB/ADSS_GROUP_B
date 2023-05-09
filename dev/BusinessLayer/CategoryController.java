@@ -1,5 +1,9 @@
 package BusinessLayer;
 
+import DataAccess.CategoryDao;
+import DataAccess.CategoryDaoImpl;
+
+import java.sql.SQLException;
 import java.util.Map;
 //TODO : In each function in the menu that has input tests to pass to the BusinessLayer.HelperFunctions class
 

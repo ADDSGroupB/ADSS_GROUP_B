@@ -19,20 +19,24 @@ public class Branch {
     private Map<Product, Queue<Item>> DemagedItems;
     private Map<Product, Integer> MinProductAmount;
     private BranchReportManager branchReportManager;
-    public Branch(String name) {
-        this.BranchID = lastAssignedId; // get
-        Branch.lastAssignedId++;
-        this.BranchName = name;// get
-        this.ProductDiscount = new HashMap<>();// get
-        this.CategoryDiscount = new HashMap<>();// get
-        this.ItemsInStore = new HashMap<>();// get
-        this.ItemsInStorage = new HashMap<>();// get
-        this.SoldItems = new HashMap<>();// get
-        this.ExpiredItems = new HashMap<>();// get + set
-        this.DemagedItems = new HashMap<>();// get + set
-        this.MinProductAmount = new HashMap<>();// get
-        this.branchReportManager = new BranchReportManager();// get
-    }
+
+    // Maybe i dont need this constructor -->  public Branch(String name)
+
+//    public Branch(String name) {
+//        this.BranchID = lastAssignedId; // get
+//        Branch.lastAssignedId++;
+//        this.BranchName = name;// get
+//        this.ProductDiscount = new HashMap<>();// get
+//        this.CategoryDiscount = new HashMap<>();// get
+//        this.ItemsInStore = new HashMap<>();// get
+//        this.ItemsInStorage = new HashMap<>();// get
+//        this.SoldItems = new HashMap<>();// get
+//        this.ExpiredItems = new HashMap<>();// get + set
+//        this.DemagedItems = new HashMap<>();// get + set
+//        this.MinProductAmount = new HashMap<>();// get
+//        this.branchReportManager = new BranchReportManager();// get
+//    }
+
     public Branch(int branchID,String name) {
         this.BranchID = branchID;
         this.BranchName = name;// get
@@ -46,7 +50,11 @@ public class Branch {
         this.MinProductAmount = new HashMap<>();// get
         this.branchReportManager = new BranchReportManager();// get
     }
+
     ///////////////// getters ////////////////////////
+    public static void setLastAssignedId(int lastAssignedId) {
+        Branch.lastAssignedId = lastAssignedId;
+    }
     public int getBranchID() {
         return BranchID;
     }
