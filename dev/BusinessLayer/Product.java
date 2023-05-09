@@ -16,7 +16,7 @@ public class Product
     private Category subCategory;
     private Category subSubCategory;
 
-    // Constructor for retrieving a product from a database - without increasing the lastAssignedId .
+
     public Product(String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
         this.productID = lastAssignedId; // increment static productID for each new product
         this.productName = name;
@@ -27,7 +27,9 @@ public class Product
         this.subSubCategory = subSubCategory;
         Product.lastAssignedId++;
     }
+    // Constructor for retrieving a product from a database - without increasing the lastAssignedId .
     // Should be in place -----Category parentCategory, Category subCategory, Category subSubCategory -- > int parentCategory, int subCategory, int subSubCategory
+    //TODO: check how can i get for the constructor the categories and not their ids
     public Product(int productID, String name, String manufacturer, double productWeight, int parentCategory, int subCategory, int subSubCategory) {
         this.productID = productID;
         this.productName = name;
