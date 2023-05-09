@@ -4,9 +4,14 @@ public class Product
 {
     private static int lastAssignedId = 1;
     private String productName;
-    private final int productID;
+    private int productID;
     private String manufacturer;
     private double productWeight;
+
+    private int parentCategoryS;
+    private int subCategoryS;
+    private int subSubCategoryS;
+
     private Category parentCategory;
     private Category subCategory;
     private Category subSubCategory;
@@ -22,14 +27,15 @@ public class Product
         this.subSubCategory = subSubCategory;
         Product.lastAssignedId++;
     }
-    public Product(int productID, String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
+    // Should be in place -----Category parentCategory, Category subCategory, Category subSubCategory -- > int parentCategory, int subCategory, int subSubCategory
+    public Product(int productID, String name, String manufacturer, double productWeight, int parentCategory, int subCategory, int subSubCategory) {
         this.productID = productID;
         this.productName = name;
         this.manufacturer = manufacturer;
         this.productWeight = productWeight;
-        this.parentCategory = parentCategory;
-        this.subCategory = subCategory;
-        this.subSubCategory = subSubCategory;
+        this.parentCategoryS = parentCategory;
+        this.subCategoryS = subCategory;
+        this.subSubCategoryS = subSubCategory;
     }
 
     public Category getParentCategory() {return parentCategory;}
@@ -40,6 +46,7 @@ public class Product
     public String getManufacturer() {return manufacturer;}
     public String getProductName() {return productName;}
     public void setProductName(String productName) {this.productName = productName;}
+    public void setProductID(int id) {this.productID = id;}
 
     @Override
     public String toString() {
