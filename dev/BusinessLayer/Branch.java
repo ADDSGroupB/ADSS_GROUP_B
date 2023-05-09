@@ -33,6 +33,19 @@ public class Branch {
         this.MinProductAmount = new HashMap<>();// get
         this.branchReportManager = new BranchReportManager();// get
     }
+    public Branch(int branchID,String name) {
+        this.BranchID = branchID;
+        this.BranchName = name;// get
+        this.ProductDiscount = new HashMap<>();// get
+        this.CategoryDiscount = new HashMap<>();// get
+        this.ItemsInStore = new HashMap<>();// get
+        this.ItemsInStorage = new HashMap<>();// get
+        this.SoldItems = new HashMap<>();// get
+        this.ExpiredItems = new HashMap<>();// get + set
+        this.DemagedItems = new HashMap<>();// get + set
+        this.MinProductAmount = new HashMap<>();// get
+        this.branchReportManager = new BranchReportManager();// get
+    }
     ///////////////// getters ////////////////////////
     public int getBranchID() {
         return BranchID;
