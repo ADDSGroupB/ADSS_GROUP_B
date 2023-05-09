@@ -11,7 +11,7 @@ public class Product
     private Category subCategory;
     private Category subSubCategory;
 
-
+    // Constructor for retrieving a product from a database - without increasing the lastAssignedId .
     public Product(String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
         this.productID = lastAssignedId; // increment static productID for each new product
         this.productName = name;
@@ -22,6 +22,16 @@ public class Product
         this.subSubCategory = subSubCategory;
         Product.lastAssignedId++;
     }
+    public Product(int productID, String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
+        this.productID = productID;
+        this.productName = name;
+        this.manufacturer = manufacturer;
+        this.productWeight = productWeight;
+        this.parentCategory = parentCategory;
+        this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
+    }
+
     public Category getParentCategory() {return parentCategory;}
     public Category getSubCategory() {return subCategory;}
     public Category getSubSubCategory() {return subSubCategory;}
