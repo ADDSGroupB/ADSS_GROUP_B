@@ -1,5 +1,6 @@
 package DataAccess;
 
+import BusinessLayer.Category;
 import BusinessLayer.Product;
 
 import java.sql.*;
@@ -40,7 +41,6 @@ public class ProductsDaoImpl implements ProductsDao {
     public void addProduct(Product product) throws SQLException
     {
         PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO Products (ProductID, ProductName, Manufacturer, Weight, ParentCategory, SubCategory, SubSubCategory) VALUES(?, ?, ?, ?, ?, ?, ?)");
-        preparedStatement.setInt(1,product.getProductID());
         preparedStatement.setString(2, product.getProductName());
         preparedStatement.setString(3, product.getManufacturer());
         preparedStatement.setDouble(4,product.getProductWeight());

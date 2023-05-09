@@ -35,6 +35,7 @@ public class Product
         this.productName = name;
         this.manufacturer = manufacturer;
         this.productWeight = productWeight;
+        // TODO: check if from here with the ids of the categories i can pull category object
         this.parentCategoryS = parentCategory;
         this.subCategoryS = subCategory;
         this.subSubCategoryS = subSubCategory;

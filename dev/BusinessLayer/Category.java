@@ -16,6 +16,13 @@ public class Category {
         this.productInCategory = new ArrayList<>();
         Category.lastAssignedId++;
     }
+    public Category(int categoryID,String name)
+    {
+        this.CategoryID = categoryID;
+        this.CategoryName = name;
+//        this.productInCategory = new ArrayList<>();
+
+    }
 
     public int getCategoryID() {
         return CategoryID;
