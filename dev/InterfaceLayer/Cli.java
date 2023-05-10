@@ -40,7 +40,7 @@ public class Cli {
 
     public void start() throws SQLException {
         Connection connection = Database.connect();
-
+        Database.createTables();
         int userInput = 0;
 
         print("Hello! and Welcome to Super Lee- supplier module, I am available to assist you with any requests you may have\nDo you want to upload existing data or start over?  \n1. Load Data\n2. New Data \n3. EXIT\n");

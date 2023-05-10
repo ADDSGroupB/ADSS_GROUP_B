@@ -14,10 +14,21 @@ public class Agreement {
     private Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount; //
     private Pair<Double,Double> totalOrderDiscountPerOrderPrice;
     private boolean selfSupply;
+    private String supplyMethod; // "Superlee" or "Myself"
+    private int supplyTime;
     private ArrayList<DayOfWeek> supplyDays;
 
     private HashMap <Integer, SupplierProduct> supllyingProducts; //prodId, supplierProduct
     //private ArrayList<String> productsByCatlogNumber; // products that supplied to the super by the *supplier* ����� ��� �����
+
+
+    public Agreement(String paymentType, boolean selfSupply, String supplyMethod, int supplyTime, ArrayList<DayOfWeek> supplyDays) {
+        this.paymentType = paymentType;
+        this.selfSupply = selfSupply;
+        this.supplyMethod = supplyMethod;
+        this.supplyTime = supplyTime;
+        this.supplyDays = supplyDays;
+    }
 
     public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays) {
         this.agreementID = id++;
@@ -82,7 +93,19 @@ public class Agreement {
     public Pair<Integer,Double> getTotalDiscountInPrecentageForOrder(){
         return totalDiscountInPrecentageForOrderAmount;
     }
-//    public void addTotalDiscount(String type, int quantity, int value)
+
+    public void setTotalDiscountInPrecentageForOrderAmount(Pair<Integer, Double> totalDiscountInPrecentageForOrderAmount) {
+        this.totalDiscountInPrecentageForOrderAmount = totalDiscountInPrecentageForOrderAmount;
+    }
+
+    public void setTotalOrderDiscountPerOrderPrice(Pair<Double, Double> totalOrderDiscountPerOrderPrice) {
+        this.totalOrderDiscountPerOrderPrice = totalOrderDiscountPerOrderPrice;
+    }
+
+    public void setSupllyingProducts(HashMap<Integer, SupplierProduct> supllyingProducts) {
+        this.supllyingProducts = supllyingProducts;
+    }
+    //    public void addTotalDiscount(String type, int quantity, int value)
 //    {
 //        if (type.toLowerCase().equals("Percent"))
 //            totalOrderDiscount.add(new PercentDiscount(quantity, value));

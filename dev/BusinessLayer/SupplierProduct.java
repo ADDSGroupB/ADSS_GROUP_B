@@ -1,5 +1,6 @@
 package BusinessLayer;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.NavigableMap;
 
@@ -11,11 +12,26 @@ public class SupplierProduct
     private int catalogID;
     private int productID;
     private double price;
-    //private String manufacturer;
+    private String manufacturer;
+    private LocalDate expirationDate;
+    private Double weight;
     private HashMap<Integer, Double> discountPerAmount; // product amount, discount in percentage
     private int ammount;
 
-    public SupplierProduct(String name, int productID,int catalogID, double price, int amount,  HashMap<Integer, Double> discountPerAmount) {
+    public SupplierProduct(String name, int supplierId, int catalogID, int productID, double price, String manufacturer, LocalDate expirationDate, Double weight, HashMap<Integer, Double> discountPerAmount, int ammount) {
+        this.name = name;
+        this.supplierId = supplierId;
+        this.catalogID = catalogID;
+        this.productID = productID;
+        this.price = price;
+        this.manufacturer = manufacturer;
+        this.expirationDate = expirationDate;
+        this.weight = weight;
+        this.discountPerAmount = discountPerAmount;
+        this.ammount = ammount;
+    }
+
+    public SupplierProduct(String name, int productID, int catalogID, double price, int amount, HashMap<Integer, Double> discountPerAmount) {
         this.name = name;
         this.productID = productID;
         this.catalogID = catalogID;

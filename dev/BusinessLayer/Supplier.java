@@ -23,6 +23,15 @@ public class Supplier {
     //private Map<Integer, Integer> productsAmount; // < catalogId: int, quantity: int >
     private Agreement agreement;
 
+    public Supplier(int supplierId, String name, String address, ArrayList<Contact> contacts, String bankAccount, Agreement agreement) {
+        this.supplierId = supplierId;
+        this.name = name;
+        this.address = address;
+        this.contacts = contacts;
+        this.bankAccount = bankAccount;
+        this.agreement = agreement;
+    }
+
     public Supplier(String name, String bankAccount, String address, ArrayList<String> manufacturers, ArrayList<String> domains, Agreement agreement, HashMap<Integer, Integer> productsAmount) {
         this.supplierId = id++;
         this.name = name;
