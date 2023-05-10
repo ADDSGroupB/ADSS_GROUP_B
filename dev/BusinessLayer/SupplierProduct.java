@@ -1,8 +1,6 @@
 package BusinessLayer;
 
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.NavigableMap;
 
 public class SupplierProduct
 {
@@ -13,22 +11,22 @@ public class SupplierProduct
     private int productID;
     private double price;
     private String manufacturer;
-    private LocalDate expirationDate;
+    private int expirationDays;
     private Double weight;
     private HashMap<Integer, Double> discountPerAmount; // product amount, discount in percentage
-    private int ammount;
+    private int amount;
 
-    public SupplierProduct(String name, int supplierId, int catalogID, int productID, double price, String manufacturer, LocalDate expirationDate, Double weight, HashMap<Integer, Double> discountPerAmount, int ammount) {
+    public SupplierProduct(String name, int supplierId, int productID, int catalogID, double price, int amount, HashMap<Integer, Double> discountPerAmount, String manufacturer, int expirationDays, Double weight) {
         this.name = name;
         this.supplierId = supplierId;
         this.catalogID = catalogID;
         this.productID = productID;
         this.price = price;
         this.manufacturer = manufacturer;
-        this.expirationDate = expirationDate;
+        this.expirationDays = expirationDays;
         this.weight = weight;
         this.discountPerAmount = discountPerAmount;
-        this.ammount = ammount;
+        this.amount = amount;
     }
 
     public SupplierProduct(String name, int productID, int catalogID, double price, int amount, HashMap<Integer, Double> discountPerAmount) {
@@ -36,7 +34,7 @@ public class SupplierProduct
         this.productID = productID;
         this.catalogID = catalogID;
         this.price = price;
-        this.ammount = amount;
+        this.amount = amount;
         //this.manufacturer = manufacturer;
         this.discountPerAmount = discountPerAmount;
     }
@@ -73,7 +71,7 @@ public class SupplierProduct
     }
 
     public int getAmount() {
-        return ammount;
+        return amount;
     }
 
     public double getPrice() {
@@ -81,7 +79,19 @@ public class SupplierProduct
     }
 
     public void setAmount(int amount) {
-        this.ammount= amount;
+        this.amount = amount;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public int getExpirationDays() {
+        return expirationDays;
+    }
+
+    public Double getWeight() {
+        return weight;
     }
 }
 

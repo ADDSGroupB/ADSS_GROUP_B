@@ -40,6 +40,7 @@ public class Cli {
 
     public void start() throws SQLException {
         Connection connection = Database.connect();
+//        Database.createTablesNotNULL();
         Database.createTables();
         int userInput = 0;
 
@@ -150,9 +151,9 @@ public class Cli {
         HashMap <Integer, SupplierProductService> supllyingProducts1 = new HashMap<>();
         HashMap<Integer, Double> discountPerAmount1 =new HashMap<>();
         discountPerAmount1.put(20, 5.0);
-        supllyingProducts1.put(5, new SupplierProductService("bamba" ,5, 7, 4.5, 10, discountPerAmount1));
-        supllyingProducts1.put(29, new SupplierProductService("shoko" ,29, 11, 12, 20, discountPerAmount1));
-        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1);
+        supllyingProducts1.put(5, new SupplierProductService("bamba" ,5, 7, 4.5, 10, discountPerAmount1, "Osem", 100, 0.3));
+        supllyingProducts1.put(29, new SupplierProductService("shoko" ,29, 11, 12, 20, discountPerAmount1, "Osem", 100, 0.3));
+        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1, "FixedDay", 0);
         ArrayList<ServiceContact> contacts1 =new ArrayList<>();
         contacts1.add(new ServiceContact("mor", "mor@gmail.com", "052-3801919"));
         supplierService.addSupplier("gal halifa", "beit ezra", "123456", agreement1, contacts1);
@@ -163,9 +164,9 @@ public class Cli {
         HashMap<Integer, Double> discountPerAmount2 =new HashMap<>();
         discountPerAmount2.put(10, 15.0);
         discountPerAmount2.put(30, 20.0);
-        supllyingProducts2.put(5, new SupplierProductService("bamba" ,5, 15, 5, 20, discountPerAmount2));
-        supllyingProducts2.put(11, new SupplierProductService("coffe" ,11, 9, 10, 50, discountPerAmount2));
-        ServiceAgreement agreement2 = new ServiceAgreement("Cash", true, deliveryDays2, supllyingProducts2);
+        supllyingProducts2.put(5, new SupplierProductService("bamba" ,5, 15, 5, 20, discountPerAmount2, "Osem", 100, 0.3));
+        supllyingProducts2.put(11, new SupplierProductService("coffe" ,11, 9, 10, 50, discountPerAmount2, "Osem", 100, 0.3));
+        ServiceAgreement agreement2 = new ServiceAgreement("Cash", true, deliveryDays2, supllyingProducts2, "FixedDay", 0);
         ArrayList<ServiceContact> contacts2 =new ArrayList<>();
         contacts2.add(new ServiceContact("miki", "miki@gmail.com", "054-2453536" ));
         supplierService.addSupplier("mor", "rehovot", "205155", agreement2, contacts2);
@@ -179,9 +180,9 @@ public class Cli {
         Pair<Integer, Double> totalDiscountPerAmount =new Pair<>(30,5.0);
         Pair<Double, Double> totalDiscountPerPrice =new Pair<>(200.0,20.0);
         discountPerAmount3.put(20, 5.0);
-        supllyingProducts3.put(5, new SupplierProductService("bamba" ,5, 16, 8, 30, discountPerAmount3));
-        supllyingProducts3.put(11, new SupplierProductService("coffee" ,11, 6, 5, 40, discountPerAmount3));
-        ServiceAgreement agreement3 = new ServiceAgreement("Cash", true, deliveryDays3, supllyingProducts3 , totalDiscountPerAmount, totalDiscountPerPrice);
+        supllyingProducts3.put(5, new SupplierProductService("bamba" ,5, 16, 8, 30, discountPerAmount3, "Osem", 100, 0.3));
+        supllyingProducts3.put(11, new SupplierProductService("coffee" ,11, 6, 5, 40, discountPerAmount3, "Osem", 100, 0.3));
+        ServiceAgreement agreement3 = new ServiceAgreement("Cash", true, deliveryDays3, supllyingProducts3 , totalDiscountPerAmount, totalDiscountPerPrice, "FixedDay", 0);
         ArrayList<ServiceContact> contacts3 =new ArrayList<>();
         contacts3.add(new ServiceContact("noa aviv", "noa@gmail.com", "050-5838687"));
         supplierService.addSupplier("itay", "beit ezra", "121212", agreement3, contacts3);
@@ -577,6 +578,8 @@ public class Cli {
 
     private ServiceAgreement createAgreement() {
         String paymentMethod = choosePaymentMethod();
+        String supplyMethod;
+        int supplyTime;
         boolean selfSupply;
         ArrayList<DayOfWeek> days = new ArrayList<>();
         print("Choose one of the following Supply methods according to the supplier's agreement \n1. By Days \n2. By Order \n3. By Super-Lee");
@@ -590,6 +593,8 @@ public class Cli {
         //supplying in specific days
         if (userInput == 1) {
             selfSupply = true;
+            supplyMethod = "FixedDay";
+            supplyTime = -1;
             int day = 0;
             print("please choose suppling days");
             print("\n1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday \n8.That's all...");
@@ -605,10 +610,17 @@ public class Cli {
         //supplying by order
         else if (userInput == 2){
             selfSupply = true;
+            supplyMethod = "DaysAmount";
+            print("please choose number of days to supply:");
+            supplyTime = reader.nextInt();
         }
         ////userinput=3 , superLee supply
-        else
+        else {
             selfSupply = false;
+            supplyMethod = "SuperLee";
+            print("please choose number of days to supply:");
+            supplyTime = reader.nextInt();
+        }
 
         print("Would you like to add specific items  to the agreement? \n1. Yes\n2. No");
         int keepAdding = reader.nextInt();
@@ -637,10 +649,10 @@ public class Cli {
                 String [] arr2 = priceDiscount.split(":");
                 Pair <Integer, Double> amountPair = new Pair<>(Integer.parseInt(arr1[0]), Double.parseDouble(arr1[1]));
                 Pair <Double, Double> pricePair = new Pair<>(Double.parseDouble(arr2[0]), Double.parseDouble(arr2[1]));
-                return new ServiceAgreement(paymentMethod, selfSupply, days, items,amountPair,pricePair);
+                return new ServiceAgreement(paymentMethod, selfSupply, days, items,amountPair,pricePair, supplyMethod, supplyTime);
 
         }
-        return new ServiceAgreement(paymentMethod, selfSupply, days, items);
+        return new ServiceAgreement(paymentMethod, selfSupply, days, items, supplyMethod, supplyTime);
     }
     public SupplierProductService createProduct(){
         print("Please enter product's name");
@@ -653,6 +665,12 @@ public class Cli {
         int catalogNumber = reader.nextInt();
         print("Please enter product's amount");
         int amount = reader.nextInt();
+        print("Please enter product's manufacturer");
+        String manufacturer = reader.nextLine();
+        print("Please enter product's expiration Days");
+        int expirationDays = reader.nextInt();
+        print("Please enter product's weight");
+        double weight = reader.nextDouble();
         reader.nextLine();
         print("Ok, now please add Discounts according to the format:amount:Discount in percentages,amount:Discount in percentages,..");
         String[] arr = reader.nextLine().split("\\s*,\\s*");
@@ -662,7 +680,7 @@ public class Cli {
             int key = Integer.parseInt(val[0]);
             double value = Double.parseDouble(val[1]);
             discounts.put(key, value);}
-        SupplierProductService newProduct = new SupplierProductService(name, productId, catalogNumber, price, amount, discounts);
+        SupplierProductService newProduct = new SupplierProductService(name, productId, catalogNumber, price, amount, discounts, manufacturer, expirationDays, weight);
         return newProduct;
     }
 

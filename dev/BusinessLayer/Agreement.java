@@ -14,7 +14,7 @@ public class Agreement {
     private Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount; //
     private Pair<Double,Double> totalOrderDiscountPerOrderPrice;
     private boolean selfSupply;
-    private String supplyMethod; // "Superlee" or "Myself"
+    private String supplyMethod; // "FixedDay" or "DaysAmount"
     private int supplyTime;
     private ArrayList<DayOfWeek> supplyDays;
 
@@ -29,32 +29,53 @@ public class Agreement {
         this.supplyTime = supplyTime;
         this.supplyDays = supplyDays;
     }
-
-    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays) {
-        this.agreementID = id++;
-        this.paymentType = paymentType;
-    //    this.discountProducts = new HashMap<Integer, ArrayList<Discount>>();
-    //    this.totalOrderDiscount = new ArrayList<Discount>();
-        this.selfSupply = selfSupply;
-        this.supplyDays = supplyDays;
-    }
-
-    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap <Integer, SupplierProduct> supllyingProducts) {
+    public Agreement(String paymentType, boolean selfSupply, String supplyMethod, int supplyTime, ArrayList<DayOfWeek> supplyDays,
+                     HashMap <Integer, SupplierProduct> supllyingProducts) {
         this.paymentType = paymentType;
         this.selfSupply = selfSupply;
+        this.supplyMethod = supplyMethod;
+        this.supplyTime = supplyTime;
         this.supplyDays = supplyDays;
         this.supllyingProducts = supllyingProducts;
     }
-
-    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap <Integer, SupplierProduct> supllyingProducts,
+    public Agreement(String paymentType, boolean selfSupply, String supplyMethod, int supplyTime, ArrayList<DayOfWeek> supplyDays, HashMap <Integer, SupplierProduct> supllyingProducts,
                      Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount, Pair<Double,Double> totalOrderDiscountPerOrderPrice) {
         this.paymentType = paymentType;
         this.selfSupply = selfSupply;
+        this.supplyMethod = supplyMethod;
+        this.supplyTime = supplyTime;
         this.supplyDays = supplyDays;
         this.supllyingProducts = supllyingProducts;
         this.totalDiscountInPrecentageForOrderAmount = totalDiscountInPrecentageForOrderAmount;
         this.totalOrderDiscountPerOrderPrice = totalOrderDiscountPerOrderPrice;
     }
+
+
+//    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays) {
+//        this.agreementID = id++;
+//        this.paymentType = paymentType;
+//    //    this.discountProducts = new HashMap<Integer, ArrayList<Discount>>();
+//    //    this.totalOrderDiscount = new ArrayList<Discount>();
+//        this.selfSupply = selfSupply;
+//        this.supplyDays = supplyDays;
+//    }
+//
+//    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap <Integer, SupplierProduct> supllyingProducts) {
+//        this.paymentType = paymentType;
+//        this.selfSupply = selfSupply;
+//        this.supplyDays = supplyDays;
+//        this.supllyingProducts = supllyingProducts;
+//    }
+//
+//    public Agreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap <Integer, SupplierProduct> supllyingProducts,
+//                     Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount, Pair<Double,Double> totalOrderDiscountPerOrderPrice) {
+//        this.paymentType = paymentType;
+//        this.selfSupply = selfSupply;
+//        this.supplyDays = supplyDays;
+//        this.supllyingProducts = supllyingProducts;
+//        this.totalDiscountInPrecentageForOrderAmount = totalDiscountInPrecentageForOrderAmount;
+//        this.totalOrderDiscountPerOrderPrice = totalOrderDiscountPerOrderPrice;
+//    }
 
     public HashMap <Integer, SupplierProduct> getSupllyingProducts(){
         return supllyingProducts;
@@ -104,6 +125,19 @@ public class Agreement {
 
     public void setSupllyingProducts(HashMap<Integer, SupplierProduct> supllyingProducts) {
         this.supllyingProducts = supllyingProducts;
+    }
+
+    public Pair<Integer, Double> getTotalDiscountInPrecentageForOrderAmount() {
+        return totalDiscountInPrecentageForOrderAmount;
+    }
+
+
+    public String getSupplyMethod() {
+        return supplyMethod;
+    }
+
+    public int getSupplyTime() {
+        return supplyTime;
     }
     //    public void addTotalDiscount(String type, int quantity, int value)
 //    {

@@ -23,7 +23,7 @@ public class ProductController {
             int productId = entry.getKey();
             SupplierProductService product = entry.getValue();
             int catatalogNumber = product.getCatalogNumber();
-            SupplierProduct supplierProduct1 = new SupplierProduct(product.getName(), product.getProductId(), product.getCatalogNumber(), product.getPrice(), product.getAmount(), product.getDiscountPerAmount());
+            SupplierProduct supplierProduct1 = new SupplierProduct(product.getName(), supplierId, product.getProductId(), product.getCatalogNumber(), product.getPrice(), product.getAmount(), product.getDiscountPerAmount(), product.getManufacturer(), product.getExpirationDays(), product.getWeight());
             supplierProduct.put(productId, supplierProduct1);
             if (productIdAndCatalogId.containsKey(productId)) {
                 productIdAndCatalogId.get(productId).put(supplierId, catatalogNumber);

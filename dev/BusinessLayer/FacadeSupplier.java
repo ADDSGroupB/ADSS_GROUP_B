@@ -1,5 +1,6 @@
 package BusinessLayer;
 
+import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
 import Utillity.Response;
@@ -12,11 +13,12 @@ public class FacadeSupplier {
     private SupplierController supplierController;
     private ProductController productController;
     private OrderController orderController;
-
+    private SupplierDAO supplierDAO;
     public FacadeSupplier(){
         supplierController = new SupplierController();
         productController = new ProductController();
         orderController = new OrderController();
+        supplierDAO = new SupplierDAO();
     }
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement,  ArrayList<ServiceContact> contactList) {
         Response res = supplierController.addSupplier(name, address, bankAccount);
@@ -24,15 +26,15 @@ public class FacadeSupplier {
             int supplierId = res.getSupplierId();
             HashMap<Integer, SupplierProduct> supllyingProducts = productController.createSupllyingProducts(serviceAgreement.getSupllyingProducts(), supplierId);
             if(serviceAgreement.getTotalDiscountInPrecentageForOrderAmount()!=null && serviceAgreement.getTotalOrderDiscountPerOrderPrice()!=null){
-                Agreement agreement1 = supplierController.createAgreementWithDiscounts(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts ,serviceAgreement.getTotalDiscountInPrecentageForOrderAmount(), serviceAgreement.getTotalOrderDiscountPerOrderPrice());
+                Agreement agreement1 = supplierController.createAgreementWithDiscounts(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts, serviceAgreement.getSupplyMethod(), serviceAgreement.getSupplyTime() ,serviceAgreement.getTotalDiscountInPrecentageForOrderAmount(), serviceAgreement.getTotalOrderDiscountPerOrderPrice());
                 supplierController.setAgreement(agreement1, supplierId);
             }
             else {
-                Agreement agreement1 = supplierController.createAgreement(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts);
+                Agreement agreement1 = supplierController.createAgreement(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts, serviceAgreement.getSupplyMethod(), serviceAgreement.getSupplyTime());
                 supplierController.setAgreement(agreement1, supplierId);
             }
             supplierController.setContacts(contactList, supplierId);
-
+            supplierDAO.addSupplier(supplierController.getSupllierByID(supplierId));
         }
         return res;
     }
@@ -40,7 +42,8 @@ public class FacadeSupplier {
 
     public Response removeSupplier(int id) {
         Response res1 = supplierController.removeSupplier(id);
-        if(!res1.errorOccurred()){
+        Response res3 = supplierDAO.removeSupplier(id);
+        if(!res1.errorOccurred() && !res3.errorOccurred()){
             Response res2 = productController.removeSupplierProducts(id);
             if(res2.getErrorMessage()!= null && res2.getErrorMessage().equals("The user doesn't have any products yet")){
                 return new Response("The user with id: " + id + " deleted successfully and he doesn't have any products");
@@ -127,6 +130,8 @@ public class FacadeSupplier {
     public void printOrders() {
         orderController.PrintOrders();
     }
+
+
 }
 
 

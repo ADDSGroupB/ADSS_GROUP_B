@@ -1,5 +1,6 @@
 package BusinessLayer;
 
+import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceContact;
 import Utillity.Pair;
 import Utillity.Response;
@@ -13,8 +14,10 @@ import java.util.Objects;
 public class SupplierController {
     private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
 
+
     public SupplierController() {
         suppliers = new HashMap<>();
+
     }
 
     public Response addSupplier(String name, String address, String bankAccount) {
@@ -29,15 +32,16 @@ public class SupplierController {
         }
         Supplier newSupplier = new Supplier(name, address, bankAccount);
         suppliers.put(newSupplier.getSupplierId(), newSupplier);
+
         return new Response(newSupplier.getSupplierId());
     }
 
 
-    public Agreement createAgreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts) {
-        return new Agreement(paymentType, selfSupply, supplyDays, SupplyingProducts);
+    public Agreement createAgreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts, String supplyMethod, int supplyTime) {
+        return new Agreement(paymentType, selfSupply, supplyMethod, supplyTime, supplyDays, SupplyingProducts);
     }
-    public Agreement createAgreementWithDiscounts(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts, Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount ,  Pair<Double,Double> totalOrderDiscountPerOrderPrice) {
-        return new Agreement(paymentType, selfSupply, supplyDays, SupplyingProducts, totalDiscountInPrecentageForOrderAmount, totalOrderDiscountPerOrderPrice);
+    public Agreement createAgreementWithDiscounts(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts, String supplyMethod, int supplyTime, Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount ,  Pair<Double,Double> totalOrderDiscountPerOrderPrice) {
+        return new Agreement(paymentType, selfSupply, supplyMethod, supplyTime, supplyDays, SupplyingProducts, totalDiscountInPrecentageForOrderAmount, totalOrderDiscountPerOrderPrice);
     }
 
     public void setAgreement(Agreement a, int id) {
@@ -58,6 +62,7 @@ public class SupplierController {
             return new Response("Supplier can't be deleted because there is no supplier with the given id: " + id);
         }
         suppliers.remove(id);
+
         return new Response(id);
     }
 
@@ -339,6 +344,11 @@ public class SupplierController {
         }
         return new Response(suppliersInOrder, supplyListSupplierProduct);
         //END WHILE, ORDER CAN BE DONE
+    }
+
+    public Supplier getSupllierByID(int id)
+    {
+        return suppliers.get(id);
     }
 
 
