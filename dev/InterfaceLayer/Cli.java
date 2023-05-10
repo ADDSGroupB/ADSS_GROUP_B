@@ -1,5 +1,6 @@
 package InterfaceLayer;
 
+import DataAccessLayer.Database;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
 import ServiceLayer.SupplierProductService;
@@ -7,6 +8,7 @@ import ServiceLayer.SupplierService;
 import Utillity.Pair;
 import Utillity.Response;
 
+import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.*;
 //import ServiceLayer.MainService;
@@ -36,7 +38,9 @@ public class Cli {
     }
 
 
-    public void start() {
+    public void start() throws SQLException {
+        Connection connection = Database.connect();
+
         int userInput = 0;
 
         print("Hello! and Welcome to Super Lee- supplier module, I am available to assist you with any requests you may have\nDo you want to upload existing data or start over?  \n1. Load Data\n2. New Data \n3. EXIT\n");
@@ -78,6 +82,13 @@ public class Cli {
         }
         if (n == 3) {
             print("Hope you enjoyed, see you next time :)");
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
             return;
         }
         //if the user pressed 2 we play the next section
