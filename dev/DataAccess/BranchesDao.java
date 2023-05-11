@@ -11,5 +11,5 @@ public interface BranchesDao {
     public List<Branch> getAllBranches() throws SQLException;
     public Branch getBranchByID(int branchID) throws SQLException;
     public Branch addBranch(String branchName) throws SQLException;
-    Map<Integer,Branch> getBranchMapFromDB();
+    public Map<Integer,Branch> getBranchesMapFromDB()throws SQLException;
 }

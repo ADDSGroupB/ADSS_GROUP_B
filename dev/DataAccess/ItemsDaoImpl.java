@@ -1,0 +1,406 @@
+package DataAccess;
+
+import BusinessLayer.StatusEnum;
+import BusinessLayer.Item;
+import BusinessLayer.Product;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ItemsDaoImpl implements ItemsDao{
+    private Connection connection;
+    private Map<Integer, Item> itemsMapFromDB;
+    private ProductsDao productsDao;
+    public ItemsDaoImpl()throws SQLException
+    {
+        connection = DBConnector.connect();
+        itemsMapFromDB = new HashMap<>();
+        productsDao = new ProductsDaoImpl();
+    }
+    @Override
+    public List<Item> getAllItems() throws SQLException {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items ");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+    @Override
+    public Item getItemByID(int itemID) throws SQLException {
+        if (itemsMapFromDB.containsKey(itemID)) {return itemsMapFromDB.get(itemID);}
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        Item item = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE ItemID = ?");
+            statement.setInt(1, itemID);
+            rs = statement.executeQuery();
+            if (rs.next())
+            {
+                LocalDate expiredDate ;
+                Product product ;
+                int branchID = rs.getInt("BranchID");
+                int productID = rs.getInt("ProductID");
+                if (productsDao.getProductsMapFromDB().containsKey(productID))
+                {product = productsDao.getProductsMapFromDB().get(productID);}
+                else {product = productsDao.getProductByID(productID);}
+                int supplierID = rs.getInt("SupplierID");
+                double priceFromSupplier = rs.getDouble("PriceFromSupplier");
+                double priceInBranch = rs.getDouble("PriceInBranch");
+                String status = rs.getString("Status");
+                String defectiveDiscription = rs.getString("DefectiveDiscription");
+                LocalDate arrivalDate =LocalDate.parse(rs.getString("ArrivalDate"));
+                if (rs.getString("ExpiredDate") != null )
+                {
+                    expiredDate =LocalDate.parse(rs.getString("ExpiredDate"));
+                    item = new Item(itemID, branchID, expiredDate, arrivalDate, priceFromSupplier, priceInBranch, supplierID, product);
+                }
+                else
+                {
+                    item = new Item(itemID,branchID,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
+                }
+                item.setDefectiveDiscription(defectiveDiscription);
+                switch (status) {
+                    case "Damaged" -> item.setStatusType(StatusEnum.Damaged);
+                    case "Expired" -> item.setStatusType(StatusEnum.Expired);
+                    case "Store" -> item.setStatusType(StatusEnum.Store);
+                    case "Storage" -> item.setStatusType(StatusEnum.Storage);
+                    case "Sold" -> item.setStatusType(StatusEnum.Sold);
+                    //TODO : CHECK WHAT TO DO BECAUSE IT CANT BE NULL
+                    default -> item.setStatusType(null);
+                }
+                itemsMapFromDB.put(itemID,item);
+            }
+            return item;
+
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting item: " + e.getMessage());
+            return null;
+        } finally {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+
+    @Override
+    public Item addItemWithExpiredDate(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        Item item ;
+        try {
+            statement = connection.prepareStatement("INSERT INTO Items (BranchID, ProductID, SupplierID, ExpiredDate, PriceFromSupplier, PriceInBranch,PriceAfterDiscount,Status,ArrivalDate) VALUES(?,?,?,?,?,?,?,?,?)");
+            statement.setInt(1,branchID);
+            statement.setInt(2,product.getProductID());
+            statement.setInt(3,supplierID);
+            statement.setString(4,expiredDate.toString());
+            statement.setDouble(5,priceFromSupplier);
+            statement.setDouble(6,priceInBranch);
+            statement.setDouble(7,priceInBranch);
+            statement.setString(8,"Storage");
+            statement.setString(9,arrivalDate.toString());
+            statement.executeUpdate();
+            rs = connection.createStatement().executeQuery("SELECT MAX(ItemID) FROM Items");
+            int last_ID = rs.getInt(1);
+            item = new Item(last_ID,branchID,expiredDate,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
+            itemsMapFromDB.put(item.getItemID(),item);
+            return item;
+        }
+        catch (Exception e) {
+            System.out.println("Error while trying to add new item with expired date: " + e.getMessage());
+            return null;
+        } finally {
+            if (statement != null) {statement.close();}
+            if (rs != null) {rs.close();}
+        }
+
+    }
+
+    @Override
+    public Item addItemWithoutExpiredDate( int branchID, LocalDate arrivalDate ,double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        Item item ;
+        try {
+            statement = connection.prepareStatement("INSERT INTO Items (BranchID, ProductID, SupplierID, PriceFromSupplier, PriceInBranch,PriceAfterDiscount,Status,ArrivalDate) VALUES(?,?,?,?,?,?,?,?)");
+            statement.setInt(1,branchID);
+            statement.setInt(2,product.getProductID());
+            statement.setInt(3,supplierID);
+            statement.setDouble(4,priceFromSupplier);
+            statement.setDouble(5,priceInBranch);
+            statement.setDouble(6,priceInBranch);
+            statement.setString(7,"Storage");
+            statement.setString(8,arrivalDate.toString());
+            statement.executeUpdate();
+            rs = connection.createStatement().executeQuery("SELECT MAX(ItemID) FROM Items");
+            int last_ID = rs.getInt(1);
+            item = new Item(last_ID,branchID,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
+            itemsMapFromDB.put(item.getItemID(),item);
+            return item;
+        }
+        catch (Exception e) {
+            System.out.println("Error while trying to add new item without expired date: " + e.getMessage());
+            return null;
+        } finally {
+            if (statement != null) {statement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
+
+    @Override
+    public Item updateItemStatus(int itemID, String status) throws SQLException {
+        Item item ;
+        PreparedStatement statement = null;
+        try {
+            if (itemsMapFromDB.containsKey(itemID)) {item = itemsMapFromDB.get(itemID);}
+            else {item = getItemByID(itemID);}
+            statement = connection.prepareStatement("UPDATE Items SET Status = ? WHERE ItemID = ?");
+            statement.setString(1, status);
+            statement.setInt(2, itemID);
+            statement.executeUpdate();
+            switch (status) {
+                case "Damaged" -> item.setStatusType(StatusEnum.Damaged);
+                case "Expired" -> item.setStatusType(StatusEnum.Expired);
+                case "Store" -> item.setStatusType(StatusEnum.Store);
+                case "Storage" -> item.setStatusType(StatusEnum.Storage);
+                case "Sold" -> item.setStatusType(StatusEnum.Sold);
+                default -> item.setStatusType(null);
+            }
+            item = this.getItemByID(itemID);
+            itemsMapFromDB.put(itemID,item);
+            return item;
+        } catch (Exception e) {
+            System.out.println("Error while trying to update item status: " + e.getMessage());
+            return null;
+        } finally {
+            if (statement != null) {statement.close();}
+        }
+    }
+
+    @Override
+    public Item updateItemPriceAfterDiscount(int itemID, double priceAfterDiscount) throws SQLException {
+        Item item;
+        PreparedStatement statement = null;
+        try {
+            if (itemsMapFromDB.containsKey(itemID)) {item = itemsMapFromDB.get(itemID);}
+            else {item = getItemByID(itemID);}
+            statement = connection.prepareStatement("UPDATE Items SET PriceAfterDiscount = ? WHERE ItemID = ?");
+            statement.setDouble(1, priceAfterDiscount);
+            statement.setInt(2, itemID);
+            statement.executeUpdate();
+            item.setPriceAfterDiscount(priceAfterDiscount);
+            itemsMapFromDB.put(itemID,item);
+            return item;
+        } catch (Exception e) {
+            System.out.println("Error while trying to update item price after discount : " + e.getMessage());
+            return null;
+        } finally {
+            if (statement != null) {statement.close();}
+        }
+    }
+
+
+    @Override
+    public Item updateItemDefectiveDescription(int itemID, String description) throws SQLException {
+
+        Item item;
+        PreparedStatement statement = null;
+        try {
+            if (itemsMapFromDB.containsKey(itemID)) {item = itemsMapFromDB.get(itemID);}
+            else {item = getItemByID(itemID);}
+            statement = connection.prepareStatement("UPDATE Items SET DefectiveDiscription = ? WHERE ItemID = ?");
+            statement.setString(1, description);
+            statement.setInt(2, itemID);
+            statement.executeUpdate();
+            item.setDefectiveDiscription(description);
+            itemsMapFromDB.put(itemID,item);
+            return item;
+        } catch (Exception e) {
+            System.out.println("Error while trying to update item defective discription : " + e.getMessage());
+            return null;
+        } finally {
+            if (statement != null) {statement.close();}
+        }
+    }
+    public List<Item> getAllExpiredItems() throws SQLException
+    {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement.setString(1,"Expired");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+    public List<Item> getAllDamagedItems() throws SQLException
+    {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement.setString(1,"Damaged");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+    public List<Item> getAllSoldItems() throws SQLException
+    {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement.setString(1,"Sold");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+    public List<Item> getAllStoreItems() throws SQLException
+    {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement.setString(1,"Store");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+    public List<Item> getAllStorageItems() throws SQLException
+    {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement.setString(1,"Storage");
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all items: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+}

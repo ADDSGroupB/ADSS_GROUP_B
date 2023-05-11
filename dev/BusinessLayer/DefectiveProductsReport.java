@@ -37,14 +37,14 @@ public class DefectiveProductsReport extends Report {
         output.append("Production date: ").append(this.getReportDate()).append("\n");
         output.append("---------------------------").append("\n");
         for (Item item : defectiveOrExpiredProducts.keySet()){
-            if (item.getDamagedOrExpiredType() == DanmagedOrExpiredEnum.Damaged) {
+            if (item.getStatusType() == StatusEnum.Damaged) {
                 output.append("Item ID: ").append(item.getItemID()).append(", Product ID: ").append(item.getProductID()).append("\n").append("DefectiveType: ")
-                        .append(item.getDamagedOrExpiredType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append("\n");
+                        .append(item.getStatusType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append("\n");
             }
             else
             {
                 output.append("Item ID: ").append(item.getItemID()).append(", Product ID: ").append(item.getProductID()).append("\n").append("DefectiveType: ")
-                        .append(item.getDamagedOrExpiredType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append("ExpireDate: ").append(item.getExpiredDate()).append("\n");
+                        .append(item.getStatusType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append("ExpireDate: ").append(item.getExpiredDate()).append("\n");
             }
             output.append("--------------------------------------\n");
         }

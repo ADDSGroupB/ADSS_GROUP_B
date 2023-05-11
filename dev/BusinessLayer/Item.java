@@ -14,9 +14,10 @@ public class Item {
     private String DefectiveDiscription; // Maybe call it Comment
     private double PriceFromSupplier;//
     private double PriceInBranch;//
-    private DanmagedOrExpiredEnum DamagedOrExpiredType;
+    private StatusEnum StatusType;
     private double priceAfterDiscount;//
     private Product product;
+
     // constructor for items with expired date
     public Item(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier , double priceInBranch , int supplierID, Product product)
     {
@@ -46,6 +47,34 @@ public class Item {
         this.product = product;
         Item.lastAssignedId++;
     }
+    // constructor for items without expired date and with item id
+    public Item(int itemID ,int branchID, LocalDate arrivalDate,double priceFromSupplier ,double priceInBranch ,int supplierID,Product product)
+    {
+        this.ItemID = itemID;
+        this.BranchID = branchID;
+        this.ProductID = product.getProductID();
+        this.PriceFromSupplier=priceFromSupplier;
+        this.PriceInBranch = priceInBranch;
+        this.SupplierID = supplierID;
+        this.priceAfterDiscount = priceInBranch;
+        this.ArrivalDate = arrivalDate;
+        this.product = product;
+    }
+    // constructor for items with expired date and wit item id
+    public Item(int itemID,int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier , double priceInBranch ,int supplierID, Product product)
+    {
+        this.ItemID = itemID;
+        this.BranchID = branchID;
+        this.ProductID = product.getProductID();
+        this.PriceFromSupplier=priceFromSupplier;
+        this.PriceInBranch = priceInBranch;
+        this.SupplierID = supplierID;
+        this.ExpiredDate = expiredDate;
+        this.ArrivalDate = arrivalDate;
+        this.priceAfterDiscount = priceInBranch;
+        this.product = product;
+    }
+
 
     public Product getProduct() {return product;}
 
@@ -64,9 +93,7 @@ public class Item {
     public double getPriceInBranch() {
         return PriceInBranch;
     }
-    public int getItemID() {
-        return ItemID;
-    }
+    public int getItemID() {return this.ItemID;}
     public int getSupplierID() {
         return SupplierID;
     }
@@ -77,64 +104,27 @@ public class Item {
         DefectiveDiscription = defectiveDiscription;
     }
     public void setPriceInBranch(double priceInBranch) {PriceInBranch = priceInBranch;}
-    public DanmagedOrExpiredEnum getDamagedOrExpiredType() {
-        return DamagedOrExpiredType;
+    public StatusEnum getStatusType() {
+        return StatusType;
     }
-    public void setDamagedOrExpiredType(DanmagedOrExpiredEnum damagedOrExpiredType) {DamagedOrExpiredType = damagedOrExpiredType;}
+    public void setStatusType(StatusEnum statusType) {StatusType = statusType;}
     public double getPriceAfterDiscount() {return priceAfterDiscount;}
     public void setPriceAfterDiscount(double priceAfterDiscount) {this.priceAfterDiscount = priceAfterDiscount;}
-
+    public String getArrivalDate() {return this.ArrivalDate.toString();}
     @Override
     public String toString() {
-        if (DamagedOrExpiredType == null) {
-            if (ExpiredDate != null) {
-                return "\n" + "Item ID: " + ItemID + " " +
-                        "Branch ID: " + BranchID + " " +
-                        "Product ID: " + ProductID + " " +
-                        "Expired Date: " + ExpiredDate + " " +
-                        "Price from Supplier: " + PriceFromSupplier + " " +
-                        "Price in Branch: " + PriceInBranch + " " +
-                        "Supplier ID: " + SupplierID+ " " +
-                        "ArrivalDate: " + ArrivalDate;}
-            else {
-                return "\n" + "Item ID: " + ItemID + " " +
-                        "Branch ID: " + BranchID + " " +
-                        "Product ID: " + ProductID + " " +
-                        "Price from Supplier: " + PriceFromSupplier + " " +
-                        "Price in Branch: " + PriceInBranch + " " +
-                        "Supplier ID: " + SupplierID+ " " +
-                        "ArrivalDate: " + ArrivalDate;}}
-        else {
-            if (DamagedOrExpiredType == DanmagedOrExpiredEnum.Damaged) {
-                if (ExpiredDate != null) {
-                    return "\n" + "Item ID: " + ItemID + " " +
-                            "Branch ID: " + BranchID + " " +
-                            "Product ID: " + ProductID + " " +
-                            "Expired Date: " + ExpiredDate + " " +
-                            "Price from Supplier: " + PriceFromSupplier + " " +
-                            "Price in Branch: " + PriceInBranch + " " +
-                            "Supplier ID: " + SupplierID + " " +
-                            "DamagedOrExpiredType: " + DamagedOrExpiredType + " " +
-                            "DefectiveDiscription: " + DefectiveDiscription + " " +
-                            "ArrivalDate: " + ArrivalDate;}
-                else {
-                    return "\n" + "Item ID: " + ItemID + " " +
-                            "Branch ID: " + BranchID + " " +
-                            "Product ID: " + ProductID + " " +
-                            "Price from Supplier: " + PriceFromSupplier + " " +
-                            "Price in Branch: " + PriceInBranch + " " +
-                            "Supplier ID: " + SupplierID + " " +
-                            "DamagedOrExpiredType: " + DamagedOrExpiredType + " " +
-                            "DefectiveDiscription: " + DefectiveDiscription+ " "
-                            +"ArrivalDate: " + ArrivalDate;}}
-            else {
-                return "\n" + "Item ID: " + ItemID + " " +
-                        "Branch ID: " + BranchID + " " +
-                        "Product ID: " + ProductID + " " +
-                        "Price from Supplier: " + PriceFromSupplier + " " +
-                        "Price in Branch: " + PriceInBranch + " " +
-                        "Supplier ID: " + SupplierID + " " +
-                        "DamagedOrExpiredType: " + DamagedOrExpiredType + " " +
-                        "Expired Date: " + ExpiredDate+ " " +
-                        "ArrivalDate: " + ArrivalDate;}}}
+        String returnString = "";
+        returnString += "Item ID : " + ItemID + " ";
+        returnString += "\n" + "Branch ID : " + BranchID + " ";
+        returnString += "\n" + "Product ID : " + ProductID + " ";
+        returnString += "\n" + "Supplier ID : " + SupplierID + " ";
+        if (ExpiredDate != null) {returnString += "\n" + "Expired Date : " + ExpiredDate + " ";}
+        returnString += "\n" + "PriceFromSupplier : " + PriceFromSupplier + " ";
+        returnString += "\n" + "PriceInBranch : " + PriceInBranch + " ";
+        returnString += "\n" + "PriceAfterDiscount : " + priceAfterDiscount + " ";
+        returnString += "\n" + "Status : " + StatusType + " ";
+        if (DefectiveDiscription != null) {returnString += "\n" + "Defective Discription : " + DefectiveDiscription + " ";}
+        returnString += "\n" + "Arrival Date : " + ArrivalDate + " ";
+        return returnString;
+    }
 }

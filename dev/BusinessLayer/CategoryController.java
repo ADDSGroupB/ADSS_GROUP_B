@@ -13,24 +13,14 @@ public class CategoryController {
   {
     mainController = m;
   }
-  public boolean addNewCategory(String categoryName)
-  {
-    for (Category category : mainController.getCategoryMap().values()) {
-      if (category.getCategoryName().equals(categoryName)) {
-        return false;
-      }
-    }
-    Category category1 = new Category(categoryName);
-    mainController.getCategoryMap().put(category1.getCategoryID(), category1);
+  public boolean addNewCategory(String categoryName) throws SQLException {
+    Category category = mainController.getCategoryDao().addCategory(categoryName);
+    if (category == null){return false;}
+    mainController.getCategoryMap().put(category.getCategoryID(), category);
     return true;
   }
-  public boolean changeCategoryName(Category category,String categoryNewName) {
-    for (Category cat : mainController.getCategoryMap().values()) {
-      if (cat.getCategoryName().equals(categoryNewName)) {
-        return false;
-      }}
-    category.setCategoryName(categoryNewName);
-    return true;
+  public void changeCategoryName(int categoryID,String categoryNewName) throws SQLException {
+    mainController.getCategoryDao().updateCategoryName(categoryID,categoryNewName);
   }
   public String getCategoryNameByID(Category category)
   {

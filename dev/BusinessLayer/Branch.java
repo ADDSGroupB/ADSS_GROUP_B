@@ -257,7 +257,7 @@ public class Branch {
                 if (item.getExpiredDate() != null && item.getExpiredDate().isBefore(LocalDate.now())) {
                     iter.remove();
                     addItemToMapOfItems(ExpiredItems, item.getProduct(), item);
-                    item.setDamagedOrExpiredType(DanmagedOrExpiredEnum.Expired);
+                    item.setStatusType(StatusEnum.Expired);
                     item.setDefectiveDiscription("Expired");
 
                     counter++;
@@ -277,7 +277,7 @@ public class Branch {
                 if (item.getExpiredDate() != null && item.getExpiredDate().isBefore(LocalDate.now())) {
                     iter.remove();
                     addItemToMapOfItems(ExpiredItems, item.getProduct(), item);
-                    item.setDamagedOrExpiredType(DanmagedOrExpiredEnum.Expired);
+                    item.setStatusType(StatusEnum.Expired);
                     item.setDefectiveDiscription("Expired");
                     counter++;
                 }
@@ -295,14 +295,14 @@ public class Branch {
     public void updateDamagedItem(Product product, int itemInput, String damagedDiscription) {
         for (Item item : ItemsInStore.get(product)) {
             if (item.getItemID() == itemInput) {
-                item.setDamagedOrExpiredType(DanmagedOrExpiredEnum.Damaged);
+                item.setStatusType(StatusEnum.Damaged);
                 item.setDefectiveDiscription(damagedDiscription);
                 break;
             }
         }
         for (Item item : ItemsInStorage.get(product)) {
             if (item.getItemID() == itemInput) {
-                item.setDamagedOrExpiredType(DanmagedOrExpiredEnum.Damaged);
+                item.setStatusType(StatusEnum.Damaged);
                 item.setDefectiveDiscription(damagedDiscription);
                 break;
             }
@@ -317,7 +317,7 @@ public class Branch {
             Iterator<Item> iter = entry.getValue().iterator();
             while (iter.hasNext()) {
                 Item item = iter.next();
-                if (item.getDamagedOrExpiredType() == DanmagedOrExpiredEnum.Damaged) {
+                if (item.getStatusType() == StatusEnum.Damaged) {
                     iter.remove();
                     addItemToMapOfItems(DemagedItems, item.getProduct(), item);
                     counter++;
@@ -332,7 +332,7 @@ public class Branch {
             Iterator<Item> iter = entry.getValue().iterator();
             while (iter.hasNext()) {
                 Item item = iter.next();
-                if (item.getDamagedOrExpiredType() == DanmagedOrExpiredEnum.Damaged) {
+                if (item.getStatusType() == StatusEnum.Damaged) {
                     iter.remove();
                     addItemToMapOfItems(DemagedItems, item.getProduct(), item);
                     counter++;

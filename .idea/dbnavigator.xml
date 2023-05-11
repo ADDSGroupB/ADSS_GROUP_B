@@ -24,6 +24,7 @@
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Branches" active-filter-id="" />
+    <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Items" active-filter-id="" />
     <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Products" active-filter-id="" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
@@ -51,7 +52,7 @@
           <config-type value="BASIC" />
           <database-version value="3.39" />
           <driver-source value="BUILTIN" />
-          <driver-library value="" />
+          <driver-library value="$PROJECT_DIR$/release" />
           <driver value="" />
           <url-type value="FILE" />
           <host value="" />

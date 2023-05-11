@@ -38,9 +38,10 @@ public class MainController {
         }
 
     }
-
+///////////////// DAO GETTERS ///////////////////////
     public BranchesDao getBranchesDao() {return branchesDao;}
-
+    public CategoryDao getCategoryDao() {return categoryDao;}
+    /////////////////////////////////////////////////////////////////////
     public BranchController getBranchController() {
         return branchController;
     }
