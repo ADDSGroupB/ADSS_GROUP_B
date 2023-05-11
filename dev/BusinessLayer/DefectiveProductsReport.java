@@ -28,6 +28,12 @@ public class DefectiveProductsReport extends Report {
         }
     }
 
+    public DefectiveProductsReport(int reportID, int branchID, LocalDate date, Map<Item, String> defectiveItemsMap) {
+        super(reportID, branchID, date);
+        this.reportKind = ReportKind.Defective;
+        this.defectiveOrExpiredProducts = defectiveItemsMap;
+    }
+
     public void addDefectiveItem(Item item, String description){
         defectiveOrExpiredProducts.put(item, description);
     }
@@ -50,4 +56,5 @@ public class DefectiveProductsReport extends Report {
         }
         return output.toString();
     }
+    public Map<Item, String> getMap() {return defectiveOrExpiredProducts;}
 }

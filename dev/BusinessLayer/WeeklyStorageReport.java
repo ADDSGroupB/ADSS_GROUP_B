@@ -13,6 +13,13 @@ public class WeeklyStorageReport extends Report {
         this.reportCategories = new HashMap<>();
         this.productAmount = _productAmount;
     }
+    public WeeklyStorageReport(int reportID, int branchID, LocalDate date, Map<Product, Integer> _productAmount)
+    {
+        super(reportID, branchID, date);
+        this.reportKind = ReportKind.Weekly;
+        this.reportCategories = new HashMap<>();
+        this.productAmount = _productAmount;
+    }
     public void addCategoryToReport(Category category){
         HashMap<Product, Integer> productsAndAmonut = new HashMap<Product, Integer>();
         for (Product product : category.getProductsInCategory()){
@@ -37,4 +44,5 @@ public class WeeklyStorageReport extends Report {
         }
         return output.toString();
     }
+    public Map<Product, Integer> getMap(){return productAmount;}
 }

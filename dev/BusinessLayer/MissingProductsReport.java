@@ -14,6 +14,12 @@ public class MissingProductsReport extends Report {
         this.reportKind = ReportKind.Missing;
         this.missingProducts = new HashMap<>();
     }
+    public MissingProductsReport(int reportID, int branchID, LocalDate reportDate, Map<Product,Integer> missingProducts)
+    {
+        super(reportID, branchID, reportDate);
+        this.reportKind = ReportKind.Missing;
+        this.missingProducts = missingProducts;
+    }
     public void addMissingProduct(Product product, int amountForOrder) {
         if (!missingProducts.containsKey(product)) {
             missingProducts.put(product, amountForOrder);
@@ -29,4 +35,5 @@ public class MissingProductsReport extends Report {
             output.append("Product ID: ").append(product.getProductID()).append(", Product Name: ").append(product.getProductName()).append(", Amount to order: ").append(missingProducts.get(product)).append("\n");}
         return output.toString();
     }
+    public Map<Product, Integer> getMap(){return missingProducts;}
 }
