@@ -12,6 +12,7 @@ import java.util.Map;
 public class ReportDaoImpl implements ReportDao {
     private Connection connection;
     private ProductsDao productsDao;
+    private ItemsDao itemsDao;
     private Map<Integer, MissingProductsReport> identityMissingReportMap;
     private Map<Integer, DefectiveProductsReport> identityDefectiveReportMap;
     private Map<Integer, WeeklyStorageReport> identityWeeklyReportMap;
@@ -32,65 +33,94 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public Map<Integer, MissingProductsReport> getAllMissingReports() throws SQLException {
         Map<Product, Integer> missingProductsMap = null;
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM MissingProductsReport");
-        int reportID = -1;
-        int branchID = -1;
-        LocalDate reportDate = null;
-        while (rs.next()) {
-            if (identityMissingReportMap.containsKey(reportID)) continue;
-            if (reportID != rs.getInt("ReportID") || branchID != rs.getInt("BranchID") ||
-                    reportDate != rs.getObject("ReportDate", LocalDate.class)) {
-                if (missingProductsMap != null) {
-                    MissingProductsReport missingReport = new MissingProductsReport(reportID, branchID, reportDate, missingProductsMap);
-                    identityMissingReportMap.put(reportID, missingReport);
+        Statement stmt= null;
+        ResultSet rs = null;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM MissingProductsReport");
+            int reportID = -1;
+            int branchID = -1;
+            LocalDate reportDate = null;
+            while (rs.next()) {
+                if (identityMissingReportMap.containsKey(reportID)) continue;
+                if (reportID != rs.getInt("ReportID") || branchID != rs.getInt("BranchID") ||
+                        reportDate != rs.getObject("ReportDate", LocalDate.class)) {
+                    if (missingProductsMap != null) {
+                        MissingProductsReport missingReport = new MissingProductsReport(reportID, branchID, reportDate, missingProductsMap);
+                        identityMissingReportMap.put(reportID, missingReport);
+                    }
+                    reportID = rs.getInt("ReportID");
+                    if (identityMissingReportMap.containsKey(reportID)) continue;
+                    branchID = rs.getInt("BranchID");
+                    reportDate = rs.getObject("ReportDate", LocalDate.class);
+                    missingProductsMap = new HashMap<>();
                 }
-                reportID = rs.getInt("ReportID");
-                branchID = rs.getInt("BranchID");
-                reportDate = rs.getObject("ReportDate", LocalDate.class);
-                missingProductsMap = new HashMap<>();
+                int productID = rs.getInt("ProductID");
+                int amountToOrder = rs.getInt("AmountToOrder");
+                missingProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
             }
-            int productID = rs.getInt("ProductID");
-            int amountToOrder = rs.getInt("AmountToOrder");
-            missingProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
+            return identityMissingReportMap;
+        } catch (Exception e) {
+            System.out.println("Error while getting all missing reports: " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (stmt != null) {stmt.close();}
         }
-        return identityMissingReportMap;
     }
 
     @Override
     public Map<Integer, DefectiveProductsReport> getAllDefectiveReports() throws SQLException {
         Map<Item, String> defectiveItemsMap = null;
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM DefectiveProductsReport");
-        int reportID = -1;
-        int branchID = -1;
-        LocalDate reportDate = null;
-        while (rs.next()) {
-            if (identityDefectiveReportMap.containsKey(reportID)) continue;
-            if (reportID != rs.getInt("ReportID") || branchID != rs.getInt("BranchID") ||
-                    reportDate != rs.getObject("ReportDate", LocalDate.class)) {
-                if (defectiveItemsMap != null) {
-                    DefectiveProductsReport defectiveReport = new DefectiveProductsReport(reportID, branchID, reportDate, defectiveItemsMap);
-                    identityDefectiveReportMap.put(reportID, defectiveReport);
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM DefectiveProductsReport");
+            int reportID = -1;
+            int branchID = -1;
+            LocalDate reportDate = null;
+            while (rs.next()) {
+                if (identityDefectiveReportMap.containsKey(reportID)) continue;
+                if (reportID != rs.getInt("ReportID") || branchID != rs.getInt("BranchID") ||
+                        reportDate != rs.getObject("ReportDate", LocalDate.class)) {
+                    if (defectiveItemsMap != null) {
+                        DefectiveProductsReport defectiveReport = new DefectiveProductsReport(reportID, branchID, reportDate, defectiveItemsMap);
+                        identityDefectiveReportMap.put(reportID, defectiveReport);
+                    }
+                    reportID = rs.getInt("ReportID");
+                    branchID = rs.getInt("BranchID");
+                    reportDate = rs.getObject("ReportDate", LocalDate.class);
+                    defectiveItemsMap = new HashMap<>();
                 }
-                reportID = rs.getInt("ReportID");
-                branchID = rs.getInt("BranchID");
-                reportDate = rs.getObject("ReportDate", LocalDate.class);
-                defectiveItemsMap = new HashMap<>();
+                //int productID = rs.getInt("ProductID");
+                int itemID = rs.getInt("ItemID");
+                Item item = itemsDao.getItemByID(itemID);
+                defectiveItemsMap.put(item, item.getDefectiveDiscription());
             }
-            int productID = rs.getInt("ProductID");
-            int itemID = rs.getInt("ItemID");
-            // Item item = itemsDao.getItemByID(productID, itemID);
-            // defectiveItemsMap.put(item, item.getDefectiveDiscription());
+            return identityDefectiveReportMap;
+        } catch (Exception e) {
+            System.out.println("Error while getting all defective reports: " + e.getMessage());
+            return null;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
         }
-        return identityDefectiveReportMap;
     }
 
     @Override
     public Map<Integer, WeeklyStorageReport> getAllWeeklyReports() throws SQLException {
         Map<Product, Integer> weeklyProductsMap = null;
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM WeeklyStorageReport");
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+        stmt = connection.createStatement();
+        rs = stmt.executeQuery("SELECT * FROM WeeklyStorageReport");
         int reportID = -1;
         int branchID = -1;
         LocalDate reportDate = null;
@@ -113,83 +143,115 @@ public class ReportDaoImpl implements ReportDao {
             //TODO: Check about add categories.
         }
         return identityWeeklyReportMap;
+    } catch (Exception e) {
+        System.out.println("Error while getting all weekly reports: " + e.getMessage());
+        return null;
+    } finally {
+        if (rs != null) {
+            rs.close();
+        }
+        if (stmt != null) {
+            stmt.close();
+        }
     }
+}
 
     @Override
     public Report getReportByID(int reportID) throws SQLException {
-        Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM Report WHERE reportID = " + reportID);
-        Report report = null;
-        if (rs.next()) {
-            String reportType = rs.getString("ReportType");
-            Map<Product, Integer> reportProductsMap = new HashMap<>();
-            int branchID;
-            int productID;
-            int amountToOrder;
-            LocalDate reportDate;
-            switch (reportType) {
-                case "MissingProducts":
-                    if (identityMissingReportMap.containsKey(report.getReportID())){return identityMissingReportMap.get(report.getReportID());}
-                    rs = stmt.executeQuery("SELECT * FROM MissingProductsReport WHERE reportID = " + reportID);
-                    rs.next();
-                    branchID = rs.getInt("BranchID");
-                    reportDate = rs.getObject("ReportDate", LocalDate.class);
-                    productID = rs.getInt("ProductID");
-                    amountToOrder = rs.getInt("AmountToOrder");
-                    reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
-                    while (rs.next()) {
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM Report WHERE reportID = " + reportID);
+            Report report = null;
+            if (rs.next()) {
+                String reportType = rs.getString("ReportType");
+                Map<Product, Integer> reportProductsMap = new HashMap<>();
+                int branchID;
+                int productID;
+                int amountToOrder;
+                LocalDate reportDate;
+                switch (reportType) {
+                    case "MissingProducts":
+                        if (identityMissingReportMap.containsKey(report.getReportID())) {
+                            return identityMissingReportMap.get(report.getReportID());
+                        }
+                        rs = stmt.executeQuery("SELECT * FROM MissingProductsReport WHERE reportID = " + reportID);
+                        rs.next();
+                        branchID = rs.getInt("BranchID");
+                        reportDate = rs.getObject("ReportDate", LocalDate.class);
                         productID = rs.getInt("ProductID");
                         amountToOrder = rs.getInt("AmountToOrder");
                         reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
-                    }
-                    report = new MissingProductsReport(reportID, branchID, reportDate, reportProductsMap);
-                    break;
-                case "DefectiveProducts":
-                    if (identityDefectiveReportMap.containsKey(report.getReportID())){return identityDefectiveReportMap.get(report.getReportID());}
-                    rs = stmt.executeQuery("SELECT * FROM DefectiveProductsReport WHERE reportID = " + reportID);
-                    rs.next();
-                    branchID = rs.getInt("BranchID");
-                    reportDate = rs.getObject("ReportDate", LocalDate.class);
-                    productID = rs.getInt("ProductID");
-                    int itemID = rs.getInt("ItemID");
-                    Map<Item, String> defectiveItemsMap = new HashMap<>();
-                    // Item item = itemsDao.getItemByID(productID, itemID);
-                    // defectiveItemsMap.put(item, item.getDefectiveDiscription());
-                    while (rs.next()) {
+                        while (rs.next()) {
+                            productID = rs.getInt("ProductID");
+                            amountToOrder = rs.getInt("AmountToOrder");
+                            reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
+                        }
+                        report = new MissingProductsReport(reportID, branchID, reportDate, reportProductsMap);
+                        break;
+                    case "DefectiveProducts":
+                        if (identityDefectiveReportMap.containsKey(report.getReportID())) {
+                            return identityDefectiveReportMap.get(report.getReportID());
+                        }
+                        rs = stmt.executeQuery("SELECT * FROM DefectiveProductsReport WHERE reportID = " + reportID);
+                        rs.next();
+                        branchID = rs.getInt("BranchID");
+                        reportDate = rs.getObject("ReportDate", LocalDate.class);
                         productID = rs.getInt("ProductID");
-                        itemID = rs.getInt("ItemID");
+                        int itemID = rs.getInt("ItemID");
+                        Map<Item, String> defectiveItemsMap = new HashMap<>();
                         // Item item = itemsDao.getItemByID(productID, itemID);
                         // defectiveItemsMap.put(item, item.getDefectiveDiscription());
-                    }
-                    report = new DefectiveProductsReport(reportID, branchID, reportDate, defectiveItemsMap);
-                    break;
-                case "WeeklyStorage":
-                    if (identityWeeklyReportMap.containsKey(report.getReportID())){return identityWeeklyReportMap.get(report.getReportID());}
-                    rs = stmt.executeQuery("SELECT * FROM WeeklyStorageReport WHERE reportID = " + reportID);
-                    rs.next();
-                    branchID = rs.getInt("BranchID");
-                    reportDate = rs.getObject("ReportDate", LocalDate.class);
-                    productID = rs.getInt("ProductID");
-                    amountToOrder = rs.getInt("AmountToOrder");
-                    reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
-                    while (rs.next()) {
+                        while (rs.next()) {
+                            productID = rs.getInt("ProductID");
+                            itemID = rs.getInt("ItemID");
+                            // Item item = itemsDao.getItemByID(productID, itemID);
+                            // defectiveItemsMap.put(item, item.getDefectiveDiscription());
+                        }
+                        report = new DefectiveProductsReport(reportID, branchID, reportDate, defectiveItemsMap);
+                        break;
+                    case "WeeklyStorage":
+                        if (identityWeeklyReportMap.containsKey(report.getReportID())) {
+                            return identityWeeklyReportMap.get(report.getReportID());
+                        }
+                        rs = stmt.executeQuery("SELECT * FROM WeeklyStorageReport WHERE reportID = " + reportID);
+                        rs.next();
+                        branchID = rs.getInt("BranchID");
+                        reportDate = rs.getObject("ReportDate", LocalDate.class);
                         productID = rs.getInt("ProductID");
                         amountToOrder = rs.getInt("AmountToOrder");
                         reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
-                    }
-                    report = new WeeklyStorageReport(reportID, branchID, reportDate, reportProductsMap);
-                    break;
-                default:
-                    throw new SQLException("Invalid report type");
+                        while (rs.next()) {
+                            productID = rs.getInt("ProductID");
+                            amountToOrder = rs.getInt("AmountToOrder");
+                            reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
+                        }
+                        report = new WeeklyStorageReport(reportID, branchID, reportDate, reportProductsMap);
+                        break;
+                    default:
+                        throw new SQLException("Invalid report type");
+                }
+            }
+            return report;
+        } catch (Exception e) {
+            System.out.println("Error while getting the report: " + e.getMessage());
+            return null;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
             }
         }
-        return report;
     }
 
     @Override
     public void addReport(Report report) throws SQLException {
         String reportType = report.getReportType();
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement = null;
+        try {
         switch (reportType) {
             case "Missing":
                 MissingProductsReport missingReport = (MissingProductsReport)report;
@@ -231,6 +293,13 @@ public class ReportDaoImpl implements ReportDao {
                 break;
             default:
                 throw new SQLException("Invalid report type");
+        }
+        } catch (Exception e) {
+            System.out.println("Error while adding the report: " + e.getMessage());
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
         }
     }
 }
