@@ -38,12 +38,12 @@ public class SupplierService {
         return facadeSupplier.addContactsTOSupplier(id, name, email, phone);
     }
 
-    public Response removeSupplierContact(int id, String email) {
-        return facadeSupplier.removeSupplierContact(id, email);
+    public Response removeSupplierContact(int id, String email, String phoneNumber) {
+        return facadeSupplier.removeSupplierContact(id, email, phoneNumber);
     }
 
-    public Response editSupplierContacts(int id, String email, String newEmail, String newphone) {
-        return facadeSupplier.editSupplierContacts(id, email, newEmail, newphone);
+    public Response editSupplierContacts(int id, String email, String newEmail, String newphone, String oldPhone) {
+        return facadeSupplier.editSupplierContacts(id, email, newEmail, newphone, oldPhone);
     }
 
     public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount, HashMap<Integer, Double> discountPerAmount) {

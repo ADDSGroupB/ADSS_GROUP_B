@@ -154,8 +154,10 @@ public class Supplier {
         this.address = address;
     }
 
-    public void addContact(String name, String email, String phone) {
-        contacts.add(new Contact(name, email, address));
+    public Contact addContact(String name, String email, String phone) {
+        Contact contact = new Contact(name, email, phone);
+        contacts.add(contact);
+        return contact;
 
     }
 

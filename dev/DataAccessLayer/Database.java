@@ -103,7 +103,8 @@ public class Database {
                 + "name TEXT NOT NULL,\n"
                 + "email TEXT NOT NULL,\n"
                 + "PRIMARY KEY(phoneNumber),\n"
-                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
+                + "CONSTRAINT fk_contact FOREIGN KEY (supplierID) REFERENCES supplier(supplierID) ON DELETE CASCADE ON UPDATE CASCADE\n"
+//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
                 + ");";
 
         String sql3 = "CREATE TABLE IF NOT EXISTS agreement (\n"
@@ -146,8 +147,7 @@ public class Database {
                 + "discountPerAmount INTEGER NOT NULL,\n"
                 + "discount DOUBLE NOT NULL,\n"
                 + "PRIMARY KEY(supplierID,productID, discountPerAmount),\n"
-                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE ON DELETE CASCADE\n"
+                + "FOREIGN KEY(supplierID, productID) REFERENCES supplierProduct(supplierID, productID) ON UPDATE CASCADE ON DELETE CASCADE\n"
                 + ");";
         String sql7 = "CREATE TABLE IF NOT EXISTS supplierOrder (\n"
                 + "supplierID INTEGER,\n"
@@ -161,12 +161,13 @@ public class Database {
                 + ");";
 
         String sql8 = "CREATE TABLE IF NOT EXISTS itemsInOrder (\n"
+                + "supplierID INTEGER,\n"
                 + "orderID INTEGER,\n"
                 + "productID INTEGER NOT NULL,\n"
                 + "amountInOrder INTEGER NOT NULL,\n"
-                + "PRIMARY KEY(orderID, productID),\n"
-                + "FOREIGN KEY(orderID) REFERENCES supplierOrder(orderID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE\n"
+                + "PRIMARY KEY(orderID, supplierID, productID),\n"
+                + "FOREIGN KEY(orderID, supplierID) REFERENCES supplierOrder(orderID, supplierID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
+                + "FOREIGN KEY(supplierID, productID) REFERENCES supplierProduct(supplierID, productID) ON UPDATE CASCADE\n"
                 + ");";
 
         String sql9 = "CREATE TABLE IF NOT EXISTS periodicOrder (\n"
@@ -174,18 +175,19 @@ public class Database {
                 + "supplierID INTEGER,\n"
                 + "branchID INTEGER,\n"
                 + "fixedDay TEXT NOT NULL,\n"
-                + "PRIMARY KEY(periodicOrderID,supplierID),\n"
+                + "PRIMARY KEY(periodicOrderID, supplierID),\n"
                 + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE\n"
                 + "-- FOREIGN KEY(branchID) REFERENCES branch(branchID) ON UPDATE CASCADE ON DELETE CASCADE\n"
                 + ");";
 
         String sql10 = "CREATE TABLE IF NOT EXISTS itemsInPeriodicOrder (\n"
                 + "periodicOrderID INTEGER,\n"
+                + "supplierID INTEGER,\n"
                 + "productID INTEGER NOT NULL,\n"
                 + "amountInOrder INTEGER NOT NULL,\n"
-                + "PRIMARY KEY(periodicOrderID,productID),\n"
-                + "FOREIGN KEY(periodicOrderID) REFERENCES periodicOrder(periodicOrderID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE\n"
+                + "PRIMARY KEY(periodicOrderID, supplierID, productID),\n"
+                + "FOREIGN KEY(periodicOrderID, supplierID) REFERENCES periodicOrder(periodicOrderID, supplierID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
+                + "FOREIGN KEY(supplierID, productID) REFERENCES supplierProduct(supplierID, productID) ON UPDATE CASCADE\n"
                 + ");";
 
         // create all tables
@@ -204,121 +206,4 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
-//    public static void createTablesNotNULL()
-//    {
-//        String sql1 = "CREATE TABLE IF NOT EXISTS supplier (\n"
-//                + "supplierID INTEGER,\n"
-//                + "name TEXT,\n"
-//                + "address TEXT,\n"
-//                + "bankAccount TEXT UNIQUE,\n"
-//                + "PRIMARY KEY(supplierID)\n"
-//                + ");";
-//
-//        String sql2 = "CREATE TABLE IF NOT EXISTS contact (\n"
-//                + "phoneNumber TEXT,\n"
-//                + "supplierID INTEGER,\n"
-//                + "name TEXT,\n"
-//                + "email TEXT,\n"
-//                + "PRIMARY KEY(phoneNumber),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//
-//        String sql3 = "CREATE TABLE IF NOT EXISTS agreement (\n"
-//                + "supplierID INTEGER,\n"
-//                + "paymentType TEXT,\n"
-//                + "deliveryDays TEXT,\n"
-//                + "selfSupply BOOLEAN,\n"
-//                + "supplyMethod TEXT,\n"
-//                + "supplyTime INTEGER,\n"
-//                + "PRIMARY KEY(supplierID),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//
-//        String sql4 = "CREATE TABLE IF NOT EXISTS discount (\n"
-//                + "supplierID INTEGER,\n"
-//                + "type TEXT,\n"
-//                + "amount DOUBLE,\n"
-//                + "discount DOUBLE,\n"
-//                + "PRIMARY KEY(supplierID, type),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//
-//        String sql5 = "CREATE TABLE IF NOT EXISTS supplierProduct (\n"
-//                + "supplierID INTEGER,\n"
-//                + "productID INTEGER,\n"
-//                + "catalogNumber INTEGER,\n"
-//                + "name TEXT,\n"
-//                + "amount INTEGER,\n"
-//                + "price DOUBLE,\n"
-//                + "weight DOUBLE,\n"
-//                + "manufacturer TEXT,\n"
-//                + "expirationDays TEXT,\n"
-//                + "PRIMARY KEY(supplierID,productID),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//
-//        String sql6 = "CREATE TABLE IF NOT EXISTS discountPerAmount (\n"
-//                + "supplierID INTEGER,\n"
-//                + "productID INTEGER,\n"
-//                + "discountPerAmount INTEGER,\n"
-//                + "discount DOUBLE,\n"
-//                + "PRIMARY KEY(supplierID,productID, discountPerAmount),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-//                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//        String sql7 = "CREATE TABLE IF NOT EXISTS supplierOrder (\n"
-//                + "supplierID INTEGER,\n"
-//                + "orderID INTEGER,\n"
-//                + "branchID INTEGER,\n"
-//                + "orderDate TEXT,\n"
-//                + "deliveryDate TEXT,\n"
-//                + "totalPrice DOUBLE,\n"
-//                + "PRIMARY KEY(orderID,supplierID),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE\n"
-//                + ");";
-//
-//        String sql8 = "CREATE TABLE IF NOT EXISTS itemsInOrder (\n"
-//                + "orderID INTEGER,\n"
-//                + "productID INTEGER,\n"
-//                + "amountInOrder INTEGER,\n"
-//                + "PRIMARY KEY(orderID, productID),\n"
-//                + "FOREIGN KEY(orderID) REFERENCES supplierOrder(orderID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-//                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE\n"
-//                + ");";
-//
-//        String sql9 = "CREATE TABLE IF NOT EXISTS periodicOrder (\n"
-//                + "periodicOrderID INTEGER,\n"
-//                + "supplierID INTEGER,\n"
-//                + "branchID INTEGER,\n"
-//                + "fixedDay TEXT,\n"
-//                + "PRIMARY KEY(periodicOrderID,supplierID),\n"
-//                + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE\n"
-//                + "-- FOREIGN KEY(branchID) REFERENCES branch(branchID) ON UPDATE CASCADE ON DELETE CASCADE\n"
-//                + ");";
-//
-//        String sql10 = "CREATE TABLE IF NOT EXISTS itemsInPeriodicOrder (\n"
-//                + "periodicOrderID INTEGER,\n"
-//                + "productID INTEGER,\n"
-//                + "amountInOrder INTEGER,\n"
-//                + "PRIMARY KEY(periodicOrderID,productID),\n"
-//                + "FOREIGN KEY(periodicOrderID) REFERENCES periodicOrder(periodicOrderID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
-//                + "FOREIGN KEY(productID) REFERENCES supplierProduct(productID) ON UPDATE CASCADE\n"
-//                + ");";
-//
-//        // create all tables
-//        try (Statement stmt = connection.createStatement()) {
-//            stmt.execute(sql1);
-//            stmt.execute(sql2);
-//            stmt.execute(sql3);
-//            stmt.execute(sql4);
-//            stmt.execute(sql5);
-//            stmt.execute(sql6);
-//            stmt.execute(sql7);
-//            stmt.execute(sql8);
-//            stmt.execute(sql9);
-//            stmt.execute(sql10);
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
 }

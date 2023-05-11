@@ -1,5 +1,6 @@
 package BusinessLayer;
 
+import DataAccessLayer.ContactDAO;
 import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceContact;
 import Utillity.Pair;
@@ -13,10 +14,12 @@ import java.util.Objects;
 
 public class SupplierController {
     private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
+    private ContactDAO contactDAO;
 
 
     public SupplierController() {
         suppliers = new HashMap<>();
+        contactDAO = new ContactDAO();
 
     }
 
@@ -103,11 +106,13 @@ public class SupplierController {
             if (c.getEmail().equals(email))
                 return new Response("can not add the new contact beacuse he is already in the supplier's contactsList");
         }
-        suppliers.get(id).addContact(name, email, phone);
+        Contact contact = suppliers.get(id).addContact(name, email, phone);
+        Response res = contactDAO.addContact(id, contact);
+        if(res.errorOccurred()) return res;
         return new Response(id);
     }
 
-    public Response removeSupplierContact(int id, String email) {
+    public Response removeSupplierContact(int id, String email, String phoneNumber) {
         if (!suppliers.containsKey(id)) {
             return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
         }
@@ -117,14 +122,26 @@ public class SupplierController {
                 return new Response(id);
             }
         }
+        Response res = contactDAO.removeContact(id, phoneNumber);
+        if(res.errorOccurred()) return res;
         return new Response("Contact with the email: "+ email +" does not exist ");
     }
 
-    public Response editSupplierContacts(int id, String email, String newEmail, String newPhone) {
-        if(newEmail.equals(""))
-            return editSupplierContactPhone(id, email, newPhone);
-        else
-            return editSupplierContactEmail(id, email, newEmail);
+    public Response editSupplierContacts(int id, String email, String newEmail, String newPhone, String oldPhone) {
+        if(newEmail.equals("")) {
+            Response res = editSupplierContactPhone(id, email, newPhone);
+            if(res.errorOccurred()) return res;
+            Response res2 = contactDAO.updatePhoneNumber(id, oldPhone, newPhone);
+            if(res2.errorOccurred()) return res2;
+            else return res;
+        }
+        else {
+            Response res = editSupplierContactEmail(id, email, newEmail);
+            if(res.errorOccurred()) return res;
+            Response res2 = contactDAO.updateEmail(id, oldPhone, newEmail);
+            if(res2.errorOccurred()) return res2;
+            else return res;
+        }
     }
 
     public Response editSupplierContactEmail(int id, String email, String newEmail){

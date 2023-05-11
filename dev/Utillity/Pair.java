@@ -1,5 +1,7 @@
 package Utillity;
 
+import java.util.Objects;
+
 public class Pair<T,U> {
     private T first;
     private U second;
@@ -25,4 +27,16 @@ public class Pair<T,U> {
         this.second = second;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pair)) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+        return pair.first.equals(first) && pair.second.equals(second);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second);
+    }
 }

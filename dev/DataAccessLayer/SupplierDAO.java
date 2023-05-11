@@ -19,10 +19,19 @@ import java.util.Objects;
 public class SupplierDAO implements iSupplierDAO {
     private Connection connection;
     private HashMap<Integer, Supplier> suppliersIM;
+    private iContactDAO contactDAO;
+    private iDiscountDAO discountDAO;
     public SupplierDAO() {
         connection = Database.connect();
-//        Database.createTables();
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("PRAGMA foreign_keys=ON;");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         suppliersIM = new HashMap<>();
+        contactDAO = new ContactDAO();
+        discountDAO = new DiscountDAO();
     }
     ///========================================Test===========================================///
     public static void main(String[] args) {
@@ -73,7 +82,8 @@ public class SupplierDAO implements iSupplierDAO {
                 if(suppliersIM.containsKey(id)) continue;
                 String name = supplierResult.getString("name");
                 String address = supplierResult.getString("address");
-                ArrayList<Contact> contacts = getContacts(id);
+//                ArrayList<Contact> contacts = getContacts(id);
+                ArrayList<Contact> contacts = contactDAO.getContactsBySupplierID(id);
                 String bankAccount = supplierResult.getString("bankAccount");
                 Agreement agreement = getAgreementByID(id);
                 Supplier supplier = new Supplier(id, name, address, contacts, bankAccount, agreement);
@@ -96,7 +106,7 @@ public class SupplierDAO implements iSupplierDAO {
             {
                 String name = supplierResult.getString("name");
                 String address = supplierResult.getString("address");
-                ArrayList<Contact> contacts = getContacts(id);
+                ArrayList<Contact> contacts = contactDAO.getContactsBySupplierID(id);
                 String bankAccount = supplierResult.getString("bankAccount");
                 Agreement agreement = getAgreementByID(id);
                 Supplier supplier = new Supplier(id, name, address, contacts, bankAccount, agreement);
@@ -107,22 +117,22 @@ public class SupplierDAO implements iSupplierDAO {
         return null;
     }
 
-    public ArrayList<Contact> getContacts(int id){
-        try (PreparedStatement contactStatement = connection.prepareStatement("SELECT * FROM contact WHERE supplierID = ?")) {
-            contactStatement.setInt(1, id);
-            ResultSet discountResult = contactStatement.executeQuery();
-            ArrayList<Contact> contacts = new ArrayList<>();
-            while (discountResult.next())
-            {
-                String name = discountResult.getString("name");
-                String email = discountResult.getString("email");
-                String phoneNumber = discountResult.getString("phoneNumber");
-                contacts.add(new Contact(name, email, phoneNumber));
-            }
-            return contacts;
-        } catch (SQLException e) { System.out.println(e.getMessage()); }
-        return null;
-    }
+//    public ArrayList<Contact> getContacts(int id){
+//        try (PreparedStatement contactStatement = connection.prepareStatement("SELECT * FROM contact WHERE supplierID = ?")) {
+//            contactStatement.setInt(1, id);
+//            ResultSet discountResult = contactStatement.executeQuery();
+//            ArrayList<Contact> contacts = new ArrayList<>();
+//            while (discountResult.next())
+//            {
+//                String name = discountResult.getString("name");
+//                String email = discountResult.getString("email");
+//                String phoneNumber = discountResult.getString("phoneNumber");
+//                contacts.add(new Contact(name, email, phoneNumber));
+//            }
+//            return contacts;
+//        } catch (SQLException e) { System.out.println(e.getMessage()); }
+//        return null;
+//    }
     public Agreement getAgreementByID(int id){
         try (PreparedStatement agreementStatement = connection.prepareStatement("SELECT * FROM agreement WHERE supplierID = ?")) {
             agreementStatement.setInt(1, id);
@@ -135,8 +145,8 @@ public class SupplierDAO implements iSupplierDAO {
                 int supplyTime = agreementResult.getInt("supplyTime");
                 ArrayList<DayOfWeek> supplyDays = getDaysFromString(agreementResult.getString("deliveryDays"));
                 Agreement agreement = new Agreement(paymentType, selfSupply, supplyMethod, supplyTime, supplyDays);
-                agreement.setTotalDiscountInPrecentageForOrderAmount(getAmountDiscountByID(id));
-                agreement.setTotalOrderDiscountPerOrderPrice(getPriceDiscountByID(id));
+                agreement.setTotalDiscountInPrecentageForOrderAmount(discountDAO.getAmountDiscountByID(id));
+                agreement.setTotalOrderDiscountPerOrderPrice(discountDAO.getPriceDiscountByID(id));
                 agreement.setSupllyingProducts(getSupplierProductsByID(id));
                 return agreement;
             }
@@ -168,43 +178,43 @@ public class SupplierDAO implements iSupplierDAO {
         return sb.substring(0, sb.length() - 2);
     }
 
-    public Pair<Integer, Double> getAmountDiscountByID(int id) {
-        try (PreparedStatement discountStatement = connection.prepareStatement("SELECT * FROM discount WHERE supplierID = ?")) {
-            discountStatement.setInt(1, id);
-            ResultSet discountResult = discountStatement.executeQuery();
-            while (discountResult.next())
-            {
-                if(Objects.equals(discountResult.getString("type"), "Amount"))
-                {
-                    int amount = (int)discountResult.getDouble("amount");
-                    double discount = discountResult.getDouble("discount");
-                    return new Pair<>(amount, discount);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
-    public Pair<Double, Double> getPriceDiscountByID(int id) {
-        try (PreparedStatement discountStatement = connection.prepareStatement("SELECT * FROM discount WHERE supplierID = ?")) {
-            discountStatement.setInt(1, id);
-            ResultSet discountResult = discountStatement.executeQuery();
-            while (discountResult.next())
-            {
-                if(Objects.equals(discountResult.getString("type"), "Price")) // There is "Amount" or "Price"
-                {
-                    double amount = discountResult.getDouble("amount");
-                    double discount = discountResult.getDouble("discount");
-                    return new Pair<>(amount, discount);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
+//    public Pair<Integer, Double> getAmountDiscountByID(int id) {
+//        try (PreparedStatement discountStatement = connection.prepareStatement("SELECT * FROM discount WHERE supplierID = ?")) {
+//            discountStatement.setInt(1, id);
+//            ResultSet discountResult = discountStatement.executeQuery();
+//            while (discountResult.next())
+//            {
+//                if(Objects.equals(discountResult.getString("type"), "Amount"))
+//                {
+//                    int amount = (int)discountResult.getDouble("amount");
+//                    double discount = discountResult.getDouble("discount");
+//                    return new Pair<>(amount, discount);
+//                }
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return null;
+//    }
+//
+//    public Pair<Double, Double> getPriceDiscountByID(int id) {
+//        try (PreparedStatement discountStatement = connection.prepareStatement("SELECT * FROM discount WHERE supplierID = ?")) {
+//            discountStatement.setInt(1, id);
+//            ResultSet discountResult = discountStatement.executeQuery();
+//            while (discountResult.next())
+//            {
+//                if(Objects.equals(discountResult.getString("type"), "Price")) // There is "Amount" or "Price"
+//                {
+//                    double amount = discountResult.getDouble("amount");
+//                    double discount = discountResult.getDouble("discount");
+//                    return new Pair<>(amount, discount);
+//                }
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return null;
+//    }
 
     HashMap<Integer, SupplierProduct> getSupplierProductsByID(int supplierId)
     {
@@ -262,41 +272,47 @@ public class SupplierDAO implements iSupplierDAO {
             supplierStatement.setString(3, supplier.getAddress());
             supplierStatement.setString(4, supplier.getBankAccount());
             supplierStatement.executeUpdate();
-            Response response = addContacts(supplier.getSupplierId(), supplier.getContacts());
-            if(response.errorOccurred()) return response;
+//            Response response = addContacts(supplier.getSupplierId(), supplier.getContacts());
+            Response response;
+            for(Contact contact : supplier.getContacts())
+            {
+                response = contactDAO.addContact(supplier.getSupplierId(), contact);
+                if(response.errorOccurred()) return response;
+            }
             response = addAgreement(supplier.getSupplierId(), supplier.getAgreement());
             if(response.errorOccurred()) return response;
             Pair<Integer, Double> discount = supplier.getTotalDiscountInPrecentageForOrder();
-            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = addDiscount(supplier.getSupplierId(), "Amount", discount);
+            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = discountDAO.addDiscount(supplier.getSupplierId(), "Amount", discount);
             if(response.errorOccurred()) return response;
             Pair<Double, Double> discount2 = supplier.getTotalOrderDiscountPerOrderPrice();
-            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = addDiscount(supplier.getSupplierId(), "Price", discount2);
+            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = discountDAO.addDiscount(supplier.getSupplierId(), "Price", discount2);
             if(response.errorOccurred()) return response;
             response = addSupplierProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
             if(response.errorOccurred()) return response;
             response = addDiscountOnProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
             if(response.errorOccurred()) return response;
+            suppliersIM.put(supplier.getSupplierId(), supplier);
             return new Response(supplier.getSupplierId());
         } catch (SQLException e) {
             return new Response(e.getMessage());
         }
     }
 
-    public Response addContacts(int supplierID, ArrayList<Contact> contacts)
-    {
-        try (PreparedStatement contactStatement = connection.prepareStatement("INSERT INTO contact (supplierID, phoneNumber, name, email) VALUES (?, ?, ?, ?)"))
-        {
-            for (Contact contact : contacts)
-            {
-                contactStatement.setInt(1, supplierID);
-                contactStatement.setString(2, contact.getPhoneNumber());
-                contactStatement.setString(3, contact.getName());
-                contactStatement.setString(4, contact.getEmail());
-                contactStatement.executeUpdate();
-            }
-        } catch (SQLException e) { return new Response(e.getMessage()); }
-        return new Response(supplierID);
-    }
+//    public Response addContacts(int supplierID, ArrayList<Contact> contacts)
+//    {
+//        try (PreparedStatement contactStatement = connection.prepareStatement("INSERT INTO contact (supplierID, phoneNumber, name, email) VALUES (?, ?, ?, ?)"))
+//        {
+//            for (Contact contact : contacts)
+//            {
+//                contactStatement.setInt(1, supplierID);
+//                contactStatement.setString(2, contact.getPhoneNumber());
+//                contactStatement.setString(3, contact.getName());
+//                contactStatement.setString(4, contact.getEmail());
+//                contactStatement.executeUpdate();
+//            }
+//        } catch (SQLException e) { return new Response(e.getMessage()); }
+//        return new Response(supplierID);
+//    }
     public Response addAgreement(int supplierID, Agreement agreement)
     {
         try (PreparedStatement statement = connection.prepareStatement("INSERT INTO agreement (supplierID, paymentType, deliveryDays, selfSupply, supplyMethod, supplyTime) VALUES (?, ?, ?, ?, ?, ?)"))
@@ -311,19 +327,19 @@ public class SupplierDAO implements iSupplierDAO {
             return new Response(supplierID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
-    public Response addDiscount(int supplierID, String type, Pair discount)
-    {
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO discount (supplierID, type, amount, discount) VALUES (?, ?, ?, ?)"))
-        {
-            statement.setInt(1, supplierID);
-            statement.setString(2, type);
-            if(discount.getFirst() instanceof Integer) statement.setDouble(3, ((Integer) discount.getFirst()).doubleValue());
-            else statement.setDouble(3, (Double) discount.getFirst());
-            statement.setDouble(4, (Double) discount.getSecond());
-            statement.executeUpdate();
-            return new Response(supplierID);
-        } catch (SQLException e) { return new Response(e.getMessage()); }
-    }
+//    public Response addDiscount(int supplierID, String type, Pair discount)
+//    {
+//        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO discount (supplierID, type, amount, discount) VALUES (?, ?, ?, ?)"))
+//        {
+//            statement.setInt(1, supplierID);
+//            statement.setString(2, type);
+//            if(discount.getFirst() instanceof Integer) statement.setDouble(3, ((Integer) discount.getFirst()).doubleValue());
+//            else statement.setDouble(3, (Double) discount.getFirst());
+//            statement.setDouble(4, (Double) discount.getSecond());
+//            statement.executeUpdate();
+//            return new Response(supplierID);
+//        } catch (SQLException e) { return new Response(e.getMessage()); }
+//    }
 
     public Response addSupplierProducts(int supplierID, Map <Integer, SupplierProduct> supllyingProducts)
     {
@@ -371,34 +387,44 @@ public class SupplierDAO implements iSupplierDAO {
         {
             statement.setInt(1, id);
             statement.executeUpdate();
-//            System.out.println("Rows effected:" + statement.executeUpdate());
-//            DatabaseMetaData metaData = connection.getMetaData();
-//            ResultSet rs = metaData.getExportedKeys(null, null, "supplier");
-//
-//            while (rs.next()) {
-//                String pkTable = rs.getString("PKTABLE_NAME");
-//                String pkColumn = rs.getString("PKCOLUMN_NAME");
-//                String fkTable = rs.getString("FKTABLE_NAME");
-//                String fkColumn = rs.getString("FKCOLUMN_NAME");
-//                System.out.println("Foreign key from " + fkTable + "." + fkColumn + " to " + pkTable + "." + pkColumn);
-//            }
-//            rs.close();
+            suppliersIM.remove(id);
             return new Response(id);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
     public Response updateSupplierName(int id, String name) {
-        return null;
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE supplier SET name = ? WHERE supplierID = ?"))
+        {
+            statement.setString(1, name);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+            if(suppliersIM.containsKey(id)) suppliersIM.get(id).setName(name);
+            return new Response(id);
+        } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
     public Response updateSupplierAddress(int id, String address) {
-        return null;
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE supplier SET address = ? WHERE supplierID = ?"))
+        {
+            statement.setString(1, address);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+            if(suppliersIM.containsKey(id)) suppliersIM.get(id).setAddress(address);
+            return new Response(id);
+        } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
     public Response updateSupplierBankAccount(int id, String bankAccount) {
-        return null;
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE supplier SET bankAccount = ? WHERE supplierID = ?"))
+        {
+            statement.setString(1, bankAccount);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+            if(suppliersIM.containsKey(id)) suppliersIM.get(id).setBankAccount(bankAccount);
+            return new Response(id);
+        } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 }

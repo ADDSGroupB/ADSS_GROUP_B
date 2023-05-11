@@ -1,6 +1,8 @@
 package InterfaceLayer;
 
+import DataAccessLayer.ContactDAO;
 import DataAccessLayer.Database;
+import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
 import ServiceLayer.SupplierProductService;
@@ -190,9 +192,15 @@ public class Cli {
 
 
 
+
     }
 
     private void supplierManagerCLI() {
+//        SupplierDAO supplierDAO = new SupplierDAO();
+//        ContactDAO contactDAO = new ContactDAO();
+//        contactDAO.updatePhoneNumber(1, "052-5993123",  "052-3801919");
+//        supplierDAO.getSupplierByID(2);
+//        contactDAO.getContactBySupplierID(1, "052-3801919");
         print("Please choose one of the following option:\n1. Add new Supplier\n2. Delete Supplier \n3. Edit Supplier's information \n4. Print suppliers \n5. Back");
         int action =0;
         try {
@@ -470,6 +478,7 @@ public class Cli {
 
     private void editContactPhone(int id) {
         String email=getValidEmail();
+        String oldPhone = getValidPhoneNumber();
         //String name = reader.nextLine();
         print("Please enter the new phone number");
         String newPhone = reader.nextLine();
@@ -477,7 +486,7 @@ public class Cli {
             print("Not a valid phone number, please try again");
             newPhone = reader.nextLine();
         }
-        Response res = supplierService.editSupplierContacts(id, email, "", newPhone);
+        Response res = supplierService.editSupplierContacts(id, email, "", newPhone, oldPhone);
         if (res.errorOccurred())
             print(res.getErrorMessage());
 
@@ -486,13 +495,14 @@ public class Cli {
 
     private void editContactEmail(int id) {
         String email=getValidEmail();
+        String phoneNumber = getValidPhoneNumber();
         print("Please enter the new email ");
         String newEmail = reader.nextLine();
         while (!serviceContact.isValidEmail(email)) {
             print("Not a valid email, please try again");
             newEmail = reader.nextLine();
         }
-        Response res = supplierService.editSupplierContacts(id, email, newEmail, "");
+        Response res = supplierService.editSupplierContacts(id, email, newEmail, "", phoneNumber);
         if (res.errorOccurred())
            print(res.getErrorMessage());
 
@@ -501,7 +511,8 @@ public class Cli {
 
     private void deleteContact(int id) {
         String email=getValidEmail();
-        Response res = supplierService.removeSupplierContact(id, email);
+        String phoneNumber = getValidPhoneNumber();
+        Response res = supplierService.removeSupplierContact(id, email, phoneNumber);
         if (res.errorOccurred())
             print(res.getErrorMessage());
         else{
@@ -518,6 +529,18 @@ public class Cli {
           //  reader.nextLine();
         }
         return email;
+    }
+
+    public String getValidPhoneNumber(){
+        print("Please enter contact's phoneNumber: ");
+        String phoneNumber = reader.nextLine();
+        // reader.nextLine();
+        while (!serviceContact.validatePhoneNumber(phoneNumber)) {
+            print("not a valid phone number. please enter a legal phone number");
+            phoneNumber = reader.nextLine();
+            //  reader.nextLine();
+        }
+        return phoneNumber;
     }
 
     private void addContactToSupplier(int id) {

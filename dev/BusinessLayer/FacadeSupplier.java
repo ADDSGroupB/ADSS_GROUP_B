@@ -62,6 +62,8 @@ public class FacadeSupplier {
     }
 
     public Response changeSupplierName(int id, String name) {
+        Response res = supplierDAO.updateSupplierName(id, name);
+        if(res.errorOccurred()) return res;
         return supplierController.changeSupplierName(id, name);
     }
 
@@ -69,12 +71,12 @@ public class FacadeSupplier {
         return supplierController.addContactsTOSupplier(id, name, email, phone);
     }
 
-    public Response removeSupplierContact(int id, String email) {
-        return supplierController.removeSupplierContact(id, email);
+    public Response removeSupplierContact(int id, String email, String phoneNumber) {
+        return supplierController.removeSupplierContact(id, email, phoneNumber);
     }
 
-    public Response editSupplierContacts(int id, String email, String newEmail, String newphone) {
-        return supplierController.editSupplierContacts(id, email, newEmail, newphone);
+    public Response editSupplierContacts(int id, String email, String newEmail, String newphone, String oldPhone) {
+        return supplierController.editSupplierContacts(id, email, newEmail, newphone, oldPhone);
     }
 
     public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount) {
