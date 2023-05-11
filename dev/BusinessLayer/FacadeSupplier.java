@@ -42,8 +42,7 @@ public class FacadeSupplier {
 
     public Response removeSupplier(int id) {
         Response res1 = supplierController.removeSupplier(id);
-        Response res3 = supplierDAO.removeSupplier(id);
-        if(!res1.errorOccurred() && !res3.errorOccurred()){
+        if(!res1.errorOccurred()){
             Response res2 = productController.removeSupplierProducts(id);
             if(res2.getErrorMessage()!= null && res2.getErrorMessage().equals("The user doesn't have any products yet")){
                 return new Response("The user with id: " + id + " deleted successfully and he doesn't have any products");
@@ -62,8 +61,6 @@ public class FacadeSupplier {
     }
 
     public Response changeSupplierName(int id, String name) {
-        Response res = supplierDAO.updateSupplierName(id, name);
-        if(res.errorOccurred()) return res;
         return supplierController.changeSupplierName(id, name);
     }
 
@@ -79,8 +76,8 @@ public class FacadeSupplier {
         return supplierController.editSupplierContacts(id, email, newEmail, newphone, oldPhone);
     }
 
-    public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount) {
-        Response res1 = supplierController.addItemToAgreement(supplierID, name,  productId, catalogNumber, price, amount, discountPerAmount);
+    public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
+        Response res1 = supplierController.addItemToAgreement(supplierID, name,  productId, catalogNumber, price, amount, discountPerAmount, weight, manufacturer, expirationDays);
         if (!res1.errorOccurred()){//want to add product to product controller
             productController.addProductToSupplier(supplierID, name, productId, catalogNumber, price, discountPerAmount);
         }
@@ -95,8 +92,8 @@ public class FacadeSupplier {
         return res1;
     }
 
-    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days) {
-        return supplierController.editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierId, selfSupply, paymentMethod, days);
+    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days, String supplyMethod, int supplyTime) {
+        return supplierController.editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierId, selfSupply, paymentMethod, days, supplyMethod, supplyTime);
     }
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {

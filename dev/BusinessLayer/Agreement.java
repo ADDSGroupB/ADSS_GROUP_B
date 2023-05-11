@@ -84,6 +84,14 @@ public class Agreement {
         return agreementID;
     }
 
+    public void setSupplyMethod(String supplyMethod) {
+        this.supplyMethod = supplyMethod;
+    }
+
+    public void setSupplyTime(int supplyTime) {
+        this.supplyTime = supplyTime;
+    }
+
     public String getPaymentType() {
         return paymentType;
     }

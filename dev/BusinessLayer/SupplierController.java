@@ -1,7 +1,6 @@
 package BusinessLayer;
 
-import DataAccessLayer.ContactDAO;
-import DataAccessLayer.SupplierDAO;
+import DataAccessLayer.*;
 import ServiceLayer.ServiceContact;
 import Utillity.Pair;
 import Utillity.Response;
@@ -15,12 +14,21 @@ import java.util.Objects;
 public class SupplierController {
     private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
     private ContactDAO contactDAO;
+    private DiscountPerAmountDAO discountPerAmountDAO;
+    private SupplierProductDAO supplierProductDAO;
+    private SupplierDAO supplierDAO;
+    private AgreementDAO agreementDAO;
+    private DeliveryDaysDAO deliveryDaysDAO;
 
 
     public SupplierController() {
         suppliers = new HashMap<>();
         contactDAO = new ContactDAO();
-
+        discountPerAmountDAO = new DiscountPerAmountDAO();
+        supplierProductDAO = new SupplierProductDAO();
+        supplierDAO = new SupplierDAO();
+        agreementDAO = new AgreementDAO();
+        deliveryDaysDAO = new DeliveryDaysDAO();
     }
 
     public Response addSupplier(String name, String address, String bankAccount) {
@@ -35,12 +43,14 @@ public class SupplierController {
         }
         Supplier newSupplier = new Supplier(name, address, bankAccount);
         suppliers.put(newSupplier.getSupplierId(), newSupplier);
-
+//        Response res = supplierDAO.addSupplier(newSupplier);
+//        if(res.errorOccurred()) return res;
         return new Response(newSupplier.getSupplierId());
     }
 
 
     public Agreement createAgreement(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts, String supplyMethod, int supplyTime) {
+        Agreement agreement = new Agreement(paymentType, selfSupply, supplyMethod, supplyTime, supplyDays, SupplyingProducts);
         return new Agreement(paymentType, selfSupply, supplyMethod, supplyTime, supplyDays, SupplyingProducts);
     }
     public Agreement createAgreementWithDiscounts(String paymentType, boolean selfSupply, ArrayList<DayOfWeek> supplyDays, HashMap<Integer, SupplierProduct> SupplyingProducts, String supplyMethod, int supplyTime, Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount ,  Pair<Double,Double> totalOrderDiscountPerOrderPrice) {
@@ -65,7 +75,8 @@ public class SupplierController {
             return new Response("Supplier can't be deleted because there is no supplier with the given id: " + id);
         }
         suppliers.remove(id);
-
+        Response res = supplierDAO.removeSupplier(id);
+        if(res.errorOccurred()) return res;
         return new Response(id);
     }
 
@@ -74,6 +85,8 @@ public class SupplierController {
             return new Response("Can't change address because supplier with id " + id + " doesn't exist in the system");
         } else {
             suppliers.get(id).setAddress(address);
+            Response res = supplierDAO.updateSupplierAddress(id, address);
+            if(res.errorOccurred()) return res;
             return new Response(id);
         }
 
@@ -84,6 +97,8 @@ public class SupplierController {
             return new Response("Can't change bankAccount because supplier with id " + id + " doesn't exist in the system");
         } else {
             suppliers.get(id).setBankAccount(bankAccount);
+            Response res = supplierDAO.updateSupplierBankAccount(id, bankAccount);
+            if(res.errorOccurred()) return res;
             return new Response(id);
         }
     }
@@ -93,6 +108,8 @@ public class SupplierController {
             return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
         } else {
             suppliers.get(id).setName(name);
+            Response res = supplierDAO.updateSupplierName(id, name);
+            if(res.errorOccurred()) return res;
             return new Response(id);
         }
 
@@ -171,7 +188,7 @@ public class SupplierController {
         return new Response("Can't edit phoneNumber beacuse contact with the email: "+ email +" does not exist ");
     }
 
-    public Response addItemToAgreement(int supplierID,String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount) {
+    public Response addItemToAgreement(int supplierID,String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
         if (!suppliers.containsKey(supplierID)) {
             return new Response("Can't change name because supplier with id " + supplierID + " doesn't exist in the system");
         }
@@ -181,7 +198,14 @@ public class SupplierController {
             if (product.getProductID() == productId)
                 return new Response("can not add item with id: " + productId + " beacuse it's already exist in the supplier's products List");
         }
-        suppliers.get(supplierID).addProduct(name, productId, catalogNumber, price, amount, discountPerAmount);
+        SupplierProduct supplierProduct = suppliers.get(supplierID).addProduct(name, supplierID, productId, catalogNumber, price, amount, discountPerAmount, weight, manufacturer, expirationDays);
+        Response response = supplierProductDAO.addSupplierProduct(supplierID, supplierProduct);
+        if (response.errorOccurred()) return response;
+        for(Map.Entry<Integer, Double> discount : discountPerAmount.entrySet())
+        {
+            response = discountPerAmountDAO.addDiscount(supplierID, productId, discount.getKey(), discount.getValue());
+            if (response.errorOccurred()) return response;
+        }
         return new Response(supplierID);
     }
 
@@ -195,6 +219,8 @@ public class SupplierController {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == itemIdToDelete) {
                 suppliers.get(supplierID).removeProduct(itemIdToDelete);
+                Response response = supplierProductDAO.removeSupplierProduct(supplierID, itemIdToDelete);
+                if (response.errorOccurred()) return response;
                 return new Response(supplierID);
             }
         }
@@ -202,7 +228,7 @@ public class SupplierController {
 
     }
 
-    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days) {
+    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days, String supplyMethod, int supplyTime) {
         if(!suppliers.containsKey(supplierId)){
             return new Response("Supplier with id: " + supplierId + " is not exist, please try again");
         }
@@ -210,6 +236,13 @@ public class SupplierController {
         supplier.setSelfSupply(selfSupply);
         supplier.SetPaymentType(paymentMethod);
         supplier.setDeliveyDays(days);
+        supplier.setSupplyMethod(supplyMethod);
+        supplier.setSupplyTime(supplyTime);
+        Response response = agreementDAO.updateAgreement(supplierId, paymentMethod, selfSupply, supplyMethod, supplyTime);
+        if (response.errorOccurred()) return response;
+        if(days != null) response = deliveryDaysDAO.updateDeliveryDays(supplierId, days);
+        else response = deliveryDaysDAO.removeDeliveryDays(supplierId);
+        if(response.errorOccurred()) return response;
         return new Response(supplierId);
     }
 
@@ -222,6 +255,8 @@ public class SupplierController {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
                 suppliers.get(supplierId).setProdactCatalogNumber(productId, newCatalogNumber);
+                Response response = supplierProductDAO.updateSupplierProductCatalogNumber(supplierId, productId, newCatalogNumber);
+                if (response.errorOccurred()) return response;
                 return new Response(supplierId);
             }
         }
@@ -264,6 +299,8 @@ public class SupplierController {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
                 product.addDiscount(ammount, discount);
+                Response res = discountPerAmountDAO.addDiscount(supplierId, productId, ammount, discount);
+                if(res.errorOccurred()) return res;
                 return new Response(supplierId);
             }
         }
@@ -279,6 +316,8 @@ public class SupplierController {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
                 product.removeDiscount(ammount);
+                Response res = discountPerAmountDAO.removeDiscount(supplierId, productId, ammount);
+                if(res.errorOccurred()) return res;
                 return new Response(supplierId);
             }
         }

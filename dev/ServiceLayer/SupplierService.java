@@ -46,16 +46,16 @@ public class SupplierService {
         return facadeSupplier.editSupplierContacts(id, email, newEmail, newphone, oldPhone);
     }
 
-    public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount, HashMap<Integer, Double> discountPerAmount) {
-        return facadeSupplier.addItemToAgreement(supplierID, name, productId, catalogNumber, price, amount, discountPerAmount);
+    public Response addItemToAgreement(int supplierID, String name, int productId, int catalogNumber, double price, int amount, HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
+        return facadeSupplier.addItemToAgreement(supplierID, name, productId, catalogNumber, price, amount, discountPerAmount, weight, manufacturer, expirationDays);
     }
 
     public Response removeItemFromAgreement(int supplierID, int itemIdToDelete) {
         return facadeSupplier.removeItemFromAgreement(supplierID, itemIdToDelete);
     }
 
-    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days) {
-        return facadeSupplier.editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierId, selfSupply, paymentMethod, days);
+    public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days, String supplyMethod, int supplyTime) {
+        return facadeSupplier.editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierId, selfSupply, paymentMethod, days, supplyMethod, supplyTime);
     }
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {

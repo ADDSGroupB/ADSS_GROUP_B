@@ -110,7 +110,6 @@ public class Database {
         String sql3 = "CREATE TABLE IF NOT EXISTS agreement (\n"
                 + "supplierID INTEGER,\n"
                 + "paymentType TEXT NOT NULL,\n"
-                + "deliveryDays TEXT NOT NULL,\n"
                 + "selfSupply BOOLEAN NOT NULL,\n"
                 + "supplyMethod TEXT NOT NULL,\n"
                 + "supplyTime INTEGER NOT NULL,\n"
@@ -189,7 +188,12 @@ public class Database {
                 + "FOREIGN KEY(periodicOrderID, supplierID) REFERENCES periodicOrder(periodicOrderID, supplierID) ON UPDATE CASCADE ON DELETE CASCADE,\n"
                 + "FOREIGN KEY(supplierID, productID) REFERENCES supplierProduct(supplierID, productID) ON UPDATE CASCADE\n"
                 + ");";
-
+        String sql11 = "CREATE TABLE IF NOT EXISTS deliveryDays (\n"
+                + "supplierID INTEGER,\n"
+                + "day TEXT NOT NULL,\n"
+                + "PRIMARY KEY(supplierID, day),\n"
+                + "CONSTRAINT fk_deliveryDays FOREIGN KEY (supplierID) REFERENCES agreement(supplierID) ON DELETE CASCADE ON UPDATE CASCADE\n"
+                + ");";
         // create all tables
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql1);
@@ -202,6 +206,7 @@ public class Database {
             stmt.execute(sql8);
             stmt.execute(sql9);
             stmt.execute(sql10);
+            stmt.execute(sql11);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

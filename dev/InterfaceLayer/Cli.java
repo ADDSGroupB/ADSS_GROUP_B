@@ -273,6 +273,8 @@ public class Cli {
     private void editPaymentMethodAndDeliveryMethodAndDeliveryDays(int id) {
         String paymentMethod = choosePaymentMethod();
         boolean selfSupply;
+        String supplyMethod;
+        int supplyTime;
         ArrayList<DayOfWeek> days = new ArrayList<>();
         print("Choose one of the following Supply methods according to the supplier's agreement \n1. By Days \n2. By Order \n3. By Super-Lee");
         int userInput = reader.nextInt();
@@ -285,6 +287,8 @@ public class Cli {
         //supplying in specific days
         if (userInput == 1) {
             selfSupply = true;
+            supplyMethod = "FixedDay";
+            supplyTime = -1;
             int day = 0;
             print("please choose supplying days");
             print("\n1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday \n8.That's all...");
@@ -300,13 +304,19 @@ public class Cli {
         //supplying by order
         else if (userInput == 2){
             selfSupply = true;
+            supplyMethod = "DaysAmount";
+            print("please choose number of days to supply:");
+            supplyTime = reader.nextInt();
         }
         ////userinput=3 , superLee supply
         else {
             selfSupply = false;
+            supplyMethod = "SuperLee";
+            print("please choose number of days to supply:");
+            supplyTime = reader.nextInt();
         }
 
-        Response res = supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays(id, selfSupply, paymentMethod  ,days);
+        Response res = supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays(id, selfSupply, paymentMethod ,days, supplyMethod, supplyTime);
         if(!res.errorOccurred()){
             print("The supplier's delivery term changed successfully for Supplier with id: " + id);
         }
@@ -324,7 +334,7 @@ public class Cli {
         if (action == 1) {
             SupplierProductService newItem = createProduct();
             // printAllProducts();
-            Response res = supplierService.addItemToAgreement(supplierID, newItem.getName(), newItem.getProductId(), newItem.getCatalogNumber(), newItem.getPrice(), newItem.getAmount(), newItem.getDiscountPerAmount());
+            Response res = supplierService.addItemToAgreement(supplierID, newItem.getName(), newItem.getProductId(), newItem.getCatalogNumber(), newItem.getPrice(), newItem.getAmount(), newItem.getDiscountPerAmount(), newItem.getWeight(), newItem.getManufacturer(), newItem.getExpirationDays());
             if (res.errorOccurred())
                 print(res.getErrorMessage());
         }
@@ -689,7 +699,7 @@ public class Cli {
         print("Please enter product's amount");
         int amount = reader.nextInt();
         print("Please enter product's manufacturer");
-        String manufacturer = reader.nextLine();
+        String manufacturer = reader.next();
         print("Please enter product's expiration Days");
         int expirationDays = reader.nextInt();
         print("Please enter product's weight");

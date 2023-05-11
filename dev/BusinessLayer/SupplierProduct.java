@@ -93,5 +93,41 @@ public class SupplierProduct
     public Double getWeight() {
         return weight;
     }
+
+    public static void setId(int id) {
+        SupplierProduct.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public void setProductID(int productID) {
+        this.productID = productID;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public void setExpirationDays(int expirationDays) {
+        this.expirationDays = expirationDays;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public void setDiscountPerAmount(HashMap<Integer, Double> discountPerAmount) {
+        this.discountPerAmount = discountPerAmount;
+    }
 }
 

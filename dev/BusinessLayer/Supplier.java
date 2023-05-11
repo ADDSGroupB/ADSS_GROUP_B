@@ -165,8 +165,10 @@ public class Supplier {
         return contacts;
     }
 
-    public void addProduct(String name, int productId, int catalogNumber, double price, int amount, HashMap<Integer, Double> discountPerAmount) {
-        agreement.getSupllyingProducts().put(productId, new SupplierProduct(name, productId, catalogNumber, price, amount, discountPerAmount));
+    public SupplierProduct addProduct(String name, int supplierId, int productId, int catalogNumber, double price, int amount, HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
+        SupplierProduct supplierProduct = new SupplierProduct(name, supplierId, productId, catalogNumber, price, amount, discountPerAmount, manufacturer, expirationDays, weight);
+        agreement.getSupllyingProducts().put(productId, supplierProduct);
+        return supplierProduct;
     }
 
     public void removeProduct(int productId) {
@@ -175,6 +177,14 @@ public class Supplier {
 
     public void setSelfSupply(boolean selfSupply) {
         this.agreement.setSelfSupply(selfSupply);
+    }
+
+    public void setSupplyMethod(String supplyMethod) {
+        this.agreement.setSupplyMethod(supplyMethod);
+    }
+
+    public void setSupplyTime(int supplyTime) {
+        this.agreement.setSupplyTime(supplyTime);
     }
 
     public void SetPaymentType(String paymentType) {
@@ -295,6 +305,7 @@ public class Supplier {
         }
         return totalAmount;
     }
+
 
 //    public HashMap<Integer, Integer> getsupplierProducts(){
 //        return supplierProducts;
