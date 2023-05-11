@@ -18,6 +18,7 @@ public class Main {
         CategoryDao categoryDao = new CategoryDaoImpl();
         BranchesDao branchesDao = new BranchesDaoImpl();
         ItemsDao itemsDao = new ItemsDaoImpl();
+
     }
 }
 
