@@ -15,6 +15,7 @@ public abstract class Report
 
     public Report(LocalDate reportDate)
     {
+        //TODO: add branchID ad an argument
         this.reportID = lastAssignedId;
         this.reportDate = reportDate;
         Report.lastAssignedId++;
