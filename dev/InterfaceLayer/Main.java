@@ -11,19 +11,13 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) throws SQLException {
+
 //        Cli cli = new Cli();
 //        cli.start();
-
         ProductsDao productsDao = new ProductsDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         BranchesDao branchesDao = new BranchesDaoImpl();
         ItemsDao itemsDao = new ItemsDaoImpl();
-
-
-
-
-
-
     }
 }
 

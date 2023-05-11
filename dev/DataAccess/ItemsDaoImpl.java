@@ -271,7 +271,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return items;
         }
         catch (Exception e) {
-            System.out.println("Error while getting all items: " + e.getMessage());
+            System.out.println("Error while getting all expired items: " + e.getMessage());
             return null;
         } finally
         {
@@ -302,7 +302,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return items;
         }
         catch (Exception e) {
-            System.out.println("Error while getting all items: " + e.getMessage());
+            System.out.println("Error while getting all damaged items: " + e.getMessage());
             return null;
         } finally
         {
@@ -333,7 +333,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return items;
         }
         catch (Exception e) {
-            System.out.println("Error while getting all items: " + e.getMessage());
+            System.out.println("Error while getting all sold items: " + e.getMessage());
             return null;
         } finally
         {
@@ -364,7 +364,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return items;
         }
         catch (Exception e) {
-            System.out.println("Error while getting all items: " + e.getMessage());
+            System.out.println("Error while getting all store items: " + e.getMessage());
             return null;
         } finally
         {
@@ -395,7 +395,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return items;
         }
         catch (Exception e) {
-            System.out.println("Error while getting all items: " + e.getMessage());
+            System.out.println("Error while getting all storage items: " + e.getMessage());
             return null;
         } finally
         {
