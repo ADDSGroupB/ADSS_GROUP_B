@@ -34,4 +34,6 @@ public abstract class Report
     public LocalDate getReportDate() {return reportDate;}
     public int getBranchID() {return branchID;}
     public String getReportType(){return reportKind.toString();}
+    public void setBranchID(int branchID){this.branchID = branchID;}
+
 }

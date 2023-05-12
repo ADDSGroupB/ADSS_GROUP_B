@@ -1,7 +1,7 @@
 package DataAccess;
 import java.sql.*;
 public class DBConnector {
-    private static final String DB_URL = "jdbc:sqlite:/Users/Dan/Desktop/Inventory.db";
+    private static final String DB_URL = "jdbc:sqlite:/Users/Itama/Desktop/Inventory.db";
     private static Connection connection;
 
     private DBConnector() {}

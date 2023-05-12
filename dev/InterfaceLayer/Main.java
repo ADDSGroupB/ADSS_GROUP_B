@@ -5,6 +5,7 @@ import DataAccess.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,6 @@ public class Main {
         BranchesDao branchesDao = new BranchesDaoImpl();
         ItemsDao itemsDao = new ItemsDaoImpl();
         ProductMinAmountDao productMinAmountDao = new ProductMinAmountDaoImpl();
-
-
     }
 }
 
