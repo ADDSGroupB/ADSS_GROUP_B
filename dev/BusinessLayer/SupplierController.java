@@ -12,37 +12,47 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SupplierController {
-    private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
-    private ContactDAO contactDAO;
-    private DiscountPerAmountDAO discountPerAmountDAO;
-    private SupplierProductDAO supplierProductDAO;
-    private SupplierDAO supplierDAO;
-    private AgreementDAO agreementDAO;
-    private DeliveryDaysDAO deliveryDaysDAO;
+//    private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
+    private final ContactDAO contactDAO;
+    private final DiscountPerAmountDAO discountPerAmountDAO;
+    private final SupplierProductDAO supplierProductDAO;
+    private final SupplierDAO supplierDAO;
+    private final AgreementDAO agreementDAO;
+    private final DeliveryDaysDAO deliveryDaysDAO;
+    private static int id;
 
 
     public SupplierController() {
-        suppliers = new HashMap<>();
+//        suppliers = new HashMap<>();
         contactDAO = new ContactDAO();
         discountPerAmountDAO = new DiscountPerAmountDAO();
         supplierProductDAO = new SupplierProductDAO();
         supplierDAO = new SupplierDAO();
         agreementDAO = new AgreementDAO();
         deliveryDaysDAO = new DeliveryDaysDAO();
+        id = supplierDAO.getLastSupplierID() + 1;
     }
 
     public Response addSupplier(String name, String address, String bankAccount) {
-        for (Map.Entry<Integer, Supplier> entry : suppliers.entrySet()) {
-            Supplier supplier = entry.getValue();
-            //System.out.println("new bank account is " + bankAccount);
-            //System.out.println("previous supplier bank account is " + supplier.getBankAccount());
-            if (Objects.equals(supplier.getBankAccount(), bankAccount)) {
-                System.out.println("Supplier with the same bank account is already exist in the system");
-                return new Response("cannot add supplier, bankAccount is already exist");
-            }
+//        for (Map.Entry<Integer, Supplier> entry : suppliers.entrySet()) {
+//            Supplier supplier = entry.getValue();
+//            //System.out.println("new bank account is " + bankAccount);
+//            //System.out.println("previous supplier bank account is " + supplier.getBankAccount());
+//            if (Objects.equals(supplier.getBankAccount(), bankAccount)) {
+//                System.out.println("Supplier with the same bank account is already exist in the system");
+//                return new Response("cannot add supplier, bankAccount is already exist");
+//            }
+//        }
+        Response response = supplierDAO.searchBankAccount(bankAccount);
+        if(response.errorOccurred()) return response;
+        if(response.getAnswer())
+        {
+            System.out.println("Supplier with the same bank account is already exist in the system");
+            return new Response("cannot add supplier, bankAccount is already exist");
         }
-        Supplier newSupplier = new Supplier(name, address, bankAccount);
-        suppliers.put(newSupplier.getSupplierId(), newSupplier);
+        Supplier newSupplier = new Supplier(id++, name, address, bankAccount);
+        supplierDAO.addSupplier(newSupplier);
+//        suppliers.put(newSupplier.getSupplierId(), newSupplier);
 //        Response res = supplierDAO.addSupplier(newSupplier);
 //        if(res.errorOccurred()) return res;
         return new Response(newSupplier.getSupplierId());
@@ -58,33 +68,35 @@ public class SupplierController {
     }
 
     public void setAgreement(Agreement a, int id) {
-        suppliers.get(id).setNewAgreement(a);
+//        suppliers.get(id).setNewAgreement(a);
+        supplierDAO.getSupplierByID(id).setNewAgreement(a);
     }
 
     public void setContacts(ArrayList<ServiceContact> contactList, int supplierId) {
-        ArrayList newContacts = new ArrayList<>();
+        ArrayList<Contact> newContacts = new ArrayList<>();
         for (ServiceContact c : contactList) {
             Contact newContact = new Contact(c.getName(), c.getEmail(), c.getPhoneNumber());
             newContacts.add(newContact);
+            contactDAO.addContact(supplierId, newContact);
         }
-        suppliers.get(supplierId).setContacts(newContacts);
+        supplierDAO.getSupplierByID(supplierId).setContacts(newContacts);
     }
 
     public Response removeSupplier(int id) {
-        if (!suppliers.containsKey(id)) {
+        if (supplierDAO.getSupplierByID(id) == null) {
             return new Response("Supplier can't be deleted because there is no supplier with the given id: " + id);
         }
-        suppliers.remove(id);
+//        suppliers.remove(id);
         Response res = supplierDAO.removeSupplier(id);
         if(res.errorOccurred()) return res;
         return new Response(id);
     }
 
     public Response changeAddress(int id, String address) {
-        if (!suppliers.containsKey(id)) {
+        if (supplierDAO.getSupplierByID(id) == null) {
             return new Response("Can't change address because supplier with id " + id + " doesn't exist in the system");
         } else {
-            suppliers.get(id).setAddress(address);
+            supplierDAO.getSupplierByID(id).setAddress(address);
             Response res = supplierDAO.updateSupplierAddress(id, address);
             if(res.errorOccurred()) return res;
             return new Response(id);
@@ -93,10 +105,10 @@ public class SupplierController {
     }
 
     public Response changeSupplierBankAccount(int id, String bankAccount) {
-        if (!suppliers.containsKey(id)) {
+        if (supplierDAO.getSupplierByID(id) == null) {
             return new Response("Can't change bankAccount because supplier with id " + id + " doesn't exist in the system");
         } else {
-            suppliers.get(id).setBankAccount(bankAccount);
+            supplierDAO.getSupplierByID(id).setBankAccount(bankAccount);
             Response res = supplierDAO.updateSupplierBankAccount(id, bankAccount);
             if(res.errorOccurred()) return res;
             return new Response(id);
@@ -104,10 +116,10 @@ public class SupplierController {
     }
 
     public Response changeSupplierName(int id, String name) {
-        if (!suppliers.containsKey(id)) {
+        if (supplierDAO.getSupplierByID(id) == null) {
             return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
         } else {
-            suppliers.get(id).setName(name);
+            supplierDAO.getSupplierByID(id).setName(name);
             Response res = supplierDAO.updateSupplierName(id, name);
             if(res.errorOccurred()) return res;
             return new Response(id);
@@ -116,37 +128,38 @@ public class SupplierController {
     }
 
     public Response addContactsTOSupplier(int id, String name, String email, String phone) {
-        if (!suppliers.containsKey(id)) {
-            return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
-        }
-        for (Contact c : suppliers.get(id).getContacts()) {
-            if (c.getEmail().equals(email))
-                return new Response("can not add the new contact beacuse he is already in the supplier's contactsList");
-        }
-        Contact contact = suppliers.get(id).addContact(name, email, phone);
+        if (supplierDAO.getSupplierByID(id) == null)
+            return new Response("Can't add contact because supplier with id " + id + " doesn't exist in the system");
+        if(contactDAO.getContactBySupplierID(id, phone) != null)
+            return new Response("can not add the new contact beacuse he is already in the supplier's contactsList");
+        Contact contact = supplierDAO.getSupplierByID(id).addContact(name, email, phone);
         Response res = contactDAO.addContact(id, contact);
         if(res.errorOccurred()) return res;
         return new Response(id);
     }
 
-    public Response removeSupplierContact(int id, String email, String phoneNumber) {
-        if (!suppliers.containsKey(id)) {
+    public Response removeSupplierContact(int id, String phoneNumber) {
+        if (supplierDAO.getSupplierByID(id) == null)
             return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
-        }
-        for (Contact c : suppliers.get(id).getContacts()) {
-            if (c.getEmail().equals(email)) {
-                suppliers.get(id).getContacts().remove(c);
+        if(contactDAO.getContactBySupplierID(id, phoneNumber) == null)
+            return new Response("Contact with the phone number: "+ phoneNumber +" does not exist ");
+        for (Contact c : supplierDAO.getSupplierByID(id).getContacts()) {
+            if (c.getPhoneNumber().equals(phoneNumber)) {
+                supplierDAO.getSupplierByID(id).getContacts().remove(c);
+                contactDAO.removeContact(id, phoneNumber);
                 return new Response(id);
             }
         }
         Response res = contactDAO.removeContact(id, phoneNumber);
         if(res.errorOccurred()) return res;
-        return new Response("Contact with the email: "+ email +" does not exist ");
+        return new Response("Contact with the phone number: "+ phoneNumber +" does not exist ");
     }
 
     public Response editSupplierContacts(int id, String email, String newEmail, String newPhone, String oldPhone) {
+        if (supplierDAO.getSupplierByID(id) == null) return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
+        if(contactDAO.getContactBySupplierID(id, oldPhone) == null) return new Response("Can't edit phoneNumber beacuse contact with the phoneNumber: " + oldPhone +" does not exist ");
         if(newEmail.equals("")) {
-            Response res = editSupplierContactPhone(id, email, newPhone);
+            Response res = editSupplierContactPhone(id, oldPhone, newPhone);
             if(res.errorOccurred()) return res;
             Response res2 = contactDAO.updatePhoneNumber(id, oldPhone, newPhone);
             if(res2.errorOccurred()) return res2;
@@ -162,43 +175,36 @@ public class SupplierController {
     }
 
     public Response editSupplierContactEmail(int id, String email, String newEmail){
-        if (!suppliers.containsKey(id)) {
-            return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
-        }
-        for (Contact c : suppliers.get(id).getContacts()) {
+        for (Contact c : supplierDAO.getSupplierByID(id).getContacts()) {
             if (c.getEmail().equals(email)) {
                 c.setEmail(newEmail);
                 return new Response(id);
             }
         }
         return new Response("Can't edit email beacuse contact with the email: "+ email +" does not exist ");
-
     }
 
-    public Response editSupplierContactPhone(int id, String email, String newPhone){
-        if (!suppliers.containsKey(id)) {
-            return new Response("Can't change name because supplier with id " + id + " doesn't exist in the system");
-        }
-        for (Contact c : suppliers.get(id).getContacts()) {
-            if (c.getEmail().equals(email)) {
+    public Response editSupplierContactPhone(int id, String oldPhone, String newPhone){
+        for (Contact c : supplierDAO.getSupplierByID(id).getContacts()) {
+            if (c.getPhoneNumber().equals(oldPhone)) {
                 c.setPhoneNumber(newPhone);
                 return new Response(id);
             }
         }
-        return new Response("Can't edit phoneNumber beacuse contact with the email: "+ email +" does not exist ");
+        return new Response("Can't edit phone number beacuse contact with the  phone number: " + oldPhone + " does not exist ");
     }
 
     public Response addItemToAgreement(int supplierID,String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
-        if (!suppliers.containsKey(supplierID)) {
+        if (supplierDAO.getSupplierByID(supplierID) == null) {
             return new Response("Can't change name because supplier with id " + supplierID + " doesn't exist in the system");
         }
-        HashMap<Integer, SupplierProduct> supplierProductsMap= suppliers.get(supplierID).getAgreement().getSupllyingProducts();
+        HashMap<Integer, SupplierProduct> supplierProductsMap= supplierDAO.getSupplierByID(supplierID).getAgreement().getSupllyingProducts();
         for (Map.Entry<Integer, SupplierProduct> entry : supplierProductsMap.entrySet()) {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId)
                 return new Response("can not add item with id: " + productId + " beacuse it's already exist in the supplier's products List");
         }
-        SupplierProduct supplierProduct = suppliers.get(supplierID).addProduct(name, supplierID, productId, catalogNumber, price, amount, discountPerAmount, weight, manufacturer, expirationDays);
+        SupplierProduct supplierProduct = supplierDAO.getSupplierByID(supplierID).addProduct(name, supplierID, productId, catalogNumber, price, amount, discountPerAmount, weight, manufacturer, expirationDays);
         Response response = supplierProductDAO.addSupplierProduct(supplierID, supplierProduct);
         if (response.errorOccurred()) return response;
         for(Map.Entry<Integer, Double> discount : discountPerAmount.entrySet())
@@ -211,14 +217,14 @@ public class SupplierController {
 
 
     public Response removeItemFromAgreement(int supplierID, int itemIdToDelete) {
-        if (!suppliers.containsKey(supplierID)) {
+        if (supplierDAO.getSupplierByID(supplierID) == null) {
             return new Response("Can't change name because supplier with id " + supplierID + " doesn't exist in the system");
         }
-        HashMap<Integer, SupplierProduct> supplierProductsMap= suppliers.get(supplierID).getAgreement().getSupllyingProducts();
+        HashMap<Integer, SupplierProduct> supplierProductsMap= supplierDAO.getSupplierByID(supplierID).getAgreement().getSupllyingProducts();
         for (Map.Entry<Integer, SupplierProduct> entry : supplierProductsMap.entrySet()) {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == itemIdToDelete) {
-                suppliers.get(supplierID).removeProduct(itemIdToDelete);
+                supplierDAO.getSupplierByID(supplierID).removeProduct(itemIdToDelete);
                 Response response = supplierProductDAO.removeSupplierProduct(supplierID, itemIdToDelete);
                 if (response.errorOccurred()) return response;
                 return new Response(supplierID);
@@ -229,10 +235,10 @@ public class SupplierController {
     }
 
     public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days, String supplyMethod, int supplyTime) {
-        if(!suppliers.containsKey(supplierId)){
+        if(supplierDAO.getSupplierByID(supplierId) == null){
             return new Response("Supplier with id: " + supplierId + " is not exist, please try again");
         }
-        Supplier supplier = suppliers.get(supplierId);
+        Supplier supplier = supplierDAO.getSupplierByID(supplierId);
         supplier.setSelfSupply(selfSupply);
         supplier.SetPaymentType(paymentMethod);
         supplier.setDeliveyDays(days);
@@ -247,14 +253,14 @@ public class SupplierController {
     }
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {
-        if(!suppliers.containsKey(supplierId)){
+        if(supplierDAO.getSupplierByID(supplierId) == null){
             return new Response("Supplier with id: " + supplierId + " is not exist, please try again");
         }
-        HashMap<Integer, SupplierProduct> supplierProductsMap= suppliers.get(supplierId).getAgreement().getSupllyingProducts();
+        HashMap<Integer, SupplierProduct> supplierProductsMap= supplierDAO.getSupplierByID(supplierId).getAgreement().getSupllyingProducts();
         for (Map.Entry<Integer, SupplierProduct> entry : supplierProductsMap.entrySet()) {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
-                suppliers.get(supplierId).setProdactCatalogNumber(productId, newCatalogNumber);
+                supplierDAO.getSupplierByID(supplierId).setProdactCatalogNumber(productId, newCatalogNumber);
                 Response response = supplierProductDAO.updateSupplierProductCatalogNumber(supplierId, productId, newCatalogNumber);
                 if (response.errorOccurred()) return response;
                 return new Response(supplierId);
@@ -264,37 +270,17 @@ public class SupplierController {
 
     }
 
-    public void printSuppliers() {
-        if(!suppliers.isEmpty()){
-            for (Map.Entry<Integer, Supplier> entry : suppliers.entrySet()) {
-                Integer supplierId = entry.getKey();
-                Supplier supplier = entry.getValue();
-
-                System.out.println("Supplier's name: " + supplier.getName() + ", supplier's id: " + supplierId + ", supplier's products:" );
-                printSupplyingProducts(supplier.getSupplyingProducts());
-                System.out.println("\n");
-                }
-            }
-        else{
-            System.out.println("Please add a supplier before choosing this option");
-        }
-        }
-
-        public void printSupplyingProducts(Map<Integer, SupplierProduct> sp) {
-            for (Map.Entry<Integer, SupplierProduct> entry : sp.entrySet()) {
-                Integer productId = entry.getKey();
-                SupplierProduct supplierProduct = entry.getValue();
-                Integer catalogId = supplierProduct.getCatalogId();
-                int amount = supplierProduct.getAmount();
-                System.out.println("productId: " + productId + ", catalogId: " + catalogId + ", amount: " + amount);
-            }
-        }
+    public void printSuppliers()
+    {
+        if(id <= 1) System.out.println("Please add a supplier before choosing this option");
+        else supplierDAO.printAllSuppliers();
+    }
 
     public Response addDiscount(int supplierId, int productId, int ammount, double discount) {
-        if(!suppliers.containsKey(supplierId)){
+        if(supplierDAO.getSupplierByID(supplierId) == null){
             return new Response("Supplier with id: " + supplierId + " is not exist, please try again");
         }
-        HashMap<Integer, SupplierProduct> supplierProductsMap= suppliers.get(supplierId).getAgreement().getSupllyingProducts();
+        HashMap<Integer, SupplierProduct> supplierProductsMap= supplierDAO.getSupplierByID(supplierId).getAgreement().getSupllyingProducts();
         for (Map.Entry<Integer, SupplierProduct> entry : supplierProductsMap.entrySet()) {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
@@ -308,10 +294,10 @@ public class SupplierController {
     }
 
     public Response removeDiscount(int supplierId, int productId, int ammount, double discount) {
-        if(!suppliers.containsKey(supplierId)){
+        if(supplierDAO.getSupplierByID(supplierId) == null){
             return new Response("Supplier with id: " + supplierId + " is not exist, please try again");
         }
-        HashMap<Integer, SupplierProduct> supplierProductsMap= suppliers.get(supplierId).getAgreement().getSupllyingProducts();
+        HashMap<Integer, SupplierProduct> supplierProductsMap= supplierDAO.getSupplierByID(supplierId).getAgreement().getSupllyingProducts();
         for (Map.Entry<Integer, SupplierProduct> entry : supplierProductsMap.entrySet()) {
             SupplierProduct product = entry.getValue();
             if (product.getProductID() == productId) {
@@ -334,7 +320,7 @@ public class SupplierController {
     }
 
     public Response findSuppliersForOrder(HashMap<Integer, Integer> products){
-        HashMap<Integer, Supplier> copyOfSuppliers = new HashMap<>(suppliers);
+        HashMap<Integer, Supplier> copyOfSuppliers = new HashMap<>(supplierDAO.getAllSuppliers());
         ArrayList<Supplier> suppliersInOrder = new ArrayList<>();
         ArrayList<ArrayList<Pair<Integer, Integer>>> supplyLists = new ArrayList<>();
         while(products.entrySet().size() > 0){
@@ -404,7 +390,7 @@ public class SupplierController {
 
     public Supplier getSupllierByID(int id)
     {
-        return suppliers.get(id);
+        return supplierDAO.getSupplierByID(id);
     }
 
 

@@ -11,16 +11,18 @@ public class Response {
     private int supplierId;
     private ArrayList<Supplier> suppliersInOrder;
     private ArrayList<ArrayList<Pair<SupplierProduct,Integer>>> supplyLists;
+    private boolean answer;
 
     public Response(ArrayList<Supplier> suppliersInOrder, ArrayList<ArrayList<Pair<SupplierProduct,Integer>>> supplyLists){
         this.suppliersInOrder = suppliersInOrder;
         this.supplyLists = supplyLists;
     }
+    public Response(boolean answer) { this.answer = answer; }
 
     public Response(int supplierId){
         this.supplierId = supplierId;
     }
-    public Response(){};
+    public Response(){}
 
     public Response(String errorMessage){
         this.errorMessage = errorMessage;
@@ -37,4 +39,5 @@ public class Response {
     public int getSupplierId(){
         return supplierId;
     }
+    public boolean getAnswer() { return answer; }
 }

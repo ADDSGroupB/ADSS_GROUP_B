@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ContactDAO implements iContactDAO{
-    private Connection connection;
-    private HashMap<Pair<Integer, String>, Contact> contactIM;
+    private final Connection connection;
+    private final HashMap<Pair<Integer, String>, Contact> contactIM;
 
     public ContactDAO()
     {
@@ -98,7 +98,7 @@ public class ContactDAO implements iContactDAO{
             statement.setInt(1, id);
             statement.setString(2, phoneNumber);
             statement.executeUpdate();
-            contactIM.remove(id);
+            contactIM.remove(new Pair<>(id, phoneNumber));
             return new Response(id);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
@@ -138,7 +138,7 @@ public class ContactDAO implements iContactDAO{
 
     @Override
     public Response updateEmail(int id,  String phoneNumber, String email) {
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE contact SET name = ? WHERE supplierID = ? AND phoneNumber = ?"))
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE contact SET email = ? WHERE supplierID = ? AND phoneNumber = ?"))
         {
             statement.setString(1, email);
             statement.setInt(2, id);

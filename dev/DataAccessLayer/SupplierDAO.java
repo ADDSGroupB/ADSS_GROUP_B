@@ -13,13 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SupplierDAO implements iSupplierDAO {
-    private Connection connection;
-    private HashMap<Integer, Supplier> suppliersIM;
-    private iContactDAO contactDAO;
-    private iDiscountDAO discountDAO;
-    private iDiscountPerAmountDAO discountPerAmountDAO;
-    private iSupplierProductDAO supplierProductDAO;
-    private iAgreementDAO agreementDAO;
+    private final Connection connection;
+    private final HashMap<Integer, Supplier> suppliersIM;
+    private final iContactDAO contactDAO;
+    private final iDiscountDAO discountDAO;
+    private final iDiscountPerAmountDAO discountPerAmountDAO;
+    private final iSupplierProductDAO supplierProductDAO;
+    private final iAgreementDAO agreementDAO;
+//    private int lastSupplierID;
     public SupplierDAO() {
         connection = Database.connect();
         try {
@@ -34,6 +35,7 @@ public class SupplierDAO implements iSupplierDAO {
         discountPerAmountDAO = new DiscountPerAmountDAO();
         supplierProductDAO = new SupplierProductDAO();
         agreementDAO = new AgreementDAO();
+//        lastSupplierID = getLastSupplierID();
     }
     @Override
     public HashMap<Integer, Supplier> getAllSuppliers() {
@@ -91,26 +93,30 @@ public class SupplierDAO implements iSupplierDAO {
             supplierStatement.setString(3, supplier.getAddress());
             supplierStatement.setString(4, supplier.getBankAccount());
             supplierStatement.executeUpdate();
-//            Response response = addContacts(supplier.getSupplierId(), supplier.getContacts());
             Response response;
             for(Contact contact : supplier.getContacts())
             {
                 response = contactDAO.addContact(supplier.getSupplierId(), contact);
                 if(response.errorOccurred()) return response;
             }
-            response = agreementDAO.addAgreement(supplier.getSupplierId(), supplier.getAgreement());
-            if(response.errorOccurred()) return response;
-            Pair<Integer, Double> discount = supplier.getTotalDiscountInPrecentageForOrder();
-            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = discountDAO.addDiscount(supplier.getSupplierId(), "Amount", discount);
-            if(response.errorOccurred()) return response;
-            Pair<Double, Double> discount2 = supplier.getTotalOrderDiscountPerOrderPrice();
-            if(supplier.getTotalDiscountInPrecentageForOrder() != null) response = discountDAO.addDiscount(supplier.getSupplierId(), "Price", discount2);
-            if(response.errorOccurred()) return response;
-            response = addSupplierProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
-            if(response.errorOccurred()) return response;
-            response = addDiscountOnProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
-            if(response.errorOccurred()) return response;
-            suppliersIM.put(supplier.getSupplierId(), supplier);
+            if(supplier.getAgreement() != null)
+            {
+                response = agreementDAO.addAgreement(supplier.getSupplierId(), supplier.getAgreement());
+                if (response.errorOccurred()) return response;
+                Pair<Integer, Double> discount = supplier.getTotalDiscountInPrecentageForOrder();
+                if (supplier.getTotalDiscountInPrecentageForOrder() != null)
+                    response = discountDAO.addDiscount(supplier.getSupplierId(), "Amount", discount);
+                if (response.errorOccurred()) return response;
+                Pair<Double, Double> discount2 = supplier.getTotalOrderDiscountPerOrderPrice();
+                if (supplier.getTotalDiscountInPrecentageForOrder() != null)
+                    response = discountDAO.addDiscount(supplier.getSupplierId(), "Price", discount2);
+                if (response.errorOccurred()) return response;
+                response = addSupplierProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
+                if (response.errorOccurred()) return response;
+                response = addDiscountOnProducts(supplier.getSupplierId(), supplier.getSupplyingProducts());
+                if (response.errorOccurred()) return response;
+                suppliersIM.put(supplier.getSupplierId(), supplier);
+            }
             return new Response(supplier.getSupplierId());
         } catch (SQLException e) {
             return new Response(e.getMessage());
@@ -180,8 +186,55 @@ public class SupplierDAO implements iSupplierDAO {
             statement.setString(1, bankAccount);
             statement.setInt(2, id);
             statement.executeUpdate();
+            statement.close();
             if(suppliersIM.containsKey(id)) suppliersIM.get(id).setBankAccount(bankAccount);
             return new Response(id);
         } catch (SQLException e) { return new Response(e.getMessage()); }
+    }
+
+    public int getLastSupplierID()
+    {
+//        if(lastSupplierID != 0) return lastSupplierID;
+        try (Statement statement = connection.createStatement()) {
+            String sql = "SELECT MAX(supplierID) AS maxSupplierID FROM supplier";
+            ResultSet rs = statement.executeQuery(sql);
+            int maxSupplierID = 0;
+            if (rs.next()) maxSupplierID = rs.getInt("maxSupplierID");
+            rs.close();
+            return maxSupplierID;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -1;
+    }
+
+    public Response searchBankAccount(String bankAccount)
+    {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM supplier WHERE bankAccount = ?"))
+        {
+            statement.setString(1, bankAccount);
+            ResultSet supplierResult = statement.executeQuery();
+            return new Response(supplierResult.next());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return new Response("SQL ERROR");
+    }
+
+    @Override
+    public void printAllSuppliers()
+    {
+        try (Statement stmt = connection.createStatement())
+        {
+            ResultSet resultSet = stmt.executeQuery("SELECT name, supplierID FROM supplier");
+            while (resultSet.next())
+            {
+                String name = resultSet.getString("name");
+                int supplierID = resultSet.getInt("supplierID");
+                System.out.println("Supplier's name: " + name + ", supplier's id: " + supplierID + ", supplier's products:" );
+                supplierProductDAO.printProductsBySupplierID(supplierID);
+            }
+            resultSet.close();
+            } catch (SQLException e) { System.out.println(e.getMessage());}
     }
 }

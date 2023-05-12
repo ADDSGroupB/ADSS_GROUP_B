@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 
 public class SupplierService {
-    private FacadeSupplier facadeSupplier;
+    private final FacadeSupplier facadeSupplier;
 
     public SupplierService() {
         facadeSupplier = new FacadeSupplier();
@@ -38,8 +38,8 @@ public class SupplierService {
         return facadeSupplier.addContactsTOSupplier(id, name, email, phone);
     }
 
-    public Response removeSupplierContact(int id, String email, String phoneNumber) {
-        return facadeSupplier.removeSupplierContact(id, email, phoneNumber);
+    public Response removeSupplierContact(int id, String phoneNumber) {
+        return facadeSupplier.removeSupplierContact(id, phoneNumber);
     }
 
     public Response editSupplierContacts(int id, String email, String newEmail, String newphone, String oldPhone) {

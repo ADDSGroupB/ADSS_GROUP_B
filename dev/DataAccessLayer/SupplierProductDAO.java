@@ -9,9 +9,9 @@ import java.sql.*;
 import java.util.HashMap;
 
 public class SupplierProductDAO implements iSupplierProductDAO{
-    private Connection connection;
-    private HashMap<Pair<Integer, Integer>, SupplierProduct> supplierProductIM;
-    private DiscountPerAmountDAO discountPerAmountDAO;
+    private final Connection connection;
+    private final HashMap<Pair<Integer, Integer>, SupplierProduct> supplierProductIM;
+    private final DiscountPerAmountDAO discountPerAmountDAO;
 
     public SupplierProductDAO() {
         connection = Database.connect();
@@ -110,7 +110,7 @@ public class SupplierProductDAO implements iSupplierProductDAO{
             statement.setInt(2, productID);
             statement.executeUpdate();
             Pair<Integer, Integer> pair = new Pair<>(supplierID, productID);
-            if(supplierProductIM.containsKey(pair)) supplierProductIM.remove(pair);
+            supplierProductIM.remove(pair);
             return new Response(supplierID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
@@ -197,5 +197,28 @@ public class SupplierProductDAO implements iSupplierProductDAO{
             if (supplierProductIM.containsKey(pair)) supplierProductIM.get(pair).setExpirationDays(expirationDays);
             return new Response(supplierID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
+    }
+
+    @Override
+    public void printProductsBySupplierID(int supplierID)
+    {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM supplierProduct WHERE supplierID = ?"))
+        {
+            stmt.setInt(1, supplierID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next())
+            {
+                int productID = rs.getInt("productID");
+                int catalogNumber = rs.getInt("catalogNumber");
+                String name = rs.getString("name");
+                int amount = rs.getInt("amount");
+                double price = rs.getDouble("price");
+                double weight = rs.getDouble("weight");
+                String manufacturer = rs.getString("manufacturer");
+                String expirationDays = rs.getString("expirationDays");
+                System.out.println("Supplier ID: " + supplierID + ", Product ID: " + productID + ", Catalog Number: " + catalogNumber + ", Name: " + name + ", Amount: " + amount + ", Price: " + price + ", Weight: " + weight + ", Manufacturer: " + manufacturer + ", Expiration Days: " + expirationDays);
+            }
+            rs.close();
+        } catch (SQLException e) { System.out.println(e.getMessage());}
     }
 }

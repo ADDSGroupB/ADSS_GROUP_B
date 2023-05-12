@@ -9,13 +9,16 @@ import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class AgreementDAO implements iAgreementDAO{
-    private Connection connection;
-    private HashMap<Integer, Agreement> agreementIM;
-    private iDiscountDAO discountDAO;
-    private iSupplierProductDAO supplierProductDAO;
-    private iDeliveryDaysDAO deliveryDaysDAO;
+    private final Connection connection;
+    private final HashMap<Integer, Agreement> agreementIM;
+    private final iDiscountDAO discountDAO;
+    private final iDiscountPerAmountDAO discountPerAmountDAO;
+    private final iSupplierProductDAO supplierProductDAO;
+    private final iDeliveryDaysDAO deliveryDaysDAO;
 
     public AgreementDAO() {
         connection = Database.connect();
@@ -27,6 +30,7 @@ public class AgreementDAO implements iAgreementDAO{
         }
         agreementIM = new HashMap<>();
         discountDAO = new DiscountDAO();
+        discountPerAmountDAO = new DiscountPerAmountDAO();
         supplierProductDAO = new SupplierProductDAO();
         deliveryDaysDAO = new DeliveryDaysDAO();
     }
@@ -67,6 +71,50 @@ public class AgreementDAO implements iAgreementDAO{
             statement.executeUpdate();
             Response response = deliveryDaysDAO.addDeliveryDays(supplierID, agreement.getSupplyDays());
             if(response.errorOccurred()) return response;
+            response = addSupplierProducts(supplierID, agreement.getSupllyingProducts());
+            if (response.errorOccurred()) return response;
+            response = addDiscountOnProducts(supplierID, agreement.getSupllyingProducts());
+            if (response.errorOccurred()) return response;
+            agreementIM.put(supplierID, agreement);
+            return new Response(supplierID);
+        } catch (SQLException e) { return new Response(e.getMessage()); }
+    }
+
+    @Override
+    public Response addAgreementWithDiscount(int supplierID, Agreement agreement) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO agreement (supplierID, paymentType, selfSupply, supplyMethod, supplyTime) VALUES (?, ?, ?, ?, ?)"))
+        {
+            statement.setInt(1, supplierID);
+            statement.setString(2, agreement.getPaymentType());
+            statement.setBoolean(3, agreement.getSelfSupply());
+            statement.setString(4, agreement.getSupplyMethod());
+            statement.setInt(5, agreement.getSupplyTime());
+            statement.executeUpdate();
+            Response response = deliveryDaysDAO.addDeliveryDays(supplierID, agreement.getSupplyDays());
+            if(response.errorOccurred()) return response;
+            Pair<Integer, Double> discount = agreement.getTotalDiscountInPrecentageForOrder();
+            if (discount != null)
+                response = discountDAO.addDiscount(supplierID, "Amount", discount);
+            if (response.errorOccurred()) return response;
+            Pair<Double, Double> discount2 = agreement.getTotalOrderDiscountPerOrderPrice();
+            if (discount2 != null)
+                response = discountDAO.addDiscount(supplierID, "Price", discount2);
+            if (response.errorOccurred()) return response;
+            response = addSupplierProducts(supplierID, agreement.getSupllyingProducts());
+            if (response.errorOccurred()) return response;
+            response = addDiscountOnProducts(supplierID, agreement.getSupllyingProducts());
+            if (response.errorOccurred()) return response;
+
+//            response = discountDAO.addDiscount(supplierID, "Amount", agreement.getTotalDiscountInPrecentageForOrderAmount());
+//            if(response.errorOccurred()) return response;
+//            response = discountDAO.addDiscount(supplierID, "Price", agreement.getTotalDiscountInPrecentageForOrder());
+//            if(response.errorOccurred()) return response;
+//            for(SupplierProduct supplierProduct : agreement.getSupllyingProducts().values())
+//            {
+//                response = supplierProductDAO.addSupplierProduct(supplierID, supplierProduct);
+//                if(response.errorOccurred()) return response;
+//            }
+
             agreementIM.put(supplierID, agreement);
             return new Response(supplierID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
@@ -157,7 +205,7 @@ public class AgreementDAO implements iAgreementDAO{
         ArrayList<DayOfWeek> daysOfWeek= new ArrayList<>();
         String[] daysArray = days.split(", ");
         for (String day : daysArray) {
-            if (day != "None") return null;
+            if (!Objects.equals(day, "None")) return null;
             daysOfWeek.add(DayOfWeek.valueOf(day.toUpperCase()));
         }
         return daysOfWeek;
@@ -172,5 +220,25 @@ public class AgreementDAO implements iAgreementDAO{
             sb.append(day.toString()).append(", ");
         }
         return sb.substring(0, sb.length() - 2);
+    }
+
+    public Response addSupplierProducts(int supplierID, Map<Integer, SupplierProduct> supllyingProducts)
+    {
+        for(SupplierProduct supplierProduct : supllyingProducts.values())
+        {
+            Response res = supplierProductDAO.addSupplierProduct(supplierID, supplierProduct);
+            if(res.errorOccurred()) return res;
+        }
+        return new Response(supplierID);
+    }
+    public Response addDiscountOnProducts(int supplierID, Map <Integer, SupplierProduct> supllyingProducts)
+    {
+        for(SupplierProduct supplierProduct : supllyingProducts.values())
+        {
+            for(Map.Entry<Integer, Double> discount : supplierProduct.getDiscountPerAmount().entrySet()) {
+                discountPerAmountDAO.addDiscount(supplierID, supplierProduct.getProductID(), discount.getKey(), discount.getValue());
+            }
+        }
+        return new Response(supplierID);
     }
 }

@@ -1,5 +1,7 @@
 package BusinessLayer;
 
+import DataAccessLayer.AgreementDAO;
+import DataAccessLayer.ContactDAO;
 import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
@@ -10,15 +12,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FacadeSupplier {
-    private SupplierController supplierController;
-    private ProductController productController;
-    private OrderController orderController;
-    private SupplierDAO supplierDAO;
+    private final SupplierController supplierController;
+    private final ProductController productController;
+    private final OrderController orderController;
+    private final AgreementDAO agreementDAO;
     public FacadeSupplier(){
         supplierController = new SupplierController();
         productController = new ProductController();
         orderController = new OrderController();
-        supplierDAO = new SupplierDAO();
+        agreementDAO = new AgreementDAO();
     }
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement,  ArrayList<ServiceContact> contactList) {
         Response res = supplierController.addSupplier(name, address, bankAccount);
@@ -28,13 +30,15 @@ public class FacadeSupplier {
             if(serviceAgreement.getTotalDiscountInPrecentageForOrderAmount()!=null && serviceAgreement.getTotalOrderDiscountPerOrderPrice()!=null){
                 Agreement agreement1 = supplierController.createAgreementWithDiscounts(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts, serviceAgreement.getSupplyMethod(), serviceAgreement.getSupplyTime() ,serviceAgreement.getTotalDiscountInPrecentageForOrderAmount(), serviceAgreement.getTotalOrderDiscountPerOrderPrice());
                 supplierController.setAgreement(agreement1, supplierId);
+                agreementDAO.addAgreementWithDiscount(supplierId, agreement1);
             }
             else {
                 Agreement agreement1 = supplierController.createAgreement(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts, serviceAgreement.getSupplyMethod(), serviceAgreement.getSupplyTime());
                 supplierController.setAgreement(agreement1, supplierId);
+                agreementDAO.addAgreement(supplierId, agreement1);
             }
             supplierController.setContacts(contactList, supplierId);
-            supplierDAO.addSupplier(supplierController.getSupllierByID(supplierId));
+//            supplierDAO.addSupplier(supplierController.getSupllierByID(supplierId));
         }
         return res;
     }
@@ -68,8 +72,8 @@ public class FacadeSupplier {
         return supplierController.addContactsTOSupplier(id, name, email, phone);
     }
 
-    public Response removeSupplierContact(int id, String email, String phoneNumber) {
-        return supplierController.removeSupplierContact(id, email, phoneNumber);
+    public Response removeSupplierContact(int id, String phoneNumber) {
+        return supplierController.removeSupplierContact(id, phoneNumber);
     }
 
     public Response editSupplierContacts(int id, String email, String newEmail, String newphone, String oldPhone) {
@@ -123,7 +127,6 @@ public class FacadeSupplier {
         }
         orderController.createOrder(res);
         return new Response();
-
     }
 
     public void printOrders() {

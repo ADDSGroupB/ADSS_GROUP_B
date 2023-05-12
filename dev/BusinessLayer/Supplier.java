@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Supplier {
-    private static int id = 1;
-    private int supplierId;
+    private final int supplierId;
     private String name;
     private String address;
     //private HashMap<String, Contact> contacts; //<key: firstName lastName, value: contact: Contact>
@@ -32,30 +31,30 @@ public class Supplier {
         this.agreement = agreement;
     }
 
-    public Supplier(String name, String bankAccount, String address, ArrayList<String> manufacturers, ArrayList<String> domains, Agreement agreement, HashMap<Integer, Integer> productsAmount) {
-        this.supplierId = id++;
-        this.name = name;
-        this.contacts = new ArrayList<>();
-        this.bankAccount = bankAccount;
-        this.address = address;
-        this.manufacturers = manufacturers;
-        this.domains = domains;
-        this.isActive = true;
-        //this.productsAmount  = productsAmount;
-        this.agreement = agreement;
-    }
+//    public Supplier(String name, String bankAccount, String address, ArrayList<String> manufacturers, ArrayList<String> domains, Agreement agreement, HashMap<Integer, Integer> productsAmount) {
+//        this.supplierId = id++;
+//        this.name = name;
+//        this.contacts = new ArrayList<>();
+//        this.bankAccount = bankAccount;
+//        this.address = address;
+//        this.manufacturers = manufacturers;
+//        this.domains = domains;
+//        this.isActive = true;
+//        //this.productsAmount  = productsAmount;
+//        this.agreement = agreement;
+//    }
+//
+//    public Supplier(String name, String bankAccount, String address, Agreement agreement) {
+//        this.supplierId = id++;
+//        this.name = name;
+//        this.bankAccount = bankAccount;
+//        this.address = address;
+//        this.isActive = true;
+//        this.agreement = agreement;
+//    }
 
-    public Supplier(String name, String bankAccount, String address, Agreement agreement) {
-        this.supplierId = id++;
-        this.name = name;
-        this.bankAccount = bankAccount;
-        this.address = address;
-        this.isActive = true;
-        this.agreement = agreement;
-    }
-
-    public Supplier(String name, String address, String bankAccount) {
-        this.supplierId = id++;
+    public Supplier(int supplierID, String name, String address, String bankAccount) {
+        this.supplierId = supplierID;
         this.name = name;
         this.address = address;
         this.bankAccount = bankAccount;
@@ -131,11 +130,7 @@ public class Supplier {
     }
 
     public void changeIsActiveStatment() {
-        if (isActive) {
-            isActive = false;
-        } else {
-            isActive = true;
-        }
+        isActive = !isActive;
     }
 
     public Agreement getAgreement() {
@@ -249,7 +244,7 @@ public class Supplier {
     public double calculatePriceAfterDiscount (ArrayList<Pair<Integer,Integer>> products) {
         double totalPriceForAllOrder = 0.0;
         for (Pair<Integer, Integer> pair : products) {
-            double totalPrice=0.0;
+            double totalPrice;
             int productId = pair.getFirst();
             int amountForDiscount = pair.getSecond();
             boolean canUseAdiscount = false;

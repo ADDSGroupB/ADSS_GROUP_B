@@ -1,8 +1,6 @@
 package InterfaceLayer;
 
-import DataAccessLayer.ContactDAO;
 import DataAccessLayer.Database;
-import DataAccessLayer.SupplierDAO;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
 import ServiceLayer.SupplierProductService;
@@ -13,38 +11,34 @@ import Utillity.Response;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.*;
-//import ServiceLayer.MainService;
-//import BusinessLayer.SuppliersBusiness.Supplier;
 
 
 
 public class Cli {
-    private Scanner reader;
-    private SupplierService supplierService;
+    private final Scanner reader;
+    private final SupplierService supplierService;
 
-    private ServiceContact serviceContact;
+    private final ServiceContact serviceContact;
+
+    private final Connection connection;
 
 
     public Cli() {
+        connection = Database.connect();
+        Database.createTables();
         reader = new Scanner(System.in);
         supplierService = new SupplierService();
         serviceContact = new ServiceContact();
     }
-
-//    private void loadData() {     // this function will load the data
-//        service.loadData();
-//    }
 
     public void print(String message){
         System.out.println(message);
     }
 
 
-    public void start() throws SQLException {
-        Connection connection = Database.connect();
-//        Database.createTablesNotNULL();
-        Database.createTables();
-        int userInput = 0;
+    public void start() {
+
+        int userInput;
 
         print("Hello! and Welcome to Super Lee- supplier module, I am available to assist you with any requests you may have\nDo you want to upload existing data or start over?  \n1. Load Data\n2. New Data \n3. EXIT\n");
         int n = reader.nextInt();
@@ -58,28 +52,26 @@ public class Cli {
                 print("For scenario two press 2- The order will be split into several orders according to different suppliers\n");
                 print("For scenario three press 3- the order can't be created\n");
                 print("Press 0- back to the menu");
+                printOrders();
                 int choose = reader.nextInt();
-                if (choose == 1) {
-                    valid = true;
-                    supplierService.createAnOrder(shortage.get(0));
-                    printOrders();
-                    choose = 0;
-                } else if (choose == 2) {
-                    valid = true;
-                    supplierService.createAnOrder(shortage.get(1));
-                    printOrders();
-                    choose = 0;
-                } else if (choose == 3) {
-                    valid = true;
-                    supplierService.createAnOrder(shortage.get(2));
-                    printOrders();
-                    choose = 0;
-                }
-                    else if(choose ==0){
-                        break;
+                switch (choose) {
+                    case 1 -> {
+                        valid = true;
+                        supplierService.createAnOrder(shortage.get(0));
+                        printOrders();
                     }
-                 else {
-                    print("Please choose a valid number (1,2,3)");
+                    case 2 -> {
+                        valid = true;
+                        supplierService.createAnOrder(shortage.get(1));
+                        printOrders();
+                    }
+                    case 3 -> {
+                        valid = true;
+                        supplierService.createAnOrder(shortage.get(2));
+                        printOrders();
+                    }
+                    case 0 -> start();
+                    default -> print("Please choose a valid number (1,2,3)");
                 }
             }
         }
@@ -92,7 +84,7 @@ public class Cli {
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            return;
+            System.exit(0);
         }
         //if the user pressed 2 we play the next section
         if (n == 2) {
@@ -100,7 +92,7 @@ public class Cli {
                     print("Which module are you interested in?  \n1. Supplier\n2. EXIT\n3. Back");
                     userInput = reader.nextInt();
                     reader.nextLine();
-                    if (userInput < 1 || userInput > 2) {
+                    if (userInput < 1 || userInput > 3) {
                         print("Please choose one of the following options:\n1. Supplier\n2. EXIT\n3. Back");
                         userInput = reader.nextInt();
                         reader.nextLine();
@@ -110,7 +102,14 @@ public class Cli {
                 }
                 if (userInput == 2) {
                     print("Hope you enjoyed, see you next time :)");
-                    return;
+                    try {
+                        if (connection != null) {
+                            connection.close();
+                        }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    System.exit(0);
                 }
                 else {
                     start();
@@ -196,11 +195,6 @@ public class Cli {
     }
 
     private void supplierManagerCLI() {
-//        SupplierDAO supplierDAO = new SupplierDAO();
-//        ContactDAO contactDAO = new ContactDAO();
-//        contactDAO.updatePhoneNumber(1, "052-5993123",  "052-3801919");
-//        supplierDAO.getSupplierByID(2);
-//        contactDAO.getContactBySupplierID(1, "052-3801919");
         print("Please choose one of the following option:\n1. Add new Supplier\n2. Delete Supplier \n3. Edit Supplier's information \n4. Print suppliers \n5. Back");
         int action =0;
         try {
@@ -243,12 +237,8 @@ public class Cli {
             int action = reader.nextInt();
             reader.nextLine();
             switch (action) {
-                case 1:
-                    editSupplierPersonalDetails(id);
-                    break;
-                case 2:
-                    editSupplierAgreement(id);
-                    break;
+                case 1 -> editSupplierPersonalDetails(id);
+                case 2 -> editSupplierAgreement(id);
             }
             System.out.println("Would you like to edit anything else?  \n1. Yes\n2. No");
             keepEditing = reader.nextInt();
@@ -356,16 +346,9 @@ public class Cli {
         int action = reader.nextInt();
         reader.nextLine();
         switch (action) {
-            case 1:
-                editItemCatalodNumber(supplierID, productId);
-                break;
-            case 2:
-                editRemoveDiscount(supplierID, productId);
-                break;
-            case 3:
-                editAddDiscount(supplierID, productId);
-                break;
-
+            case 1 -> editItemCatalodNumber(supplierID, productId);
+            case 2 -> editRemoveDiscount(supplierID, productId);
+            case 3 -> editAddDiscount(supplierID, productId);
         }
     }
 
@@ -418,18 +401,10 @@ public class Cli {
             reader.nextLine();
         }
         switch (action) {
-            case 1:
-                editContacts(id);
-                break;
-            case 2:
-                editAddress(id);
-                break;
-            case 3:
-                editBankAccount(id);
-                break;
-            case 4:
-                editSupplierName(id);
-                break;
+            case 1 -> editContacts(id);
+            case 2 -> editAddress(id);
+            case 3 -> editBankAccount(id);
+            case 4 -> editSupplierName(id);
         }
     }
 
@@ -465,29 +440,24 @@ public class Cli {
 
     private void editContacts(int id) {
        print("Choose an action \n1. Add a contact \n2. Delete a contact \n3. Edit contact's email \n4. Edit contact's phone number");
-        int action = Integer.parseInt(reader.nextLine());
+       int action;
+       try { action = Integer.parseInt(reader.nextLine()); }
+        catch (NumberFormatException e) { action = 5; }
         while (action < 1 || action > 4) {
             System.out.println("Please Enter a valid number (1 to 4)");
-            action = Integer.parseInt(reader.nextLine());
+            try { action = Integer.parseInt(reader.nextLine()); }
+            catch (NumberFormatException e) { action = 5; }
         }
         switch (action) {
-            case 1:
-                addContactToSupplier(id);
-                break;
-            case 2:
-                deleteContact(id);
-                break;
-            case 3:
-                editContactEmail(id);
-                break;
-            case 4:
-                editContactPhone(id);
-                break;
+            case 1 -> addContactToSupplier(id);
+            case 2 -> deleteContact(id);
+            case 3 -> editContactEmail(id);
+            case 4 -> editContactPhone(id);
         }
     }
 
     private void editContactPhone(int id) {
-        String email=getValidEmail();
+//        String email=getValidEmail();
         String oldPhone = getValidPhoneNumber();
         //String name = reader.nextLine();
         print("Please enter the new phone number");
@@ -496,7 +466,7 @@ public class Cli {
             print("Not a valid phone number, please try again");
             newPhone = reader.nextLine();
         }
-        Response res = supplierService.editSupplierContacts(id, email, "", newPhone, oldPhone);
+        Response res = supplierService.editSupplierContacts(id, "", "", newPhone, oldPhone);
         if (res.errorOccurred())
             print(res.getErrorMessage());
 
@@ -520,13 +490,13 @@ public class Cli {
 
 
     private void deleteContact(int id) {
-        String email=getValidEmail();
+//        String email=getValidEmail();
         String phoneNumber = getValidPhoneNumber();
-        Response res = supplierService.removeSupplierContact(id, email, phoneNumber);
+        Response res = supplierService.removeSupplierContact(id, phoneNumber);
         if (res.errorOccurred())
             print(res.getErrorMessage());
         else{
-            print("contact withe email: "+email+" deleted successfully from supplier with id: "+id);
+            print("contact withe phone number: "+ phoneNumber+" deleted successfully from supplier with id: "+id);
         }
     }
     public String getValidEmail(){
@@ -660,8 +630,6 @@ public class Cli {
 
         reader.nextLine();
         HashMap<Integer, SupplierProductService> items = new HashMap<>();
-//        if (keepAdding == 1)
-//            printAllProducts();
         while (keepAdding == 1) {
             SupplierProductService newProduct = createProduct();
             items.put(newProduct.getProductId(), newProduct);
@@ -713,8 +681,7 @@ public class Cli {
             int key = Integer.parseInt(val[0]);
             double value = Double.parseDouble(val[1]);
             discounts.put(key, value);}
-        SupplierProductService newProduct = new SupplierProductService(name, productId, catalogNumber, price, amount, discounts, manufacturer, expirationDays, weight);
-        return newProduct;
+        return new SupplierProductService(name, productId, catalogNumber, price, amount, discounts, manufacturer, expirationDays, weight);
     }
 
 
@@ -743,27 +710,6 @@ public class Cli {
         }
         return "";
     }
-//    private ArrayList<ServiceContact> createContacts() {
-//        ArrayList<ServiceContact> contactList = new ArrayList<>();
-//        int keepAdding = 1;
-//        while (keepAdding == 1) {
-//            print("Please enter a contact name");
-//            String nameC = reader.nextLine();
-//            print("Please enter " + nameC + "'s email");
-//            String email = reader.nextLine();
-//            while (!serviceContact.isValidEmail(email)) {
-//                print("not a valid email. please enter a legal email address");
-//                email = reader.nextLine();
-//            }
-//            print("Please enter " + nameC + "'s phone number");
-//            String phone = reader.nextLine();
-//            contactList.add(new ServiceContact(nameC, email, phone));
-//            print("Would you like to add another contact? \n1. Yes\n2. No");
-//            keepAdding = reader.nextInt();
-//            reader.nextLine();
-//        }
-//        return contactList;
-//    }
 
     private ArrayList<ServiceContact> createContacts() {
         ArrayList<ServiceContact> contactList = new ArrayList<>();
