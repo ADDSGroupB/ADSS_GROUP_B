@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="false" />
+    <value-preview-text-wrapping value="true" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DatabaseBrowserManager">
@@ -12,7 +12,7 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="42eb445d-abab-46fa-93c7-18aa3856e8d0">
+    <connection id="587609b3-1f74-4340-8ec1-7ff406f5ccac">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
@@ -22,29 +22,13 @@
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
-  <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Branches" active-filter-id="" />
-    <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Items" active-filter-id="" />
-    <filter-actions connection-id="42eb445d-abab-46fa-93c7-18aa3856e8d0" dataset="main.Products" active-filter-id="" />
-  </component>
-  <component name="DBNavigator.Project.ExecutionManager">
-    <retain-sticky-names value="false" />
-  </component>
-  <component name="DBNavigator.Project.MethodExecutionManager">
-    <method-browser />
-    <execution-history>
-      <group-entries value="true" />
-      <execution-inputs />
-    </execution-history>
-    <argument-values-cache />
-  </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
     <filters />
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="42eb445d-abab-46fa-93c7-18aa3856e8d0" active="true" signed="true">
+      <connection id="587609b3-1f74-4340-8ec1-7ff406f5ccac" active="true" signed="true">
         <database>
           <name value="Connection" />
           <description value="" />
@@ -52,7 +36,7 @@
           <config-type value="BASIC" />
           <database-version value="3.39" />
           <driver-source value="BUILTIN" />
-          <driver-library value="$PROJECT_DIR$/release" />
+          <driver-library value="" />
           <driver value="" />
           <url-type value="FILE" />
           <host value="" />

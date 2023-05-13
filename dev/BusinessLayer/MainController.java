@@ -1,119 +1,52 @@
 package BusinessLayer;
 
-import DataAccess.BranchesDao;
-import DataAccess.BranchesDaoImpl;
-import DataAccess.CategoryDao;
-import DataAccess.CategoryDaoImpl;
+import DataAccess.*;
 
 import java.sql.SQLException;
 import java.util.*;
 
 public class MainController {
-    private Map<Integer, Branch> branchMap;
-    private Map<Integer, Category> categoryMap;
-    private Map<Integer, Product> productMap;
     private CategoryController categoryController;
     private ProductController productController;
     private BranchController branchController;
     private BranchesDao branchesDao;
     private CategoryDao categoryDao;
-
+    private ItemsDao itemsDao;
+    private ProductMinAmountDao productMinAmountDao;
+    private ProductsDao productsDao;
+    private ReportDao reportDao;
 
     public MainController() {
-        this.categoryMap = new HashMap<>();
-        this.productMap = new HashMap<>();
-        this.branchMap = new HashMap<>();
         this.branchController = new BranchController();
         this.categoryController = new CategoryController(this);
         this.productController = new ProductController(this);
         try {
             this.branchesDao = new BranchesDaoImpl();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             this.categoryDao = new CategoryDaoImpl();
+            this.itemsDao = new ItemsDaoImpl();
+            this.productMinAmountDao = new ProductMinAmountDaoImpl();
+            this.productsDao = new ProductsDaoImpl();
+            this.reportDao = new ReportDaoImpl();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
-///////////////// DAO GETTERS ///////////////////////
     public BranchesDao getBranchesDao() {return branchesDao;}
     public CategoryDao getCategoryDao() {return categoryDao;}
-    /////////////////////////////////////////////////////////////////////
+    public ItemsDao getItemsDao() {return itemsDao;}
+    public ProductMinAmountDao getProductMinAmountDao() {return productMinAmountDao;}
+    public ProductsDao getProductsDao() {return productsDao;}
+    public ReportDao getReportDao() {return reportDao;}
     public BranchController getBranchController() {
         return branchController;
     }
-
-    public Map<Integer, Branch> getBranchMap() {
-        return branchMap;
-    }
-
     public ProductController getProductController() {
         return productController;
     }
-
-    public Map<Integer, Product> getProductMap() {
-        return productMap;
-    }
-
     public CategoryController getCategoryController() {
         return categoryController;
     }
 
-    public Map<Integer, Category> getCategoryMap() {
-        return categoryMap;
-    }
-
-    public void updateCategory() {
-        if (branchMap.size() == 0) {
-            return;
-        }
-        for (Branch branch : branchMap.values()) {
-            for (Category category : this.getCategoryMap().values())
-            {
-                if (!branch.getCategoryDiscount().containsKey(category)) {
-                    ArrayList<Discount> categoryDiscount = new ArrayList<>();
-                    branch.getCategoryDiscount().put(category, categoryDiscount);
-                }
-            }
-        }
-    }
-    public void updateProductInMapsInBranch() {
-        if (this.getBranchMap().size() == 0) {
-            return;
-        }
-        for (Branch branch : this.getBranchMap().values()) {
-            for (Product p : this.getProductMap().values()) {
-                if (!branch.getItemsInStore().containsKey(p)) {
-                    Queue<Item> itemQueueStore = new LinkedList<>();
-                    branch.getItemsInStore().put(p, itemQueueStore);
-                }
-                if (!branch.getItemsInStorage().containsKey(p)) {
-                    Queue<Item> itemQueueStorage = new LinkedList<>();
-                    branch.getItemsInStorage().put(p, itemQueueStorage);
-                }
-                if (!branch.getSoldItems().containsKey(p)) {
-                    Queue<Item> itemQueueSold = new LinkedList<>();
-                    branch.getSoldItems().put(p, itemQueueSold);
-                }
-                if (!branch.getDemagedItems().containsKey(p)) {
-                    Queue<Item> itemQueueDamaged = new LinkedList<>();
-                    branch.getDemagedItems().put(p, itemQueueDamaged);
-                }
-                if (!branch.getExpiredItems().containsKey(p)) {
-                    Queue<Item> itemQueueExpired = new LinkedList<>();
-                    branch.getExpiredItems().put(p, itemQueueExpired);
-                }
-                if (!branch.getProductDiscount().containsKey(p)) {
-                    ArrayList<Discount> productDiscount = new ArrayList<>();
-                    branch.getProductDiscount().put(p, productDiscount);
-                }
-
-            }
-        }
-    }
 }
 
 

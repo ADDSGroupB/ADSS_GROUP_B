@@ -17,11 +17,9 @@ public class CategoryDaoImpl implements CategoryDao {
         connection = DBConnector.connect();
         categoryMapFromDB = new HashMap<>();
     }
-
     public Map<Integer, Category> getCategoryMapFromDB() {
         return categoryMapFromDB;
     }
-
     @Override
     public List<Category> getAllCategories() throws SQLException {
         List<Category> categories = new ArrayList<>();
@@ -105,7 +103,6 @@ public class CategoryDaoImpl implements CategoryDao {
         }
 
     }
-
     public Category updateCategoryName(int categoryID, String categoryNewName) throws SQLException {
         Category category;
         PreparedStatement statement = null;
@@ -130,4 +127,24 @@ public class CategoryDaoImpl implements CategoryDao {
         }
 
     }
+    public boolean checkNewCategoryName(String newCategoryName)throws SQLException
+    {
+        PreparedStatement preparedStatement =null;
+        ResultSet rs =null;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT * FROM Categories WHERE CategoryName = ? ");
+            preparedStatement.setString(1,newCategoryName);
+            rs = preparedStatement.executeQuery();
+            return !rs.next();
+        }
+        catch (Exception e){
+            System.out.println("Error while trying to check if the category name exist: " + e.getMessage());
+            return false;
+        }
+        finally {
+            if (preparedStatement!=null){preparedStatement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
+
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductMinAmountDao {
-
     public Integer getMinAmountOfProductByBranch(int productID,int branchID) throws SQLException;
     public Map<Product,Integer> getMinOfAllProductsByBranchID(int branchID)throws SQLException;
     public String getOrderStatusByProductInBranch(int productID,int branchID)throws SQLException;

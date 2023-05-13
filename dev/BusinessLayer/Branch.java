@@ -5,7 +5,6 @@ import java.util.*;
 
 public class Branch {
     // Static variable to keep track of the last assigned ID
-    private static int lastAssignedId = 1;
     private final int BranchID;
     private String BranchName;
     private static int MinItemsInShelf = 4;
@@ -20,23 +19,6 @@ public class Branch {
     private Map<Product, Integer> MinProductAmount;
     private BranchReportManager branchReportManager;
 
-    // Maybe i dont need this constructor -->  public Branch(String name)
-
-//    public Branch(String name) {
-//        this.BranchID = lastAssignedId; // get
-//        Branch.lastAssignedId++;
-//        this.BranchName = name;// get
-//        this.ProductDiscount = new HashMap<>();// get
-//        this.CategoryDiscount = new HashMap<>();// get
-//        this.ItemsInStore = new HashMap<>();// get
-//        this.ItemsInStorage = new HashMap<>();// get
-//        this.SoldItems = new HashMap<>();// get
-//        this.ExpiredItems = new HashMap<>();// get + set
-//        this.DemagedItems = new HashMap<>();// get + set
-//        this.MinProductAmount = new HashMap<>();// get
-//        this.branchReportManager = new BranchReportManager();// get
-//    }
-
     public Branch(int branchID,String name) {
         this.BranchID = branchID;
         this.BranchName = name;// get
@@ -50,65 +32,28 @@ public class Branch {
         this.MinProductAmount = new HashMap<>();// get
         this.branchReportManager = new BranchReportManager();// get
     }
-
     ///////////////// getters ////////////////////////
-    public static void setLastAssignedId(int lastAssignedId) {
-        Branch.lastAssignedId = lastAssignedId;
-    }
     public int getBranchID() {
         return BranchID;
     }
-
     public String getBranchName() {
         return BranchName;
     }
-
-    public Map<Product, ArrayList<Discount>> getProductDiscount() {
-        return ProductDiscount;
-    }
-
-    public Map<Category, ArrayList<Discount>> getCategoryDiscount() {
-        return CategoryDiscount;
-    }
-
-    public Map<Product, Queue<Item>> getItemsInStore() {
-        return ItemsInStore;
-    }
-
-    public Map<Product, Queue<Item>> getItemsInStorage() {
-        return ItemsInStorage;
-    }
-
-    public Map<Product, Queue<Item>> getSoldItems() {
-        return SoldItems;
-    }
-
-    public Map<Product, Queue<Item>> getExpiredItems() {
-        return ExpiredItems;
-    }
-
-    public Map<Product, Queue<Item>> getDemagedItems() {
-        return DemagedItems;
-    }
-
-    public Map<Product, Integer> getMinProductAmount() {
-        return MinProductAmount;
-    }
-
+    public Map<Product, ArrayList<Discount>> getProductDiscount() {return ProductDiscount;}
+    public Map<Category, ArrayList<Discount>> getCategoryDiscount() {return CategoryDiscount;}
+    public Map<Product, Queue<Item>> getItemsInStore() {return ItemsInStore;}
+    public Map<Product, Queue<Item>> getItemsInStorage() {return ItemsInStorage;}
+    public Map<Product, Queue<Item>> getSoldItems() {return SoldItems;}
+    public Map<Product, Queue<Item>> getExpiredItems() {return ExpiredItems;}
+    public Map<Product, Queue<Item>> getDemagedItems() {return DemagedItems;}
+    public Map<Product, Integer> getMinProductAmount() {return MinProductAmount;}
     public BranchReportManager getBranchReportManager() {
         return branchReportManager;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /////////////////////setters/////////////////////////////////////////////
-    public void setDemagedItems(Map<Product, Queue<Item>> demagedItems) {
-        DemagedItems = demagedItems;
-    }
-
-    public void setExpiredItems(Map<Product, Queue<Item>> expiredItems) {
-        ExpiredItems = expiredItems;
-    }
+    public void setDemagedItems(Map<Product, Queue<Item>> demagedItems) {DemagedItems = demagedItems;}
+    public void setExpiredItems(Map<Product, Queue<Item>> expiredItems) {ExpiredItems = expiredItems;}
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void addItemToMapOfItems(Map<Product, Queue<Item>> map, Product product, Item item) {// function that add item to the maps :ItemsInStore,ItemsInStorage,SoldItems,ExpiredItems ,DemagedItems
@@ -349,16 +294,16 @@ public class Branch {
         return productIDArray;
     }
 
-    public void fromSupplierToStorage(Product product, int quantity, int branchID, LocalDate arrivalDate, LocalDate Expireddate, double pricefromsupplier, double priceinbranch, int supplierID) {
-        for (int i = 0; i < quantity; i++) {
-            Item item;
-            if (Expireddate == null) {
-                item = new Item(branchID, pricefromsupplier, arrivalDate, priceinbranch, supplierID, product);
-            } else {
-                item = new Item(branchID, Expireddate, arrivalDate, pricefromsupplier, priceinbranch, supplierID, product);
-            }
-            addItemToMapOfItems(ItemsInStorage, product, item);
-        }
-        checkProductAmountInShelfToMoveItems(product);
-    }
+//    public void fromSupplierToStorage(Product product, int quantity, int branchID, LocalDate arrivalDate, LocalDate Expireddate, double pricefromsupplier, double priceinbranch, int supplierID) {
+//        for (int i = 0; i < quantity; i++) {
+//            Item item;
+//            if (Expireddate == null) {
+//                item = new Item(branchID, pricefromsupplier, arrivalDate, priceinbranch, supplierID, product);
+//            } else {
+//                item = new Item(branchID, Expireddate, arrivalDate, pricefromsupplier, priceinbranch, supplierID, product);
+//            }
+//            addItemToMapOfItems(ItemsInStorage, product, item);
+//        }
+//        checkProductAmountInShelfToMoveItems(product);
+//    }
 }

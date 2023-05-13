@@ -114,9 +114,9 @@ public class BranchController {
         }
     }
 
-    public void addItems(Branch branch,Product product,int quantity,int BranchID, LocalDate date, double priceFromSupplier,double priceInBranch,int supplierID) {
-        branch.fromSupplierToStorage(product, quantity, branch.getBranchID(),LocalDate.now() ,date, priceFromSupplier, priceInBranch, supplierID);
-    }
+//    public void addItems(Branch branch,Product product,int quantity,int BranchID, LocalDate date, double priceFromSupplier,double priceInBranch,int supplierID) {
+//        branch.fromSupplierToStorage(product, quantity, branch.getBranchID(),LocalDate.now() ,date, priceFromSupplier, priceInBranch, supplierID);
+//    }
 
     public boolean checkDamagedItem(Branch branch,Product product,int itemIDdefective) {
         boolean checkInStore = false;

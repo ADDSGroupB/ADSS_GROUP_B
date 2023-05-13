@@ -2,65 +2,19 @@ package BusinessLayer;
 
 import java.time.LocalDate;
 public class Item {
-
-    // Static variable to keep track of the last assigned ID
-    private static int lastAssignedId = 1;
-    private final int ItemID;//
-    private int SupplierID;//
-    private int BranchID;//
-    private int ProductID;//
-    private LocalDate ExpiredDate;//
-    private LocalDate ArrivalDate;//
-    private String DefectiveDiscription; // Maybe call it Comment
-    private double PriceFromSupplier;//
-    private double PriceInBranch;//
+    private final int ItemID;
+    private int SupplierID;
+    private int BranchID;
+    private int ProductID;
+    private LocalDate ExpiredDate;
+    private LocalDate ArrivalDate;
+    private String DefectiveDiscription;
+    private double PriceFromSupplier;
+    private double PriceInBranch;
     private StatusEnum StatusType;
-    private double priceAfterDiscount;//
+    private double priceAfterDiscount;
     private Product product;
 
-    // constructor for items with expired date
-    public Item(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier , double priceInBranch , int supplierID, Product product)
-    {
-        this.ItemID = lastAssignedId;
-        this.BranchID = branchID;
-        this.ProductID = product.getProductID();
-        this.PriceFromSupplier=priceFromSupplier;
-        this.PriceInBranch = priceInBranch;
-        this.SupplierID = supplierID;
-        this.ExpiredDate = expiredDate;
-        this.ArrivalDate = arrivalDate;
-        this.priceAfterDiscount = priceInBranch;
-        this.product = product;
-        Item.lastAssignedId++;
-    }
-    // constructor for items without expired date
-    public Item(int branchID,double priceFromSupplier , LocalDate arrivalDate,double priceInBranch ,int supplierID,Product product)
-    {
-        this.ItemID = lastAssignedId;
-        this.BranchID = branchID;
-        this.ProductID = product.getProductID();
-        this.PriceFromSupplier=priceFromSupplier;
-        this.PriceInBranch = priceInBranch;
-        this.SupplierID = supplierID;
-        this.priceAfterDiscount = priceInBranch;
-        this.ArrivalDate = arrivalDate;
-        this.product = product;
-        Item.lastAssignedId++;
-    }
-    // constructor for items without expired date and with item id
-    public Item(int itemID ,int branchID, LocalDate arrivalDate,double priceFromSupplier ,double priceInBranch ,int supplierID,Product product)
-    {
-        this.ItemID = itemID;
-        this.BranchID = branchID;
-        this.ProductID = product.getProductID();
-        this.PriceFromSupplier=priceFromSupplier;
-        this.PriceInBranch = priceInBranch;
-        this.SupplierID = supplierID;
-        this.priceAfterDiscount = priceInBranch;
-        this.ArrivalDate = arrivalDate;
-        this.product = product;
-    }
-    // constructor for items with expired date and wit item id
     public Item(int itemID,int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier , double priceInBranch ,int supplierID, Product product)
     {
         this.ItemID = itemID;
@@ -77,7 +31,6 @@ public class Item {
 
 
     public Product getProduct() {return product;}
-
     public int getBranchID() {
         return BranchID;
     }

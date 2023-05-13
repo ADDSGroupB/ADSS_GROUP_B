@@ -21,6 +21,7 @@ public class ItemsDaoImpl implements ItemsDao{
         itemsMapFromDB = new HashMap<>();
         productsDao = new ProductsDaoImpl();
     }
+    public Map<Integer, Item> getItemsMapFromDB() {return itemsMapFromDB;}
     @Override
     public List<Item> getAllItems() throws SQLException {
         List<Item> items = new ArrayList<>();
@@ -83,7 +84,7 @@ public class ItemsDaoImpl implements ItemsDao{
                 }
                 else
                 {
-                    item = new Item(itemID,branchID,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
+                    item = new Item(itemID,branchID,null,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
                 }
                 item.setDefectiveDiscription(defectiveDiscription);
                 switch (status) {
@@ -92,13 +93,11 @@ public class ItemsDaoImpl implements ItemsDao{
                     case "Store" -> item.setStatusType(StatusEnum.Store);
                     case "Storage" -> item.setStatusType(StatusEnum.Storage);
                     case "Sold" -> item.setStatusType(StatusEnum.Sold);
-                    //TODO : CHECK WHAT TO DO BECAUSE IT CANT BE NULL
                     default -> item.setStatusType(null);
                 }
                 itemsMapFromDB.put(itemID,item);
             }
             return item;
-
         }
         catch (Exception e) {
             System.out.println("Error while getting item: " + e.getMessage());
@@ -108,9 +107,8 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-
     @Override
-    public Item addItemWithExpiredDate(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
+    public Item addItem(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
         PreparedStatement statement = null;
         ResultSet rs = null;
         Item item ;
@@ -119,7 +117,8 @@ public class ItemsDaoImpl implements ItemsDao{
             statement.setInt(1,branchID);
             statement.setInt(2,product.getProductID());
             statement.setInt(3,supplierID);
-            statement.setString(4,expiredDate.toString());
+            if (expiredDate != null) {statement.setString(4, expiredDate.toString());}
+            else {statement.setString(4, null);}
             statement.setDouble(5,priceFromSupplier);
             statement.setDouble(6,priceInBranch);
             statement.setDouble(7,priceInBranch);
@@ -133,7 +132,7 @@ public class ItemsDaoImpl implements ItemsDao{
             return item;
         }
         catch (Exception e) {
-            System.out.println("Error while trying to add new item with expired date: " + e.getMessage());
+            System.out.println("Error while trying to add new item: " + e.getMessage());
             return null;
         } finally {
             if (statement != null) {statement.close();}
@@ -141,38 +140,6 @@ public class ItemsDaoImpl implements ItemsDao{
         }
 
     }
-
-    @Override
-    public Item addItemWithoutExpiredDate( int branchID, LocalDate arrivalDate ,double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
-        PreparedStatement statement = null;
-        ResultSet rs = null;
-        Item item ;
-        try {
-            statement = connection.prepareStatement("INSERT INTO Items (BranchID, ProductID, SupplierID, PriceFromSupplier, PriceInBranch,PriceAfterDiscount,Status,ArrivalDate) VALUES(?,?,?,?,?,?,?,?)");
-            statement.setInt(1,branchID);
-            statement.setInt(2,product.getProductID());
-            statement.setInt(3,supplierID);
-            statement.setDouble(4,priceFromSupplier);
-            statement.setDouble(5,priceInBranch);
-            statement.setDouble(6,priceInBranch);
-            statement.setString(7,"Storage");
-            statement.setString(8,arrivalDate.toString());
-            statement.executeUpdate();
-            rs = connection.createStatement().executeQuery("SELECT MAX(ItemID) FROM Items");
-            int last_ID = rs.getInt(1);
-            item = new Item(last_ID,branchID,arrivalDate,priceFromSupplier,priceInBranch,supplierID,product);
-            itemsMapFromDB.put(item.getItemID(),item);
-            return item;
-        }
-        catch (Exception e) {
-            System.out.println("Error while trying to add new item without expired date: " + e.getMessage());
-            return null;
-        } finally {
-            if (statement != null) {statement.close();}
-            if (rs != null) {rs.close();}
-        }
-    }
-
     @Override
     public Item updateItemStatus(int itemID, String status) throws SQLException {
         Item item ;
@@ -202,7 +169,6 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-
     @Override
     public Item updateItemPriceAfterDiscount(int itemID, double priceAfterDiscount) throws SQLException {
         Item item;

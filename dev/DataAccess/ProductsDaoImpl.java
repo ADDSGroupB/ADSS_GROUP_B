@@ -13,8 +13,6 @@ public class ProductsDaoImpl implements ProductsDao {
     private Connection connection;
     private CategoryDao categoryDao;
     private Map<Integer, Product> productMapFromDB;
-
-
     public ProductsDaoImpl() throws SQLException {
         connection = DBConnector.connect();
         categoryDao = new CategoryDaoImpl();
@@ -55,7 +53,6 @@ public class ProductsDaoImpl implements ProductsDao {
             if (rs != null){rs.close();}
             if (statement != null){statement.close();}
         }
-
     }
     @Override
     public Product getProductByID(int productID) throws SQLException {
@@ -121,8 +118,53 @@ public class ProductsDaoImpl implements ProductsDao {
             if (preparedStatement!=null){preparedStatement.close();}
             if (rs != null) {rs.close();}
         }
-
     }
-
-
+    public boolean checkNewName(String newProductName,String manufacturer)throws SQLException
+    {
+        PreparedStatement preparedStatement =null;
+        ResultSet rs =null;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT * FROM Products WHERE ProductName = ? And Manufacturer = ?");
+            preparedStatement.setString(1,newProductName);
+            preparedStatement.setString(2,manufacturer);
+            rs = preparedStatement.executeQuery();
+            return !rs.next();
+        }
+        catch (Exception e){
+            System.out.println("Error while trying to check if the product name exist: " + e.getMessage());
+            return false;
+        }
+        finally {
+            if (preparedStatement!=null){preparedStatement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
+    public List<Product> getAllProductsInCategory(int categoryID) throws SQLException
+    {
+        List<Product> productsInCategory = new ArrayList<>();
+        PreparedStatement preparedStatement =null;
+        ResultSet rs =null;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT * FROM Products WHERE ParentCategory = ? OR SubCategory = ? OR SubSubCategory =?");
+            preparedStatement.setInt(1,categoryID);
+            preparedStatement.setInt(2,categoryID);
+            preparedStatement.setInt(3,categoryID);
+            rs = preparedStatement.executeQuery();
+            while (rs.next())
+            {
+                int productID = rs.getInt(1);
+                Product product = getProductByID(productID);
+                productsInCategory.add(product);
+            }
+            return productsInCategory;
+        }
+        catch (Exception e){
+            System.out.println("Error while trying to get all products in category: " + e.getMessage());
+            return null;
+        }
+        finally {
+            if (preparedStatement!=null){preparedStatement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
 }
