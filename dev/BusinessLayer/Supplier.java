@@ -5,6 +5,7 @@ import Utillity.Pair;
 
 //import java.awt.geom.Area;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -299,6 +300,63 @@ public class Supplier {
             totalAmount+=p.getSecond();
         }
         return totalAmount;
+    }
+
+    public int numberOfProductsCanSupply (HashMap<Integer, Integer> products){
+        int count = 0 ;
+        for (Map.Entry<Integer, Integer> entry : products.entrySet()) {
+            if (agreement.getSupllyingProducts().containsKey(entry))
+                count++;
+        }
+        return count;
+
+    }
+    public double calculatePricePerProduct (int productId, int amountToOrder) {
+        Pair<Integer, Integer> productAndAmount = new Pair<>(productId, amountToOrder);
+        ArrayList<Pair<Integer, Integer>> toCalculate = new ArrayList<>();
+        toCalculate.add(productAndAmount);
+
+        return calculatePriceAfterDiscount(toCalculate);
+    }
+
+    public double getProductPrice (int productId){
+        return getSupplyingProducts().get(productId).getPrice();
+    }
+
+    public int getSupplierClosestDaysToDelivery(){
+        ArrayList<Integer> daysInInt = new ArrayList<>();
+        Agreement a1 = getAgreement();
+        if(a1.getSupplyDays() != null  && a1.getSupplyDays().size() > 0){
+            for(DayOfWeek date: a1.getSupplyDays()){
+                if(date.getValue() - LocalDate.EPOCH.getDayOfMonth() > 0){
+                    daysInInt.add(date.getValue() - LocalDate.EPOCH.getDayOfMonth());
+                }
+                else {
+                    daysInInt.add((LocalDate.EPOCH.getDayOfMonth() + 7) - date.getValue());
+                }
+            }
+            return getMinimum(daysInInt);
+        }
+        return a1.getSupplyTime();
+    }
+
+    public int getMinimum(ArrayList<Integer> numbers) {
+
+        int min = Integer.MAX_VALUE;
+        for (int number : numbers) {
+            if (number < min) {
+                min = number;
+            }
+        }
+        return min;
+    }
+
+    public int getAmountByProduct (int productId){
+        return getSupplyingProducts().get(productId).getAmount();
+    }
+
+    public String getContactPhoneNumber(){
+        return contacts.get(0).getPhoneNumber();
     }
 
 

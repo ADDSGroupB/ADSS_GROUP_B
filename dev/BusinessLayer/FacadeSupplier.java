@@ -120,13 +120,16 @@ public class FacadeSupplier {
         return supplierController.removeDiscount(supplierId, productId, ammount, discount);
     }
 
-    public Response createAnOrder(HashMap<Integer, Integer> shortage) {
-        Response res = supplierController.findSuppliersForOrder(shortage);
-        if(res.errorOccurred()){
-            return res;
-        }
-        orderController.createOrder(res);
-        return new Response();
+    public Response createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) {
+        //Response res = supplierController.findSuppliersForOrder(shortage);
+        ArrayList<ArrayList<Supplier>> supplierstoOrder = supplierController.findFastestSuppliers(shortage);
+//        if(res.errorOccurred()){
+//            return res;
+//        }
+//        orderController.createOrderByShortage(res);
+        return orderController.createOrderByShortage(supplierstoOrder, branchId ,shortage);
+        //return new Response();
+
     }
 
     public void printOrders() {

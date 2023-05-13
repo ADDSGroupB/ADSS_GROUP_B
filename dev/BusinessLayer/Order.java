@@ -5,8 +5,7 @@ import Utillity.Pair;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
-public class Order
-{
+public class Order {
     private static int id = 1;
 
     private String supplierName;
@@ -17,55 +16,47 @@ public class Order
     private boolean collected;
     private LocalDate deliveryDate;
     private String contactPhoneNumber;
-    private LocalDate orderDate;
-    private ArrayList<Pair<SupplierProduct,Integer>> productsInOrder;
+    private LocalDate creationDate;
+    private ArrayList<Pair<SupplierProduct, Integer>> productsInOrder;
     private ArrayList<SupplierProduct> ItemsInOrder;
+
+
 
     private double totalPriceBeforeDiscount;
     private double totalPriceAfterDiscount;
 
 
-
-    public Order(String supplierName, String supplierAddress, int supplierId ,String contactPhoneNumber, ArrayList<Pair<SupplierProduct,Integer>> productsInOrder, double totalPriceBeforeDiscount, double totalPriceAfterDiscount)
-    {
+    public Order(String supplierName, String supplierAddress, int supplierId, String contactPhoneNumber, ArrayList<Pair<SupplierProduct, Integer>> productsInOrder, double totalPriceBeforeDiscount, double totalPriceAfterDiscount, LocalDate deliveryDate, int branchID) {
         this.orderID = id++;
         this.supplierName = supplierName;
         this.supplierAddress = supplierAddress;
         this.supplierId = supplierId;
         this.contactPhoneNumber = contactPhoneNumber;
-        this.orderDate = LocalDate.now();
+        this.creationDate = LocalDate.now();
         this.productsInOrder = productsInOrder;
         this.totalPriceBeforeDiscount = totalPriceBeforeDiscount;
         this.totalPriceAfterDiscount = totalPriceAfterDiscount;
-    }
-
-    public Order(int orderID, int supplierID, int branchID, LocalDate orderDate, LocalDate deliveryDate, boolean collected, double totalPriceBeforeDiscount, double totalPriceAfterDiscount) {
-        this.orderID = orderID;
-        this.supplierId = supplierID;
-        this.branchID = branchID;
-        this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
-        this.collected = collected;
-        this.totalPriceBeforeDiscount = totalPriceBeforeDiscount;
-        this.totalPriceAfterDiscount = totalPriceAfterDiscount;
+        this.collected = false;
+        this.branchID = branchID;
     }
 
     @Override
-    public String toString(){
-        String s ="";
-        s+="OrderId: " + orderID + ", date: " + orderDate +  "\n";
-        s+="Supplier's details: \n";
-        s+="Supplier name: " + supplierName +", supplier address: " + supplierAddress + ", supplierId: " + supplierId + ", supplier's contact phone number: " + contactPhoneNumber + "\n";
-        s+="Products details: \n";
-        for(Pair<SupplierProduct, Integer> p : productsInOrder){
+    public String toString() {
+        String s = "";
+        s += "OrderId: " + orderID + ", date: " + creationDate + "\n";
+        s += "Supplier's details: \n";
+        s += "Supplier name: " + supplierName + ", supplier address: " + supplierAddress + ", supplierId: " + supplierId + ", supplier's contact phone number: " + contactPhoneNumber + "\n";
+        s += "Products details: \n";
+        for (Pair<SupplierProduct, Integer> p : productsInOrder) {
             int productId = p.getFirst().getProductID();
             String productName = p.getFirst().getName();
             int amount = p.getSecond();
             double productPrice = p.getFirst().getPrice();
-            s = s + "productId: " + productId +", product name: " + productName +", amount: " +amount +", price: " + productPrice +"\n";
+            s = s + "productId: " + productId + ", product name: " + productName + ", amount: " + amount + ", price: " + productPrice + "\n";
         }
-        s+="Total price before discount: " + totalPriceBeforeDiscount +"\n";
-        s+="Total price after discount: " + totalPriceAfterDiscount +"\n";
+        s += "Total price before discount: " + totalPriceBeforeDiscount + "\n";
+        s += "Total price after discount: " + totalPriceAfterDiscount + "\n";
         return s;
     }
 
@@ -141,13 +132,6 @@ public class Order
         this.contactPhoneNumber = contactPhoneNumber;
     }
 
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
-    }
 
     public ArrayList<Pair<SupplierProduct, Integer>> getProductsInOrder() {
         return productsInOrder;
@@ -179,5 +163,13 @@ public class Order
 
     public void setTotalPriceAfterDiscount(double totalPriceAfterDiscount) {
         this.totalPriceAfterDiscount = totalPriceAfterDiscount;
+    }
+
+    public void setIsPlaced() {
+        this.collected = true;
+    }
+
+    public boolean isPlaced() {
+        return collected;
     }
 }

@@ -74,8 +74,8 @@ public class SupplierService {
         return facadeSupplier.removeDiscounts(supplierId, productId, ammount, discount);
     }
 
-    public void createAnOrder(HashMap<Integer, Integer> shortage) {
-        facadeSupplier.createAnOrder(shortage);
+    public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) {
+        facadeSupplier.createOrderByShortage(branchId ,shortage);
     }
 
     public void printOrders() {

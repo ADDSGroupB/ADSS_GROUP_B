@@ -57,17 +57,17 @@ public class Cli {
                 switch (choose) {
                     case 1 -> {
                         valid = true;
-                        supplierService.createAnOrder(shortage.get(0));
+                        supplierService.createOrderByShortage(1 ,shortage.get(0));
                         printOrders();
                     }
                     case 2 -> {
                         valid = true;
-                        supplierService.createAnOrder(shortage.get(1));
+                        supplierService.createOrderByShortage(1 ,shortage.get(1));
                         printOrders();
                     }
                     case 3 -> {
                         valid = true;
-                        supplierService.createAnOrder(shortage.get(2));
+                        supplierService.createOrderByShortage(1 ,shortage.get(2));
                         printOrders();
                     }
                     case 0 -> start();

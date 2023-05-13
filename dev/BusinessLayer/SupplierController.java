@@ -6,10 +6,7 @@ import Utillity.Pair;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class SupplierController {
 //    private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
@@ -391,6 +388,46 @@ public class SupplierController {
     public Supplier getSupllierByID(int id)
     {
         return supplierDAO.getSupplierByID(id);
+    }
+
+    public ArrayList<ArrayList<Supplier>> findFastestSuppliers(HashMap<Integer, Integer> products) {
+        HashMap<Integer, Supplier> copyOfSuppliers = new HashMap<>(supplierDAO.getAllSuppliers());
+        // ArrayList<Supplier> fastestSuppliers = new ArrayList<>();
+        ArrayList<ArrayList<Supplier>> sortedSuppliers = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : products.entrySet()) {
+            int productId = entry.getKey();
+            int amountLeftToOrder = entry.getValue();
+            ArrayList<Supplier> supplierCanSupply = new ArrayList<>();
+            for (Map.Entry<Integer, Supplier> e : copyOfSuppliers.entrySet()) {
+                Supplier currSup = e.getValue();
+                if (currSup.getSupplyingProducts().containsKey(entry.getKey()))
+                    supplierCanSupply.add(currSup);
+            }
+            SuppliersComparator c = new SuppliersComparator();
+            supplierCanSupply.sort(c);
+
+            for (int i = 0; i < supplierCanSupply.size() ; i++) {
+                Supplier currSup = supplierCanSupply.get(i);
+                amountLeftToOrder = Math.max(amountLeftToOrder - currSup.getAmountByProduct(productId), 0);
+                for (int j = 0; j<i; j++ ){
+                    Supplier prevSup = supplierCanSupply.get(j);
+                    if (currSup.getSupplierClosestDaysToDelivery() == prevSup.getSupplierClosestDaysToDelivery()) {
+                        if (currSup.getAmountByProduct(productId) > prevSup.getAmountByProduct(productId)) {
+                            Collections.swap(supplierCanSupply, i, j);
+                        }
+                        if (currSup.getAmountByProduct(productId) == prevSup.getAmountByProduct(productId)) {
+                            if (currSup.calculatePricePerProduct(productId, amountLeftToOrder) < prevSup.calculatePricePerProduct(productId, amountLeftToOrder)){
+                                Collections.swap(supplierCanSupply, i, j);
+                            }
+                        }
+                    }
+
+                }
+            }
+            sortedSuppliers.add(supplierCanSupply);
+
+        }
+        return sortedSuppliers;
     }
 
 
