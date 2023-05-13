@@ -39,6 +39,20 @@ public class SupplierProduct
         this.discountPerAmount = discountPerAmount;
     }
 
+    public SupplierProduct(SupplierProduct supplierProduct)
+    {
+        this.name = supplierProduct.name;
+        this.supplierId = supplierProduct.supplierId;
+        this.catalogID = supplierProduct.catalogID;
+        this.productID = supplierProduct.productID;
+        this.price = supplierProduct.price;
+        this.manufacturer = supplierProduct.manufacturer;
+        this.expirationDays = supplierProduct.expirationDays;
+        this.weight = supplierProduct.weight;
+        this.discountPerAmount = supplierProduct.discountPerAmount;
+        this.amount = supplierProduct.amount;
+    }
+
     public SupplierProduct(){
     }
 
@@ -128,6 +142,14 @@ public class SupplierProduct
 
     public void setDiscountPerAmount(HashMap<Integer, Double> discountPerAmount) {
         this.discountPerAmount = discountPerAmount;
+    }
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+
+    public int getCatalogID() {
+        return catalogID;
     }
 }
 

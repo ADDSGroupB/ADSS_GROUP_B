@@ -200,27 +200,7 @@ public class AgreementDAO implements iAgreementDAO{
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
-    private static ArrayList<DayOfWeek> getDaysFromString(String days)
-    {
-        ArrayList<DayOfWeek> daysOfWeek= new ArrayList<>();
-        String[] daysArray = days.split(", ");
-        for (String day : daysArray) {
-            if (!Objects.equals(day, "None")) return null;
-            daysOfWeek.add(DayOfWeek.valueOf(day.toUpperCase()));
-        }
-        return daysOfWeek;
-    }
 
-    private static String getStringFromDays(ArrayList<DayOfWeek> daysOfWeek) {
-        if (daysOfWeek == null || daysOfWeek.isEmpty()) {
-            return "None";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (DayOfWeek day : daysOfWeek) {
-            sb.append(day.toString()).append(", ");
-        }
-        return sb.substring(0, sb.length() - 2);
-    }
 
     public Response addSupplierProducts(int supplierID, Map<Integer, SupplierProduct> supllyingProducts)
     {

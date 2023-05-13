@@ -13,9 +13,13 @@ public class Order
     private String supplierAddress;
     private int supplierId;
     private int orderID;
+    private int branchID;
+    private boolean collected;
+    private LocalDate deliveryDate;
     private String contactPhoneNumber;
     private LocalDate orderDate;
     private ArrayList<Pair<SupplierProduct,Integer>> productsInOrder;
+    private ArrayList<SupplierProduct> ItemsInOrder;
 
     private double totalPriceBeforeDiscount;
     private double totalPriceAfterDiscount;
@@ -31,6 +35,17 @@ public class Order
         this.contactPhoneNumber = contactPhoneNumber;
         this.orderDate = LocalDate.now();
         this.productsInOrder = productsInOrder;
+        this.totalPriceBeforeDiscount = totalPriceBeforeDiscount;
+        this.totalPriceAfterDiscount = totalPriceAfterDiscount;
+    }
+
+    public Order(int orderID, int supplierID, int branchID, LocalDate orderDate, LocalDate deliveryDate, boolean collected, double totalPriceBeforeDiscount, double totalPriceAfterDiscount) {
+        this.orderID = orderID;
+        this.supplierId = supplierID;
+        this.branchID = branchID;
+        this.orderDate = orderDate;
+        this.deliveryDate = deliveryDate;
+        this.collected = collected;
         this.totalPriceBeforeDiscount = totalPriceBeforeDiscount;
         this.totalPriceAfterDiscount = totalPriceAfterDiscount;
     }
@@ -52,5 +67,117 @@ public class Order
         s+="Total price before discount: " + totalPriceBeforeDiscount +"\n";
         s+="Total price after discount: " + totalPriceAfterDiscount +"\n";
         return s;
+    }
+
+    public static int getId() {
+        return id;
+    }
+
+    public static void setId(int id) {
+        Order.id = id;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getSupplierAddress() {
+        return supplierAddress;
+    }
+
+    public void setSupplierAddress(String supplierAddress) {
+        this.supplierAddress = supplierAddress;
+    }
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
+    }
+
+    public int getBranchID() {
+        return branchID;
+    }
+
+    public void setBranchID(int branchID) {
+        this.branchID = branchID;
+    }
+
+    public boolean isCollected() {
+        return collected;
+    }
+
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
+    public LocalDate getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(LocalDate deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
+    }
+
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public ArrayList<Pair<SupplierProduct, Integer>> getProductsInOrder() {
+        return productsInOrder;
+    }
+
+    public void setProductsInOrder(ArrayList<Pair<SupplierProduct, Integer>> productsInOrder) {
+        this.productsInOrder = productsInOrder;
+    }
+
+    public ArrayList<SupplierProduct> getItemsInOrder() {
+        return ItemsInOrder;
+    }
+
+    public void setItemsInOrder(ArrayList<SupplierProduct> itemsInOrder) {
+        ItemsInOrder = itemsInOrder;
+    }
+
+    public double getTotalPriceBeforeDiscount() {
+        return totalPriceBeforeDiscount;
+    }
+
+    public void setTotalPriceBeforeDiscount(double totalPriceBeforeDiscount) {
+        this.totalPriceBeforeDiscount = totalPriceBeforeDiscount;
+    }
+
+    public double getTotalPriceAfterDiscount() {
+        return totalPriceAfterDiscount;
+    }
+
+    public void setTotalPriceAfterDiscount(double totalPriceAfterDiscount) {
+        this.totalPriceAfterDiscount = totalPriceAfterDiscount;
     }
 }
