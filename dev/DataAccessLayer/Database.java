@@ -98,8 +98,8 @@ public class Database {
                 + ");";
 
         String sql2 = "CREATE TABLE IF NOT EXISTS contact (\n"
-                + "phoneNumber TEXT,\n"
                 + "supplierID INTEGER NOT NULL,\n"
+                + "phoneNumber TEXT,\n"
                 + "name TEXT NOT NULL,\n"
                 + "email TEXT NOT NULL,\n"
                 + "PRIMARY KEY(phoneNumber),\n"
@@ -150,9 +150,12 @@ public class Database {
                 + ");";
         String sql7 = "CREATE TABLE IF NOT EXISTS supplierOrder (\n"
                 + "orderID INTEGER,\n"
-                + "supplierID INTEGER,\n"
-                + "branchID INTEGER,\n"
-                + "orderDate TEXT NOT NULL,\n"
+                + "supplierID INTEGER NOT NULL,\n"
+                + "supplierName TEXT NOT NULL,\n"
+                + "supplierAddress TEXT NOT NULL,\n"
+                + "contactPhoneNumber TEXT NOT NULL,\n"
+                + "branchID INTEGER NOT NULL,\n"
+                + "creationDate TEXT NOT NULL,\n"
                 + "deliveryDate TEXT NOT NULL,\n"
                 + "collected BOOLEAN NOT NULL,\n"
                 + "totalPriceBeforeDiscount DOUBLE NOT NULL,\n"
@@ -173,8 +176,8 @@ public class Database {
 
         String sql9 = "CREATE TABLE IF NOT EXISTS periodicOrder (\n"
                 + "periodicOrderID INTEGER,\n"
-                + "supplierID INTEGER,\n"
-                + "branchID INTEGER,\n"
+                + "supplierID INTEGER NOT NULL,\n"
+                + "branchID INTEGER NOT NULL,\n"
                 + "fixedDay TEXT NOT NULL,\n"
                 + "PRIMARY KEY(periodicOrderID),\n"
                 + "FOREIGN KEY(supplierID) REFERENCES supplier(supplierID) ON UPDATE CASCADE\n"

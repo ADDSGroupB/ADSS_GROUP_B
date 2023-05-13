@@ -15,8 +15,7 @@ public interface iSupplierOrderDAO {
     HashMap<Integer, Order> getAllOrderForToday();
     Response addOrder(Order order);
     Response removeOrder(int orderID);
-    Response updateSupplierName(int orderID, String name);
 
     int getLastOrderID();
-    void printOrder(int orderID);
+//    void printOrder(int orderID); // TODO: Maybe
 }

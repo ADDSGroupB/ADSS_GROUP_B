@@ -1,5 +1,6 @@
 package BusinessLayer;
 
+import DataAccessLayer.SupplierOrderDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -10,9 +11,13 @@ import java.util.Map;
 
 public class OrderController {
     private HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
+    private SupplierOrderDAO supplierOrderDAO;
+    private static int id;
 
     public OrderController(){
         supplierOrders = new HashMap<>();
+        supplierOrderDAO = new SupplierOrderDAO();
+        id = supplierOrderDAO.getLastOrderID() + 1;
     }
 
 //    public void createOrder(Response res) {
@@ -73,14 +78,17 @@ public class OrderController {
             String supplierName = supplierToOrder.getName();
             String supplierAddress = supplierToOrder.getAddress();
             String contactPhoneNumber = supplierToOrder.getContactPhoneNumber();
-            ArrayList<Pair<SupplierProduct,Integer>> productsToOrder =new ArrayList<>();
+//            ArrayList<Pair<SupplierProduct,Integer>> productsToOrder =new ArrayList<>();
+            ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
 
             for (int j = 0; j < suppliersProduct.size(); j++) {//run over all products to order from supplier
                 int productId = suppliersProduct.get(j).getFirst();
                 int amountToOrder = suppliersProduct.get(j).getSecond();
 
-                SupplierProduct product = supplierToOrder.getProductById(productId);
-                productsToOrder.add(new Pair<>(product, amountToOrder));
+                SupplierProduct product = new SupplierProduct(supplierToOrder.getProductById(productId));
+                product.setAmount(amountToOrder);
+                productsToOrder.add(product);
+//                productsToOrder.add(new Pair<>(product, amountToOrder));
             }
             double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscount(suppliersProduct);
             int totalAmountToOrder = supplierToOrder.getTotalAmount(suppliersProduct);
@@ -96,11 +104,12 @@ public class OrderController {
 
             LocalDate deliveyDate = LocalDate.now().plusDays(supplierToOrder.getSupplierClosestDaysToDelivery());//create the arrival date
 
-            Order newOrderForSupplier = new Order(supplierName, supplierAddress, supplierId, contactPhoneNumber, productsToOrder, priceBeforeDiscount, priceAfterDiscount,deliveyDate, branchId);
+            Order newOrderForSupplier = new Order(id++, supplierName, supplierAddress, supplierId, contactPhoneNumber, productsToOrder, priceBeforeDiscount, priceAfterDiscount,deliveyDate, branchId);
             if (!supplierOrders.containsKey(supplierId)) {
                 supplierOrders.put(supplierId, new ArrayList<>());
             }
             supplierOrders.get(supplierId).add(newOrderForSupplier);
+            supplierOrderDAO.addOrder(newOrderForSupplier);
         }
         return new Response(0);
 
