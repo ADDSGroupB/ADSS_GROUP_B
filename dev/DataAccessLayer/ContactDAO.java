@@ -1,6 +1,7 @@
 package DataAccessLayer;
 
 import BusinessLayer.Contact;
+import DataAccessLayer.Interfaces.iContactDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -8,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ContactDAO implements iContactDAO{
+public class ContactDAO implements iContactDAO {
     private final Connection connection;
     private final HashMap<Pair<Integer, String>, Contact> contactIM;
 

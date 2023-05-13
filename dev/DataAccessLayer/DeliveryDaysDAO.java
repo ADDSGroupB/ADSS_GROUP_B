@@ -1,15 +1,14 @@
 package DataAccessLayer;
 
-import BusinessLayer.Agreement;
+import DataAccessLayer.Interfaces.iDeliveryDaysDAO;
 import Utillity.Response;
 
 import java.sql.*;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DeliveryDaysDAO implements iDeliveryDaysDAO{
+public class DeliveryDaysDAO implements iDeliveryDaysDAO {
     private Connection connection;
     private HashMap<Integer, ArrayList<DayOfWeek>> deliveryDaysIM;
 

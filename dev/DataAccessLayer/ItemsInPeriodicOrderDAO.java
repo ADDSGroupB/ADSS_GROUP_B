@@ -1,19 +1,19 @@
 package DataAccessLayer;
 
 import BusinessLayer.SupplierProduct;
-import DataAccessLayer.Interfaces.iItemsInOrderDAO;
+import DataAccessLayer.Interfaces.iItemsInPeriodicOrderDAO;
 import Utillity.Response;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ItemsInOrderDAO implements iItemsInOrderDAO {
+public class ItemsInPeriodicOrderDAO implements iItemsInPeriodicOrderDAO {
     private final Connection connection;
-    private final HashMap<Integer, ArrayList<SupplierProduct>> itemsInOrderIM;
+    private final HashMap<Integer, ArrayList<SupplierProduct>> itemsInPeriodicOrderIM;
     private final SupplierProductDAO supplierProductDAO;
 
-    public ItemsInOrderDAO() {
+    public ItemsInPeriodicOrderDAO() {
         connection = Database.connect();
         try {
             Statement statement = connection.createStatement();
@@ -21,15 +21,15 @@ public class ItemsInOrderDAO implements iItemsInOrderDAO {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        itemsInOrderIM = new HashMap<>();
+        itemsInPeriodicOrderIM = new HashMap<>();
         supplierProductDAO = new SupplierProductDAO();
     }
 
     @Override
-    public ArrayList<SupplierProduct> getProductsInOrder(int orderID, int supplierID) {
-        if(itemsInOrderIM.containsKey(orderID)) return itemsInOrderIM.get(orderID);
-        itemsInOrderIM.put(orderID, new ArrayList<>());
-        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM itemsInOrder WHERE orderID = ?")) {
+    public ArrayList<SupplierProduct> getProductsInPeriodicOrder(int orderID, int supplierID) {
+        if(itemsInPeriodicOrderIM.containsKey(orderID)) return itemsInPeriodicOrderIM.get(orderID);
+        itemsInPeriodicOrderIM.put(orderID, new ArrayList<>());
+        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM itemsInPeriodicOrder WHERE periodicOrderID = ?")) {
             supplierStatement.setInt(1, orderID);
             ResultSet result = supplierStatement.executeQuery();
             while (result.next())
@@ -38,16 +38,16 @@ public class ItemsInOrderDAO implements iItemsInOrderDAO {
                 int amountInOrder = result.getInt("amountInOrder");
                 SupplierProduct supplierProduct = new SupplierProduct(supplierProductDAO.getSupplierProduct(supplierID, productID));
                 supplierProduct.setAmount(amountInOrder);
-                itemsInOrderIM.get(orderID).add(supplierProduct);
+                itemsInPeriodicOrderIM.get(orderID).add(supplierProduct);
             }
-            return itemsInOrderIM.get(orderID);
+            return itemsInPeriodicOrderIM.get(orderID);
         } catch (SQLException e) { System.out.println(e.getMessage()); }
         return null;
     }
 
     @Override
-    public Response addProductsToOrder(int orderID, ArrayList<SupplierProduct> productsInOrder) {
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO itemsInOrder (orderID, supplierID, productID, amountInOrder) VALUES (?, ?, ?, ?)"))
+    public Response addProductsToPeriodicOrder(int orderID, ArrayList<SupplierProduct> productsInOrder) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO itemsInPeriodicOrder (periodicOrderID, supplierID, productID, amountInOrder) VALUES (?, ?, ?, ?)"))
         {
             for(SupplierProduct supplierProduct : productsInOrder)
             {
@@ -57,47 +57,47 @@ public class ItemsInOrderDAO implements iItemsInOrderDAO {
                 statement.setInt(4, supplierProduct.getAmount());
                 statement.executeUpdate();
             }
-            itemsInOrderIM.put(orderID, productsInOrder);
+            itemsInPeriodicOrderIM.put(orderID, productsInOrder);
             return new Response(orderID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
-    public Response addProductToOrder(int orderID, SupplierProduct supplierProduct) {
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO itemsInOrder (orderID, supplierID, productID, amountInOrder) VALUES (?, ?, ?, ?)"))
+    public Response addProductToPeriodicOrder(int orderID, SupplierProduct supplierProduct) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO itemsInPeriodicOrder (periodicOrderID, supplierID, productID, amountInOrder) VALUES (?, ?, ?, ?)"))
         {
             statement.setInt(1, orderID);
             statement.setInt(2, supplierProduct.getSupplierId());
             statement.setInt(3, supplierProduct.getProductID());
             statement.setInt(4, supplierProduct.getAmount());
             statement.executeUpdate();
-            if (!itemsInOrderIM.containsKey(orderID)) itemsInOrderIM.put(orderID, new ArrayList<>());
-            itemsInOrderIM.get(orderID).add(supplierProduct);
+            if (!itemsInPeriodicOrderIM.containsKey(orderID)) itemsInPeriodicOrderIM.put(orderID, new ArrayList<>());
+            itemsInPeriodicOrderIM.get(orderID).add(supplierProduct);
             return new Response(orderID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
-    public Response removeProductFromOrder(int orderID, int productID) {
-        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM itemsInOrder WHERE orderID = ? AND productID = ?"))
+    public Response removeProductFromPeriodicOrder(int orderID, int productID) {
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM itemsInPeriodicOrder WHERE periodicOrderID = ? AND productID = ?"))
         {
             statement.setInt(1, orderID);
             statement.setInt(2, productID);
             statement.executeUpdate();
-            itemsInOrderIM.get(orderID).removeIf(supplierProduct -> supplierProduct.getProductID() == productID);
+            itemsInPeriodicOrderIM.get(orderID).removeIf(supplierProduct -> supplierProduct.getProductID() == productID);
             return new Response(orderID);
         } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override
-    public Response updateProductAmountInOrder(int orderID, int productID, int amountInOrder) {
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE itemsInOrder SET amountInOrder = ? WHERE orderID = ? AND productID = ?"))
+    public Response updateProductAmountInPeriodicOrder(int orderID, int productID, int amountInOrder) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE itemsInPeriodicOrder SET amountInOrder = ? WHERE periodicOrderID = ? AND productID = ?"))
         {
             statement.setInt(1, amountInOrder);
             statement.setInt(2, orderID);
             statement.setInt(3, productID);
             statement.executeUpdate();
-            for(SupplierProduct supplierProduct : itemsInOrderIM.get(orderID))
+            for(SupplierProduct supplierProduct : itemsInPeriodicOrderIM.get(orderID))
                 if(supplierProduct.getProductID() == productID) supplierProduct.setAmount(amountInOrder);
             return new Response(orderID);
         } catch (SQLException e) { return new Response(e.getMessage()); }

@@ -4,6 +4,7 @@ import BusinessLayer.Agreement;
 import BusinessLayer.Contact;
 import BusinessLayer.Supplier;
 import BusinessLayer.SupplierProduct;
+import DataAccessLayer.Interfaces.*;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -236,5 +237,12 @@ public class SupplierDAO implements iSupplierDAO {
             }
             resultSet.close();
             } catch (SQLException e) { System.out.println(e.getMessage());}
+    }
+
+    public Response updateSupplierProductAmount(int supplierID, int productID, int amount)
+    {
+        if(suppliersIM.containsKey(supplierID))
+            suppliersIM.get(supplierID).getSupplyingProducts().get(productID).setAmount(amount);
+        return supplierProductDAO.updateSupplierProductAmount(supplierID, productID, amount);
     }
 }

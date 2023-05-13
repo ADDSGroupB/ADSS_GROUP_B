@@ -15,11 +15,13 @@ public class FacadeSupplier {
     private final SupplierController supplierController;
     private final ProductController productController;
     private final OrderController orderController;
+    private final PeriodicOrderController periodicOrderController;
     private final AgreementDAO agreementDAO;
     public FacadeSupplier(){
         supplierController = new SupplierController();
         productController = new ProductController();
         orderController = new OrderController();
+        periodicOrderController = new PeriodicOrderController();
         agreementDAO = new AgreementDAO();
     }
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement,  ArrayList<ServiceContact> contactList) {
@@ -132,11 +134,19 @@ public class FacadeSupplier {
 
     }
 
+    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, ArrayList<SupplierProduct> itemsInOrder)
+    {
+        return periodicOrderController.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
+    }
+
     public void printOrders() {
         orderController.PrintOrders();
     }
 
 
+    public Response executePeriodicOrder(int periodicOrderID) {
+        return periodicOrderController.executePeriodicOrder(periodicOrderID);
+    }
 }
 
 

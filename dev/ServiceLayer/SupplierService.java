@@ -1,6 +1,7 @@
 package ServiceLayer;
 
 import BusinessLayer.FacadeSupplier;
+import BusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
@@ -76,6 +77,15 @@ public class SupplierService {
 
     public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) {
         facadeSupplier.createOrderByShortage(branchId ,shortage);
+    }
+
+    public Response executePeriodicOrder(int periodicOrderID) {
+        return facadeSupplier.executePeriodicOrder(periodicOrderID);
+    }
+
+    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, ArrayList<SupplierProduct> itemsInOrder)
+    {
+        return facadeSupplier.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
     }
 
     public void printOrders() {

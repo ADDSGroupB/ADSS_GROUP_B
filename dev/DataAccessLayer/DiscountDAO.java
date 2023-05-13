@@ -1,6 +1,6 @@
 package DataAccessLayer;
 
-import BusinessLayer.Contact;
+import DataAccessLayer.Interfaces.iDiscountDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class DiscountDAO implements iDiscountDAO{
+public class DiscountDAO implements iDiscountDAO {
     private Connection connection;
     private HashMap<Pair<Integer, String>, Pair<Double, Double>> discountIM;
 

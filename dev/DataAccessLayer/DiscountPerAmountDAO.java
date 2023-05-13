@@ -1,12 +1,13 @@
 package DataAccessLayer;
 
+import DataAccessLayer.Interfaces.iDiscountPerAmountDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
 import java.sql.*;
 import java.util.HashMap;
 
-public class DiscountPerAmountDAO implements iDiscountPerAmountDAO{
+public class DiscountPerAmountDAO implements iDiscountPerAmountDAO {
     private Connection connection;
     private HashMap<Pair<Integer, Integer>, HashMap<Integer, Double>> discountIM;
 

@@ -1,14 +1,14 @@
 package DataAccessLayer;
 
-import BusinessLayer.Contact;
 import BusinessLayer.SupplierProduct;
+import DataAccessLayer.Interfaces.iSupplierProductDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
 import java.sql.*;
 import java.util.HashMap;
 
-public class SupplierProductDAO implements iSupplierProductDAO{
+public class SupplierProductDAO implements iSupplierProductDAO {
     private final Connection connection;
     private final HashMap<Pair<Integer, Integer>, SupplierProduct> supplierProductIM;
     private final DiscountPerAmountDAO discountPerAmountDAO;

@@ -1,4 +1,4 @@
-package DataAccessLayer;
+package DataAccessLayer.Interfaces;
 
 import BusinessLayer.Contact;
 import BusinessLayer.Supplier;

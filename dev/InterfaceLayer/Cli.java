@@ -52,7 +52,7 @@ public class Cli {
                 print("For scenario two press 2- The order will be split into several orders according to different suppliers\n");
                 print("For scenario three press 3- the order can't be created\n");
                 print("Press 0- back to the menu");
-                printOrders();
+//                printOrders();
                 int choose = reader.nextInt();
                 switch (choose) {
                     case 1 -> {

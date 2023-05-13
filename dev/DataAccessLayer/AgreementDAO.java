@@ -2,6 +2,7 @@ package DataAccessLayer;
 
 import BusinessLayer.Agreement;
 import BusinessLayer.SupplierProduct;
+import DataAccessLayer.Interfaces.*;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -10,9 +11,8 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class AgreementDAO implements iAgreementDAO{
+public class AgreementDAO implements iAgreementDAO {
     private final Connection connection;
     private final HashMap<Integer, Agreement> agreementIM;
     private final iDiscountDAO discountDAO;

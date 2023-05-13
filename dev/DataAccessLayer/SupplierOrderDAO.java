@@ -1,17 +1,15 @@
 package DataAccessLayer;
 
 import BusinessLayer.Order;
-import BusinessLayer.Supplier;
-import Utillity.Pair;
+import DataAccessLayer.Interfaces.iSupplierOrderDAO;
 import Utillity.Response;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SupplierOrderDAO implements iSupplierOrderDAO{
+public class SupplierOrderDAO implements iSupplierOrderDAO {
     private final Connection connection;
     private final HashMap<Integer, Order> supplierOrderIM;
     private final ItemsInOrderDAO itemsInOrderDAO;
@@ -51,12 +49,12 @@ public class SupplierOrderDAO implements iSupplierOrderDAO{
                 String supplierAddress = result.getString("supplierAddress");
                 String contactPhoneNumber = result.getString("contactPhoneNumber");
                 int branchID = result.getInt("branchID");
-                LocalDate orderDate = stringToLocalDate(result.getString("orderDate"));
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
                 LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
                 boolean collected = result.getBoolean("collected");
                 double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
                 double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
-                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, orderDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
                 order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
                 supplierOrderIM.put(orderID, order);
             }
@@ -78,12 +76,12 @@ public class SupplierOrderDAO implements iSupplierOrderDAO{
                 String supplierAddress = result.getString("supplierAddress");
                 String contactPhoneNumber = result.getString("contactPhoneNumber");
                 int branchID = result.getInt("branchID");
-                LocalDate orderDate = stringToLocalDate(result.getString("orderDate"));
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
                 LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
                 boolean collected = result.getBoolean("collected");
                 double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
                 double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
-                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, orderDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
                 order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
                 supplierOrderIM.put(orderID, order);
                 return order;
@@ -108,12 +106,12 @@ public class SupplierOrderDAO implements iSupplierOrderDAO{
                 String supplierAddress = result.getString("supplierAddress");
                 String contactPhoneNumber = result.getString("contactPhoneNumber");
                 int branchID = result.getInt("branchID");
-                LocalDate orderDate = stringToLocalDate(result.getString("orderDate"));
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
                 LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
                 boolean collected = result.getBoolean("collected");
                 double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
                 double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
-                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, orderDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
                 order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
                 supplierOrderIM.put(orderID, order);
                 supplierOrders.put(orderID, order);
@@ -139,12 +137,12 @@ public class SupplierOrderDAO implements iSupplierOrderDAO{
                 String supplierName = result.getString("supplierName");
                 String supplierAddress = result.getString("supplierAddress");
                 String contactPhoneNumber = result.getString("contactPhoneNumber");
-                LocalDate orderDate = stringToLocalDate(result.getString("orderDate"));
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
                 LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
                 boolean collected = result.getBoolean("collected");
                 double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
                 double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
-                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, orderDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
                 order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
                 supplierOrderIM.put(orderID, order);
                 branchOrders.put(orderID, order);
@@ -172,12 +170,12 @@ public class SupplierOrderDAO implements iSupplierOrderDAO{
                 String supplierAddress = result.getString("supplierAddress");
                 String contactPhoneNumber = result.getString("contactPhoneNumber");
                 int branchID = result.getInt("branchID");
-                LocalDate orderDate = stringToLocalDate(result.getString("orderDate"));
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
                 LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
                 boolean collected = result.getBoolean("collected");
                 double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
                 double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
-                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, orderDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
                 order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
                 supplierOrderIM.put(orderID, order);
                 todayOrders.put(orderID, order);
