@@ -2,6 +2,7 @@ package DataAccessLayer;
 
 import BusinessLayer.Order;
 import DataAccessLayer.Interfaces.iSupplierOrderDAO;
+import Utillity.Pair;
 import Utillity.Response;
 
 import java.sql.*;
@@ -183,6 +184,50 @@ public class SupplierOrderDAO implements iSupplierOrderDAO {
             return todayOrders;
         } catch (SQLException e) { System.out.println(e.getMessage()); }
         return null;
+    }
+
+    @Override
+    public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) {
+        LocalDate todayDate = LocalDate.now();
+        HashMap<Integer, Order> todayOrders = new HashMap<>();
+        for(Order order : supplierOrderIM.values())
+            if(order.getDeliveryDate() == todayDate) todayOrders.put(order.getOrderID(), order);
+        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM supplierOrder WHERE branchID = ? AND deliveryDate = ? AND collected = 0")) {
+            supplierStatement.setInt(1, branchID);
+            supplierStatement.setString(2, localDateToString(todayDate));
+            ResultSet result = supplierStatement.executeQuery();
+            while (result.next())
+            {
+                int orderID = result.getInt("orderID");
+                if(todayOrders.containsKey(orderID)) continue;
+                int supplierID = result.getInt("supplierID");
+                String supplierName = result.getString("supplierName");
+                String supplierAddress = result.getString("supplierAddress");
+                String contactPhoneNumber = result.getString("contactPhoneNumber");
+                LocalDate creationDate = stringToLocalDate(result.getString("creationDate"));
+                LocalDate deliveryDate = stringToLocalDate(result.getString("deliveryDate"));
+                boolean collected = result.getBoolean("collected");
+                double totalPriceBeforeDiscount = result.getDouble("totalPriceBeforeDiscount");
+                double totalPriceAfterDiscount = result.getDouble("totalPriceAfterDiscount");
+                Order order = new Order(orderID, supplierID, supplierName, supplierAddress, contactPhoneNumber, branchID, creationDate, deliveryDate, collected, totalPriceBeforeDiscount, totalPriceAfterDiscount);
+                order.setItemsInOrder(itemsInOrderDAO.getProductsInOrder(orderID, supplierID));
+                supplierOrderIM.put(orderID, order);
+                todayOrders.put(orderID, order);
+            }
+            return todayOrders;
+        } catch (SQLException e) { System.out.println(e.getMessage()); }
+        return null;
+    }
+
+    @Override
+    public Response markOrderAsCollected(int orderID) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE supplierOrder SET collected = 1 WHERE orderID = ?"))
+        {
+            statement.setInt(1, orderID);
+            statement.executeUpdate();
+            if (supplierOrderIM.containsKey(orderID)) supplierOrderIM.get(orderID).setCollected(true);
+            return new Response(orderID);
+        } catch (SQLException e) { return new Response(e.getMessage()); }
     }
 
     @Override

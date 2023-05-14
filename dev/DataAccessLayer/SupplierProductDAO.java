@@ -45,7 +45,7 @@ public class SupplierProductDAO implements iSupplierProductDAO {
                 Pair<Integer, Integer> pair = new Pair<>(supplierId, productID);
                 if(!supplierProductIM.containsKey(pair))
                 {
-                    SupplierProduct supplierProduct = new SupplierProduct(name, supplierId, catalogID, productID, price, amount, discountPerAmount, manufacturer, expirationDays, weight);
+                    SupplierProduct supplierProduct = new SupplierProduct(name, supplierId, productID, catalogID, price, amount, discountPerAmount, manufacturer, expirationDays, weight);
                     supplierProductIM.put(pair, supplierProduct);
                     supplierProducts.put(productID, supplierProduct);
                 }
@@ -75,7 +75,7 @@ public class SupplierProductDAO implements iSupplierProductDAO {
                 Double weight = supplierResult.getDouble("weight");
                 HashMap<Integer, Double> discountPerAmount = discountPerAmountDAO.getProductDiscountByID(supplierID, productID);
                 int amount = supplierResult.getInt("amount");
-                SupplierProduct supplierProduct = new SupplierProduct(name, supplierID, catalogID, productID, price, amount, discountPerAmount, manufacturer, expirationDays, weight);
+                SupplierProduct supplierProduct = new SupplierProduct(name, supplierID, productID, catalogID, price, amount, discountPerAmount, manufacturer, expirationDays, weight);
                 supplierProductIM.put(pair, supplierProduct);
                 return supplierProduct;
             }

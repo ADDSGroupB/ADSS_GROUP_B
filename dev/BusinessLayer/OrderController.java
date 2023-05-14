@@ -1,6 +1,9 @@
 package BusinessLayer;
 
+import DataAccessLayer.PeriodicOrderDAO;
+import DataAccessLayer.SupplierDAO;
 import DataAccessLayer.SupplierOrderDAO;
+import DataAccessLayer.SupplierProductDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -10,13 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OrderController {
-    private HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
+    private final HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
     private SupplierOrderDAO supplierOrderDAO;
+    private PeriodicOrderDAO periodicOrderDAO;
+    private SupplierProductDAO supplierProductDAO;
+    private SupplierDAO supplierDAO;
     private static int id;
 
     public OrderController(){
         supplierOrders = new HashMap<>();
         supplierOrderDAO = new SupplierOrderDAO();
+        periodicOrderDAO = new PeriodicOrderDAO();
+        supplierProductDAO = new SupplierProductDAO();
+        supplierDAO = new SupplierDAO();
         id = supplierOrderDAO.getLastOrderID() + 1;
     }
 
@@ -88,6 +97,9 @@ public class OrderController {
                 SupplierProduct product = new SupplierProduct(supplierToOrder.getProductById(productId));
                 product.setAmount(amountToOrder);
                 productsToOrder.add(product);
+                //Update the amount in supplier
+//                Response res = supplierDAO.updateSupplierProductAmount(supplierToOrder.getSupplierId(), product.getProductID(), supplierToOrder.getProductById(productId).getAmount() - product.getAmount());
+//                if(res.errorOccurred()) return res;
 //                productsToOrder.add(new Pair<>(product, amountToOrder));
             }
             double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscount(suppliersProduct);
@@ -116,6 +128,50 @@ public class OrderController {
     }
 
 
+    public Response executePeriodicOrder(int periodicOrderID)
+    {
+        PeriodicOrder periodicOrder = periodicOrderDAO.getPeriodicOrderByID(periodicOrderID);
+        if(periodicOrder == null)
+            return new Response("Periodic Order Creation Fails, Reason: periodicOrderID Is Not Exists");
+        Supplier supplierToOrder = supplierDAO.getSupplierByID(periodicOrder.getSupplierID());
+        ArrayList<SupplierProduct> productsInOrder = periodicOrder.getItemsInOrder();
+        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
+        //Update the products amount for the order - checks the amount that the supplier got
+        for(SupplierProduct productInOrder : productsInOrder)
+        {
+            SupplierProduct productInSupplier = supplierProductDAO.getSupplierProduct(periodicOrder.getSupplierID(), productInOrder.getProductID());
+            if(productInSupplier == null || productInSupplier.getAmount() == 0) continue;
+            if(productInSupplier.getAmount() < productInOrder.getAmount())
+            {
+                //Update the amount in supplier
+                productsToOrder.add(new SupplierProduct(productInSupplier));
+//                Response res = supplierDAO.updateSupplierProductAmount(supplierToOrder.getSupplierId(), productInSupplier.getProductID(), 0);
+//                if(res.errorOccurred()) return res;
+            }
+            else
+            {
+                productsToOrder.add(new SupplierProduct(productInOrder));
+                //Update the amount in supplier
+//                Response res = supplierDAO.updateSupplierProductAmount(supplierToOrder.getSupplierId(), productInOrder.getProductID(), productInSupplier.getAmount() - productInOrder.getAmount());
+//                if(res.errorOccurred()) return res;
+            }
+
+        }
+        double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscountNew(productsToOrder);
+        int totalAmountToOrder = supplierToOrder.getTotalAmountNew(productsToOrder);
+        if (supplierToOrder.getTotalOrderDiscountPerOrderPrice() != null && supplierToOrder.getTotalDiscountInPrecentageForOrder() != null)
+        {
+            if (priceAfterDiscount > supplierToOrder.getTotalOrderDiscountPerOrderPrice().getFirst())
+                priceAfterDiscount = priceAfterDiscount - supplierToOrder.getTotalOrderDiscountPerOrderPrice().getSecond();
+            if (totalAmountToOrder > supplierToOrder.getTotalDiscountInPrecentageForOrder().getFirst())
+                priceAfterDiscount = ((100 - supplierToOrder.getTotalDiscountInPrecentageForOrder().getSecond()) / 100) * priceAfterDiscount;
+        }
+        double priceBeforeDiscount = supplierToOrder.calculatePriceBeforeDiscountNew(productsToOrder);
+        LocalDate deliveryDate = LocalDate.now().plusDays(supplierToOrder.getSupplierClosestDaysToDelivery());//create the arrival date
+        Order newOrderForSupplier = new Order(id++, supplierToOrder.getName(), supplierToOrder.getAddress(), supplierToOrder.getSupplierId(), supplierToOrder.getContactPhoneNumber(), productsToOrder, priceBeforeDiscount, priceAfterDiscount,deliveryDate, periodicOrder.getBranchID());
+        supplierOrderDAO.addOrder(newOrderForSupplier);
+        return new Response(newOrderForSupplier.getOrderID());
+    }
 
     public HashMap<Supplier, ArrayList<Pair<Integer, Integer>>> createOrderList (ArrayList<ArrayList<Supplier>> sortedSuppliers, HashMap<Integer, Integer> shortage){
         int i = 0;
@@ -158,6 +214,8 @@ public class OrderController {
         }
         return orderList;
     }
+
+
 
 
 

@@ -117,7 +117,7 @@ public class PeriodicOrderDAO implements iPeriodicOrderDAO {
         HashMap<Integer, PeriodicOrder> todayOrders = new HashMap<>();
         for(PeriodicOrder order : periodicOrderIM.values())
             if(order.getFixedDay() == todayDate) todayOrders.put(order.getPeriodicOrderID(), order);
-        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM periodicOrder WHERE deliveryDate = ?")) {
+        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM periodicOrder WHERE fixedDay = ?")) {
             supplierStatement.setString(1, String.valueOf(todayDate));
             ResultSet result = supplierStatement.executeQuery();
             while (result.next())

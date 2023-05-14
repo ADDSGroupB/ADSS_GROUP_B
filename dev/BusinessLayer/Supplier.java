@@ -271,6 +271,34 @@ public class Supplier {
         return totalPriceForAllOrder;
     }
 
+    public double calculatePriceAfterDiscountNew (ArrayList<SupplierProduct> products) {
+        double totalPriceForAllOrder = 0.0;
+        for (SupplierProduct supplierProduct : products) {
+            double totalPrice;
+            int productId = supplierProduct.getProductID();
+            int amountForDiscount = supplierProduct.getAmount();
+            boolean canUseAdiscount = false;
+            double productPrice = supplierProduct.getPrice();
+            HashMap<Integer, Double> productDiscounts = supplierProduct.getDiscountPerAmount();
+            for (Map.Entry<Integer, Double> entry : productDiscounts.entrySet()) {
+                if (entry.getKey() <= amountForDiscount) {
+                    canUseAdiscount = true;
+                    amountForDiscount = entry.getKey();
+                } else {
+                    break;
+                }
+            }
+            if (canUseAdiscount) {
+                double priceAfterDiscount = ((100 - productDiscounts.get(amountForDiscount)) * amountForDiscount * productPrice) / 100;
+                totalPrice = (supplierProduct.getAmount() - amountForDiscount) * productPrice + priceAfterDiscount;
+            } else {
+                totalPrice = (supplierProduct.getAmount()) * productPrice;
+            }
+            totalPriceForAllOrder+=totalPrice;
+        }
+        return totalPriceForAllOrder;
+    }
+
     public SupplierProduct getProductById (int productId){
         return getSupplyingProducts().get(productId);
 }
@@ -287,6 +315,17 @@ public class Supplier {
         }
         return totalPriceForAllOrder;
     }
+
+    public double calculatePriceBeforeDiscountNew (ArrayList<SupplierProduct> products) {
+        double totalPriceForAllOrder = 0.0;
+        for (SupplierProduct supplierProduct : products) {
+            int amountToOrder = supplierProduct.getAmount();
+            double productPrice = supplierProduct.getPrice();
+            totalPriceForAllOrder+=amountToOrder*productPrice;
+        }
+        return totalPriceForAllOrder;
+    }
+
     public Pair<Double,Double> getTotalOrderDiscountPerOrderPrice(){
         return agreement.getTotalOrderDiscountPerOrderPrice();
     }
@@ -299,6 +338,13 @@ public class Supplier {
         for (Pair<Integer,Integer> p:products){
             totalAmount+=p.getSecond();
         }
+        return totalAmount;
+    }
+
+    public int getTotalAmountNew (ArrayList<SupplierProduct> products) {
+        int totalAmount=0;
+        for (SupplierProduct supplierProduct : products)
+            totalAmount += supplierProduct.getAmount();
         return totalAmount;
     }
 

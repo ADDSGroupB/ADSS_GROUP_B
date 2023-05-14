@@ -3,6 +3,7 @@ package BusinessLayer;
 import DataAccessLayer.AgreementDAO;
 import DataAccessLayer.ContactDAO;
 import DataAccessLayer.SupplierDAO;
+import DataAccessLayer.SupplierProductDAO;
 import ServiceLayer.ServiceAgreement;
 import ServiceLayer.ServiceContact;
 import Utillity.Response;
@@ -23,6 +24,21 @@ public class FacadeSupplier {
         orderController = new OrderController();
         periodicOrderController = new PeriodicOrderController();
         agreementDAO = new AgreementDAO();
+    }
+
+    public static void main(String[] args) {
+        FacadeSupplier facadeSupplier = new FacadeSupplier();
+        SupplierProductDAO supplierProductDAO = new SupplierProductDAO();
+        HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(3);
+        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
+        for (SupplierProduct supplierProduct : supplierProducts.values())
+        {
+            SupplierProduct product = new SupplierProduct(supplierProduct);
+            product.setAmount(30);
+            productsToOrder.add(product);
+        }
+        facadeSupplier.createPeriodicOrder(3, 1, DayOfWeek.SUNDAY, productsToOrder);
+//        facadeSupplier.executePeriodicOrder(1);
     }
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement,  ArrayList<ServiceContact> contactList) {
         Response res = supplierController.addSupplier(name, address, bankAccount);
@@ -145,8 +161,10 @@ public class FacadeSupplier {
 
 
     public Response executePeriodicOrder(int periodicOrderID) {
-        return periodicOrderController.executePeriodicOrder(periodicOrderID);
+        return orderController.executePeriodicOrder(periodicOrderID);
     }
+
+    public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return periodicOrderController.getAllPeriodicOrderForToday(); }
 }
 
 

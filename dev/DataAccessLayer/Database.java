@@ -19,6 +19,12 @@ public class Database {
         return connection;
     }
 
+    public static void disconnect()
+    {
+        try { if (connection != null) connection.close(); }
+        catch (SQLException e) { System.out.println(e.getMessage()); }
+    }
+
     public static void testDAO()
     {
         String sql = "INSERT INTO supplier (supplierID, name, address, bankAccount) " +

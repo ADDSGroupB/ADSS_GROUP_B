@@ -1,20 +1,30 @@
 package ServiceLayer;
 
 import BusinessLayer.FacadeSupplier;
+import BusinessLayer.PeriodicOrder;
 import BusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TimerTask;
 
 
-public class SupplierService {
+public class SupplierService extends TimerTask {
     private final FacadeSupplier facadeSupplier;
 
     public SupplierService() {
         facadeSupplier = new FacadeSupplier();
     }
+
+    @Override
+    public void run()
+    {
+        for(PeriodicOrder periodicOrder : getAllPeriodicOrderForToday().values())
+            executePeriodicOrder(periodicOrder.getPeriodicOrderID());
+    }
+
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement, ArrayList<ServiceContact> contactList) {
         return facadeSupplier.addSupplier(name, address, bankAccount, serviceAgreement, contactList);
     }
@@ -87,6 +97,8 @@ public class SupplierService {
     {
         return facadeSupplier.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
     }
+
+    public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return facadeSupplier.getAllPeriodicOrderForToday(); }
 
     public void printOrders() {
         facadeSupplier.printOrders();

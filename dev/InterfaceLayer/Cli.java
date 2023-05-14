@@ -11,7 +11,7 @@ import Utillity.Response;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.*;
-
+import java.util.concurrent.TimeUnit;
 
 
 public class Cli {
@@ -29,6 +29,7 @@ public class Cli {
         reader = new Scanner(System.in);
         supplierService = new SupplierService();
         serviceContact = new ServiceContact();
+        startDailyTask();
     }
 
     public void print(String message){
@@ -37,6 +38,8 @@ public class Cli {
 
 
     public void start() {
+
+
 
         int userInput;
 
@@ -77,13 +80,7 @@ public class Cli {
         }
         if (n == 3) {
             print("Hope you enjoyed, see you next time :)");
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            Database.disconnect();
             System.exit(0);
         }
         //if the user pressed 2 we play the next section
@@ -102,13 +99,7 @@ public class Cli {
                 }
                 if (userInput == 2) {
                     print("Hope you enjoyed, see you next time :)");
-                    try {
-                        if (connection != null) {
-                            connection.close();
-                        }
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
+                    Database.disconnect();
                     System.exit(0);
                 }
                 else {
@@ -751,5 +742,19 @@ public class Cli {
         supplierService.printOrders();
     }
 
-
+    private void startDailyTask()
+    {
+        Timer timer = new Timer();
+        // Schedule the task to execute every day at 10:00am
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
+        calendar.set(Calendar.MINUTE, 17);
+        calendar.set(Calendar.SECOND, 30);
+        calendar.set(Calendar.MILLISECOND, 0);
+        timer.scheduleAtFixedRate(supplierService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            timer.cancel();
+            Database.disconnect();
+        }));
+    }
 }
