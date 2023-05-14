@@ -5,11 +5,15 @@ import java.util.Map;
 
 public class WeeklyStorageReport extends Report {
     private Map<Category, Map<Product, Integer>> reportCategories;
-    public WeeklyStorageReport(int reportID, int branchID, LocalDate date)
+    public WeeklyStorageReport(int reportID, int branchID, LocalDate date,  Map<Category, Map<Product, Integer>> reportCategories)
     {
         super(reportID, branchID, date);
         this.reportKind = ReportKind.Weekly;
         this.reportCategories = new HashMap<>();
+    }
+    public WeeklyStorageReport(int reportID, int branchID, LocalDate date)
+    {
+        this(reportID, branchID, date, new HashMap<>());
     }
     public void addCategoryToReport(Category category, Map<Product, Integer> productCurrAmount){
         reportCategories.put(category, productCurrAmount);
@@ -32,4 +36,6 @@ public class WeeklyStorageReport extends Report {
         }
         return output.toString();
     }
+    public Map<Category, Map<Product, Integer>> getWeeklyReportMap(){return reportCategories;}
+
 }

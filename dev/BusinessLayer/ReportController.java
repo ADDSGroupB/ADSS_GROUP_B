@@ -7,15 +7,14 @@ import java.util.Queue;
 
 public class ReportController {
 
-    public MissingProductsReport createNewMissingReport(LocalDate date) {
-        MissingProductsReport report = new MissingProductsReport(date);
-        return report;
+    public MissingProductsReport createNewMissingReport(int reportID, int branchID) {
+        return new MissingProductsReport(reportID, branchID, LocalDate.now());
     }
-
-    public DefectiveProductsReport createNewDefectiveReport(LocalDate date) {
-        Map<Product, Queue<Item>> newDamagedItems = new HashMap<>();
-        Map<Product, Queue<Item>> newExpiredItems = new HashMap<>();
-        return new DefectiveProductsReport(date, newExpiredItems, newDamagedItems);
+    public WeeklyStorageReport createNewWeeklyReport(int reportID, int branchID) {
+        return new WeeklyStorageReport(reportID, branchID, LocalDate.now());
+    }
+    public DefectiveProductsReport createNewDefectiveReport(int reportID, int branchID) {
+        return new DefectiveProductsReport(reportID, branchID, LocalDate.now());
     }
 
 //    public DefectiveProductsReport updateProductsInReport(DefectiveProductsReport report, Branch branch) {
@@ -40,9 +39,5 @@ public class ReportController {
 //        }
 //        return report;
 //    }
-    public WeeklyStorageReport createNewWeeklyReport(LocalDate date) {
-        Map<Product, Integer> productAmount = new HashMap<>();
-        return new WeeklyStorageReport(date, productAmount);
-    }
 
 }

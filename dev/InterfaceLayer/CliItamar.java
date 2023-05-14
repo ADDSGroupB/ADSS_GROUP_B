@@ -70,6 +70,7 @@ public class CliItamar {
                                         System.out.print("Enter the amount to order : ");
                                         int amount = HelperFunctions.positiveItegerInsertion();
                                         report_curr.addMissingProduct(product, amount);
+                                        mainController.getReportDao().addLineToMissingReport(report_curr.getReportID(), productID, amount);
                                     }
                                     else
                                     {
@@ -77,6 +78,7 @@ public class CliItamar {
                                     }
                                 }
                                 branch.getBranchReportManager().setCurrentMissingReport(report_curr);
+                                mainController.getReportDao().addReport(report_curr);
                                 System.out.println("The products have been successfully added to the report");
                                 break;
                             case 3:
@@ -117,24 +119,24 @@ public class CliItamar {
                                 branch.getBranchReportManager().addNewReport(report);
                                 continue;
                             case 2: {
-                                DefectiveProductsReport reprt_curr = branch.getBranchReportManager().getCurrentDefectiveReport();
+                                DefectiveProductsReport report_curr = branch.getBranchReportManager().getCurrentDefectiveReport();
                                 System.out.println("Updating the damaged items report...");
-                                //TODO:getAllDamagedItems(branchID);
-                                List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItems();
-                                List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItems();
+                                List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
+                                List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
                                 if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
                                     System.out.println("We currently have no damaged or expired items to report...");
                                 } else {
                                     for (Item item : defectiveItems){
-                                        reprt_curr.addDefectiveItem(item);
+                                        report_curr.addDefectiveItem(item);
                                     }
                                     for (Item item : expiredItems){
-                                        reprt_curr.addDefectiveItem(item);
+                                        report_curr.addDefectiveItem(item);
                                     }
                                     //reprt_curr = mainController.getBranchController().getReportController().updateProductsInReport(reprt_curr, branch);
                                     System.out.println("The update was successful");
                                 }
-                                branch.getBranchReportManager().setCurrentDefectiveReport(reprt_curr);
+                                branch.getBranchReportManager().setCurrentDefectiveReport(report_curr);
+                                mainController.getReportDao().addReport(report_curr);
                                 break;
                             }
                             case 3:
@@ -193,13 +195,20 @@ public class CliItamar {
                                         scanner.nextLine(); // clear input buffer
                                         continue;
                                     }
+                                    if (curr.getWeeklyReportMap().containsKey(category)){
+                                        System.out.println("The category is already in the report");
+                                        scanner.nextLine(); // clear input buffer
+                                        continue;
+                                    }
                                     List<Product> products = mainController.getProductsDao().getAllProductsInCategory(categoryID);
                                     Map<Product, Integer> productCurrAmount = new HashMap<>();
-//                                    for (Product product : products){
-//                                        int productAmount = mainController.getProductsDao().getProductAmountInBranch(product.getProductID(), branch.getBranchID());
-//                                        productCurrAmount.put(product, productAmount);
-//                                    }
-                                    branch.getBranchReportManager().getCurrentWeeklyReport().addCategoryToReport(category, productCurrAmount);
+                                    for (Product product : products){
+                                        int productAmount = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                                        productAmount += mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                                        productCurrAmount.put(product, productAmount);
+                                        mainController.getReportDao().addLineToWeeklyReport(curr.getReportID(), categoryID, product.getProductID(), productAmount);
+                                    }
+                                    curr.addCategoryToReport(category, productCurrAmount);
                                 }
                                 branch.getBranchReportManager().setCurrentWeeklyReport(curr);
                                 System.out.println("Adding categories to the report has been successfully completed");
