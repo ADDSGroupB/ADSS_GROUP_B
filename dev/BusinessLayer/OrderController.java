@@ -1,16 +1,11 @@
 package BusinessLayer;
 
-import DataAccessLayer.PeriodicOrderDAO;
-import DataAccessLayer.SupplierDAO;
-import DataAccessLayer.SupplierOrderDAO;
-import DataAccessLayer.SupplierProductDAO;
+import DataAccessLayer.*;
 import Utillity.Pair;
 import Utillity.Response;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class OrderController {
     private final HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
@@ -28,6 +23,14 @@ public class OrderController {
         supplierDAO = new SupplierDAO();
         id = supplierOrderDAO.getLastOrderID() + 1;
     }
+
+//    public static void main(String[] args) {
+//        OrderController orderController = new OrderController();
+//        HashMap<Integer, Integer> productsToAdd = new HashMap<>();
+//        productsToAdd.put(5, 5);
+//        productsToAdd.put(29, 5);
+//        orderController.addProductsToOrder(1, productsToAdd);
+//    }
 
     public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) { return supplierOrderDAO.getNoneCollectedOrdersForToday(branchID); }
     public HashMap<Integer, Order> getOrdersFromSupplier(int supplierID) { return supplierOrderDAO.getOrdersFromSupplier(supplierID); }
@@ -133,6 +136,103 @@ public class OrderController {
         return new Response(0);
 
     }
+
+    public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd)
+    {
+        Order order = supplierOrderDAO.getOrderByID(orderID);
+        if(order == null)
+            return new Response("Periodic Order Updating Fails, Reason: OrderID Is Not Exists");
+        for(int productID : productsToAdd.keySet())
+            if (supplierProductDAO.getSupplierProduct(order.getSupplierId(), productID) == null)
+                return new Response("The supplier with the ID: " + order.getSupplierId() + " not supplying the product with the ID: " + productID);
+        Supplier supplierToOrder = supplierDAO.getSupplierByID(order.getSupplierId());
+        ArrayList<SupplierProduct> productsInOrder = order.getItemsInOrder();
+        TreeSet<SupplierProduct> productsToOrder = new TreeSet<>(Comparator.comparingInt(SupplierProduct::getProductID));
+//        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>(order.getItemsInOrder());
+        for (Map.Entry<Integer, Integer> productAndAmount : productsToAdd.entrySet())
+        {
+            int productID = productAndAmount.getKey();
+            int amount = productAndAmount.getValue();
+            SupplierProduct productInSupplier = supplierProductDAO.getSupplierProduct(order.getSupplierId(), productID);
+            if(productInSupplier == null || productInSupplier.getAmount() == 0) continue;
+            SupplierProduct product = new SupplierProduct(productInSupplier);
+            if(productInSupplier.getAmount() > amount) product.setAmount(amount);
+            productsToOrder.add(product);
+        }
+        //Update the products amount for the order - checks the amount that the supplier got
+        for(SupplierProduct productInOrder : productsInOrder)
+        {
+            SupplierProduct productInSupplier = supplierProductDAO.getSupplierProduct(order.getSupplierId(), productInOrder.getProductID());
+            if(productInSupplier == null || productInSupplier.getAmount() == 0) continue;
+            if(productInSupplier.getAmount() < productInOrder.getAmount())
+                productsToOrder.add(new SupplierProduct(productInSupplier));
+            else
+                productsToOrder.add(new SupplierProduct(productInOrder));
+        }
+        ArrayList<SupplierProduct> productsList = new ArrayList<>(productsToOrder);
+        double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscountNew(productsList);
+        int totalAmountToOrder = supplierToOrder.getTotalAmountNew(productsList);
+        if (supplierToOrder.getTotalOrderDiscountPerOrderPrice() != null && supplierToOrder.getTotalDiscountInPrecentageForOrder() != null)
+        {
+            if (priceAfterDiscount > supplierToOrder.getTotalOrderDiscountPerOrderPrice().getFirst())
+                priceAfterDiscount = priceAfterDiscount - supplierToOrder.getTotalOrderDiscountPerOrderPrice().getSecond();
+            if (totalAmountToOrder > supplierToOrder.getTotalDiscountInPrecentageForOrder().getFirst())
+                priceAfterDiscount = ((100 - supplierToOrder.getTotalDiscountInPrecentageForOrder().getSecond()) / 100) * priceAfterDiscount;
+        }
+        double priceBeforeDiscount = supplierToOrder.calculatePriceBeforeDiscountNew(productsList);
+        Order updatedOrderForSupplier = new Order(order, productsList, priceBeforeDiscount, priceAfterDiscount);
+        Response response = supplierOrderDAO.removeOrder(orderID);
+        if(response.errorOccurred()) return response;
+        response = supplierOrderDAO.addOrder(updatedOrderForSupplier);
+        if(response.errorOccurred()) return response;
+        return new Response(updatedOrderForSupplier.getOrderID());
+    }
+
+    public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove)
+    {
+        Order order = supplierOrderDAO.getOrderByID(orderID);
+
+        if(order == null)
+            return new Response("Periodic Order Updating Fails, Reason: OrderID Is Not Exists");
+        boolean found = false;
+        for(int productID : productsToRemove) {
+            for (SupplierProduct supplierProduct : order.getItemsInOrder())
+            {
+                if (supplierProduct.getProductID() == productID) {
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) return new Response("In this order there is no such product with the ID: " + productID);
+            else found = false;
+        }
+
+        Supplier supplierToOrder = supplierDAO.getSupplierByID(order.getSupplierId());
+        ArrayList<SupplierProduct> productsInOrder = order.getItemsInOrder();
+        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>(order.getItemsInOrder());
+        for (int productID : productsToRemove)
+            productsToOrder.removeIf(product -> product.getProductID() == productID);
+        //Update the products amount for the order - checks the amount that the supplier got
+        double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscountNew(productsToOrder);
+        int totalAmountToOrder = supplierToOrder.getTotalAmountNew(productsToOrder);
+        if (supplierToOrder.getTotalOrderDiscountPerOrderPrice() != null && supplierToOrder.getTotalDiscountInPrecentageForOrder() != null)
+        {
+            if (priceAfterDiscount > supplierToOrder.getTotalOrderDiscountPerOrderPrice().getFirst())
+                priceAfterDiscount = priceAfterDiscount - supplierToOrder.getTotalOrderDiscountPerOrderPrice().getSecond();
+            if (totalAmountToOrder > supplierToOrder.getTotalDiscountInPrecentageForOrder().getFirst())
+                priceAfterDiscount = ((100 - supplierToOrder.getTotalDiscountInPrecentageForOrder().getSecond()) / 100) * priceAfterDiscount;
+        }
+        double priceBeforeDiscount = supplierToOrder.calculatePriceBeforeDiscountNew(productsToOrder);
+        Order updatedOrderForSupplier = new Order(order, productsToOrder, priceBeforeDiscount, priceAfterDiscount);
+        Response response = supplierOrderDAO.removeOrder(orderID);
+        if(response.errorOccurred()) return response;
+        if(priceAfterDiscount == 0){
+            response = supplierOrderDAO.addOrder(updatedOrderForSupplier);
+            if (response.errorOccurred()) return response;
+        }
+        return new Response(updatedOrderForSupplier.getOrderID());
+    }
+
 
 
     public Response executePeriodicOrder(int periodicOrderID)

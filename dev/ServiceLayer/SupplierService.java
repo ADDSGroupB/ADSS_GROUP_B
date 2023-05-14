@@ -3,13 +3,11 @@ package ServiceLayer;
 import BusinessLayer.FacadeSupplier;
 import BusinessLayer.Order;
 import BusinessLayer.PeriodicOrder;
-import BusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TimerTask;
 
 
 public class SupplierService implements iOrderService{
@@ -98,6 +96,12 @@ public class SupplierService implements iOrderService{
     public Order getOrderByID(int orderID) { return facadeSupplier.getOrderByID(orderID); }
     @Override
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return facadeSupplier.getAllPeriodicOrderForToday(); }
+
+    @Override
+    public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return facadeSupplier.updateProductsInOrder(orderID, productsToAdd); }
+
+    @Override
+    public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return facadeSupplier.removeProductsFromOrder(orderID, productsToRemove); }
 
     public void printOrders() {
         facadeSupplier.printOrders();

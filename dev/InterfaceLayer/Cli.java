@@ -30,6 +30,12 @@ public class Cli {
         startDailyTask();
     }
 
+    public static void main(String[] args) {
+        Cli cli = new Cli();
+        cli.updateProductsInOrder();
+        cli.removeProductsFromOrder();
+    }
+
     public void print(String message){
         System.out.println(message);
     }
@@ -46,6 +52,7 @@ public class Cli {
         //reader.nextLine();
         if (n == 1) {
             loadData();
+            start();
             ArrayList<HashMap<Integer, Integer>> shortage = enterShortage();
             boolean valid = false;
             while (!valid) {
@@ -133,63 +140,22 @@ public class Cli {
         return shortage;
     }
 
-    private void loadData() {//  supplier1   //
-//        ArrayList<DayOfWeek> deliveryDays1 =new ArrayList<>();
-//        deliveryDays1.add(DayOfWeek.MONDAY);
-//        deliveryDays1.add(DayOfWeek.FRIDAY);
-//        HashMap <Integer, SupplierProductService> supllyingProducts1 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount1 =new HashMap<>();
-//        discountPerAmount1.put(20, 5.0);
-//        supllyingProducts1.put(5, new SupplierProductService("bamba" ,5, 7, 4.5, 10, discountPerAmount1, "Osem", 100, 0.3));
-//        supllyingProducts1.put(29, new SupplierProductService("shoko" ,29, 11, 12, 20, discountPerAmount1, "Osem", 100, 0.3));
-//        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1, "FixedDay", 0);
-//        ArrayList<ServiceContact> contacts1 =new ArrayList<>();
-//        contacts1.add(new ServiceContact("mor", "mor@gmail.com", "052-3801919"));
-//        supplierService.addSupplier("gal halifa", "beit ezra", "123456", agreement1, contacts1);
-//
-//        //  supplier2   //
-//        ArrayList<DayOfWeek> deliveryDays2 =new ArrayList<>();
-//        HashMap <Integer, SupplierProductService> supllyingProducts2 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount2 =new HashMap<>();
-//        discountPerAmount2.put(10, 15.0);
-//        discountPerAmount2.put(30, 20.0);
-//        supllyingProducts2.put(5, new SupplierProductService("bamba" ,5, 15, 5, 20, discountPerAmount2, "Osem", 100, 0.3));
-//        supllyingProducts2.put(11, new SupplierProductService("coffe" ,11, 9, 10, 50, discountPerAmount2, "Osem", 100, 0.3));
-//        ServiceAgreement agreement2 = new ServiceAgreement("Cash", true, deliveryDays2, supllyingProducts2, "FixedDay", 0);
-//        ArrayList<ServiceContact> contacts2 =new ArrayList<>();
-//        contacts2.add(new ServiceContact("miki", "miki@gmail.com", "054-2453536" ));
-//        supplierService.addSupplier("mor", "rehovot", "205155", agreement2, contacts2);
-//
-//        //  supplier3   //
-//        ArrayList<DayOfWeek> deliveryDays3 =new ArrayList<>();
-//        deliveryDays3.add(DayOfWeek.MONDAY);
-//        deliveryDays3.add(DayOfWeek.TUESDAY);
-//        HashMap <Integer, SupplierProductService> supllyingProducts3 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount3 =new HashMap<>();
-//        Pair<Integer, Double> totalDiscountPerAmount =new Pair<>(30,5.0);
-//        Pair<Double, Double> totalDiscountPerPrice =new Pair<>(200.0,20.0);
-//        discountPerAmount3.put(20, 5.0);
-//        supllyingProducts3.put(5, new SupplierProductService("bamba" ,5, 16, 8, 30, discountPerAmount3, "Osem", 100, 0.3));
-//        supllyingProducts3.put(11, new SupplierProductService("coffee" ,11, 6, 5, 40, discountPerAmount3, "Osem", 100, 0.3));
-//        ServiceAgreement agreement3 = new ServiceAgreement("Cash", true, deliveryDays3, supllyingProducts3 , totalDiscountPerAmount, totalDiscountPerPrice, "FixedDay", 0);
-//        ArrayList<ServiceContact> contacts3 =new ArrayList<>();
-//        contacts3.add(new ServiceContact("noa aviv", "noa@gmail.com", "050-5838687"));
-//        supplierService.addSupplier("itay", "beit ezra", "121212", agreement3, contacts3);
-//         ///////////////////////////    for assignment 1    ///////////////////////////////////////////////
-
+    private void loadData() {
         //  supplier1   //
         ArrayList<DayOfWeek> deliveryDays1 = new ArrayList<>();
         deliveryDays1.add(DayOfWeek.MONDAY);
         deliveryDays1.add(DayOfWeek.FRIDAY);
         HashMap<Integer, SupplierProductService> supllyingProducts1 = new HashMap<>();
         HashMap<Integer, Double> discountPerAmount1 = new HashMap<>();
-        //discountPerAmount1.put(30, 95.0);
-        supllyingProducts1.put(5, new SupplierProductService("bamba", 5, 7, 20, 30, discountPerAmount1, "Osem", 100, 0.3));
-        supllyingProducts1.put(29, new SupplierProductService("shoko", 29, 11, 12, 20, discountPerAmount1, "Osem", 100, 0.3));
-        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1, "FixedDay", 0);
+        discountPerAmount1.put(10, 15.0);
+        supllyingProducts1.put(5, new SupplierProductService("Bamba", 5, 7, 6.9, 30, discountPerAmount1, "Osem", 120, 0.4));
+        supllyingProducts1.put(29, new SupplierProductService("Shoko", 29, 11, 4.9, 20, discountPerAmount1, "Tnuva", 25, 0.3));
+        supllyingProducts1.put(17, new SupplierProductService("Coffee", 17, 86, 12.5, 50, discountPerAmount1, "Elite", 90, 0.7));
+        supllyingProducts1.put(68, new SupplierProductService("Nutella", 68, 5, 29.9, 45, discountPerAmount1, "Ferraro", 100, 1.0));
+        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1, "By Days", 0);
         ArrayList<ServiceContact> contacts1 = new ArrayList<>();
-        contacts1.add(new ServiceContact("mor", "mor@gmail.com", "052-3801919"));
-        supplierService.addSupplier("gal halifa", "beit ezra", "123456", agreement1, contacts1);
+        contacts1.add(new ServiceContact("Itamar Barami", "itamar@gmail.com", "052-3801919"));
+        supplierService.addSupplier("Gal Halifa", "Beit Ezra", "123456", agreement1, contacts1);
 
         //  supplier2   //
         ArrayList<DayOfWeek> deliveryDays2 = new ArrayList<>();
@@ -197,12 +163,13 @@ public class Cli {
         HashMap<Integer, Double> discountPerAmount2 = new HashMap<>();
 //        discountPerAmount2.put(10, 15.0);
 //        discountPerAmount2.put(30, 20.0);
-        supllyingProducts2.put(5, new SupplierProductService("bamba", 5, 15, 5, 20, discountPerAmount2, "Osem", 100, 0.3));
-        supllyingProducts2.put(11, new SupplierProductService("coffe", 11, 9, 10, 50, discountPerAmount2, "Osem", 100, 0.3));
-        ServiceAgreement agreement2 = new ServiceAgreement("Cash", true, deliveryDays2, supllyingProducts2, "FixedDay", 3);
+        supllyingProducts2.put(5, new SupplierProductService("Bamba", 5, 15, 7, 20, discountPerAmount2, "Osem", 120, 0.4));
+        supllyingProducts2.put(17, new SupplierProductService("Coffee", 17, 100, 10, 40, discountPerAmount2, "Elite", 90, 0.3));
+        supllyingProducts2.put(45, new SupplierProductService("Shampoo", 45, 9, 17.9, 100, discountPerAmount2, "Head and Shoulders", 180, 1.2));
+        ServiceAgreement agreement2 = new ServiceAgreement("net 30 EOM", true, deliveryDays2, supllyingProducts2, "ByOrder", 3);
         ArrayList<ServiceContact> contacts2 = new ArrayList<>();
-        contacts2.add(new ServiceContact("miki", "miki@gmail.com", "054-2453536"));
-        supplierService.addSupplier("mor shuker", "rehovot", "205155", agreement2, contacts2);
+        contacts2.add(new ServiceContact("Miki daniarov", "miki@gmail.com", "054-2453536"));
+        supplierService.addSupplier("Mor Shuker", "Rehovot", "205155", agreement2, contacts2);
 
         //  supplier3   //
         ArrayList<DayOfWeek> deliveryDays3 = new ArrayList<>();
@@ -210,15 +177,36 @@ public class Cli {
         deliveryDays3.add(DayOfWeek.MONDAY);
         HashMap<Integer, SupplierProductService> supllyingProducts3 = new HashMap<>();
         HashMap<Integer, Double> discountPerAmount3 = new HashMap<>();
-        //    Pair<Integer, Double> totalDiscountPerAmount =new Pair<>(30,5.0);
-        //     Pair<Double, Double> totalDiscountPerPrice =new Pair<>(200.0,20.0);
+        Pair<Integer, Double> totalDiscountPerAmount3 =new Pair<>(30,5.0);
+        Pair<Double, Double> totalDiscountPerPrice3 =new Pair<>(200.0,20.0);
         discountPerAmount3.put(30, 20.0);
-        supllyingProducts3.put(5, new SupplierProductService("bamba", 5, 16, 2, 30, discountPerAmount3, "Osem", 100, 0.3));
-        supllyingProducts3.put(11, new SupplierProductService("coffee", 11, 6, 5, 40, discountPerAmount3, "Osem", 100, 0.3));
-        ServiceAgreement agreement3 = new ServiceAgreement("Cash", true, deliveryDays3, supllyingProducts3, "FixedDay", 0);
+        supllyingProducts3.put(5, new SupplierProductService("Bamba", 5, 31, 5.9, 30, discountPerAmount3, "Osem", 120, 0.4));
+        supllyingProducts3.put(17, new SupplierProductService("Coffee", 17, 99, 5, 80, discountPerAmount3, "Elite", 90, 0.7));
+        supllyingProducts3.put(68, new SupplierProductService("Nutella", 68, 4, 39.9, 20, discountPerAmount3, "Ferraro", 100, 1.0));
+        ServiceAgreement agreement3 = new ServiceAgreement("TransitToAccount", true, deliveryDays3, supllyingProducts3, totalDiscountPerAmount3, totalDiscountPerPrice3, "ByDays", 0);
         ArrayList<ServiceContact> contacts3 = new ArrayList<>();
-        contacts3.add(new ServiceContact("noa aviv", "noa@gmail.com", "050-5838687"));
-        supplierService.addSupplier("itay gershon", "beit ezra", "121212", agreement3, contacts3);
+        contacts3.add(new ServiceContact("Noa Aviv", "noa@gmail.com", "050-5838687"));
+        supplierService.addSupplier("Itay Gershon", "Beit ezra", "121212", agreement3, contacts3);
+
+
+        //  supplier4   //
+        ArrayList<DayOfWeek> deliveryDays4 = new ArrayList<>();
+        deliveryDays4.add(DayOfWeek.SUNDAY);
+        deliveryDays4.add(DayOfWeek.WEDNESDAY);
+        deliveryDays4.add(DayOfWeek.THURSDAY);
+        HashMap<Integer, SupplierProductService> supllyingProducts4 = new HashMap<>();
+        HashMap<Integer, Double> discountPerAmount4 = new HashMap<>();
+        Pair<Integer, Double> totalDiscountPerAmount4 =new Pair<>(30,5.0);
+        Pair<Double, Double> totalDiscountPerPrice4 =new Pair<>(200.0,20.0);
+        discountPerAmount4.put(10, 20.0);
+        supllyingProducts4.put(5, new SupplierProductService("Bamba", 5, 71, 4.9, 40, discountPerAmount4, "Osem", 120, 0.4));
+        supllyingProducts4.put(17, new SupplierProductService("Coffee", 17, 24, 9.9, 35, discountPerAmount4, "Elite", 90, 0.7));
+        supllyingProducts4.put(68, new SupplierProductService("Nutella", 68, 104, 23.9, 10, discountPerAmount4, "Ferraro", 100, 1.0));
+        ServiceAgreement agreement4 = new ServiceAgreement("TransitToAccount", true, deliveryDays4, supllyingProducts4, totalDiscountPerAmount4, totalDiscountPerPrice4, "ByDays", 0);
+        ArrayList<ServiceContact> contacts4 = new ArrayList<>();
+        contacts3.add(new ServiceContact("Dan Weizmann", "dan@gmail.com", "050-5839494"));
+        supplierService.addSupplier("Guy Biton", "Beer Sheva", "7891234", agreement4, contacts4);
+
     }
 
 
@@ -399,9 +387,9 @@ public class Cli {
         print("please enter the discount you want to delete");
         String s=reader.nextLine();
         String[] val = s.split(":");
-        int ammount = Integer.parseInt(val[0]);
+        int amount = Integer.parseInt(val[0]);
         double discount = Double.parseDouble(val[1]);
-        Response res = supplierService.removeDiscounts(supplierID, productId, ammount, discount);
+        Response res = supplierService.removeDiscounts(supplierID, productId, amount, discount);
         if (res.errorOccurred())
             print(res.getErrorMessage());
         else{
@@ -811,6 +799,62 @@ public class Cli {
         Response response = orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
         if(response.errorOccurred()) System.out.println(response.getErrorMessage());
         else System.out.println("Periodic Order With The ID " + response.getSupplierId() + " Has Successfully Been Created");
+    }
+
+    private void updateProductsInOrder()
+    {
+        print("Please Enter Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+        while (!correct)
+        {
+            print("Choose Products And Amounts According To The Format: ProductID:Amount");
+            String[] arr = reader.nextLine().split("\\s*,\\s*");
+            for(String s1 : arr)
+            {
+                try
+                {
+                    String[] val = s1.split(":");
+                    int productID = Integer.parseInt(val[0]);
+                    int amount = Integer.parseInt(val[1]);
+                    productsAndAmount.put(productID, amount);
+                    correct = true;
+                }
+                catch (Exception e)
+                {
+                    System.out.println("Please Enter Only According To The Format!");
+                    productsAndAmount.clear();
+                }
+            }
+        }
+
+        Response response = orderService.updateProductsInOrder(orderID, productsAndAmount);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
+    }
+
+    private void removeProductsFromOrder()
+    {
+        print("Please Enter Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        ArrayList<Integer> products = new ArrayList<>();
+        while (!correct)
+        {
+            print("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
+            String[] arr = reader.nextLine().split("\\s*,\\s*");
+            for(String s1 : arr)
+            {
+                try { products.add(Integer.parseInt(s1)); correct = true; }
+                catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
+            }
+        }
+        Response response = orderService.removeProductsFromOrder(orderID, products);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
     }
 
     private void startDailyTask()

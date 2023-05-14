@@ -1,29 +1,26 @@
 package BusinessLayer;
 
-import Utillity.Pair;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
 
 public class Order {
-    private static int id = 1;
 
-    private String supplierName;
-    private String supplierAddress;
-    private int supplierId;
-    private int orderID;
-    private int branchID;
+    private final String supplierName;
+    private final String supplierAddress;
+    private final int supplierId;
+    private final int orderID;
+    private final int branchID;
     private boolean collected;
-    private LocalDate deliveryDate;
-    private String contactPhoneNumber;
+    private final LocalDate deliveryDate;
+    private final String contactPhoneNumber;
     private final LocalDate creationDate;
-    private ArrayList<Pair<SupplierProduct, Integer>> productsInOrder;
     private ArrayList<SupplierProduct> itemsInOrder;
 
 
 
-    private double totalPriceBeforeDiscount;
-    private double totalPriceAfterDiscount;
+    private final double totalPriceBeforeDiscount;
+    private final double totalPriceAfterDiscount;
 
 
     public Order(int orderID, String supplierName, String supplierAddress, int supplierId, String contactPhoneNumber, ArrayList<SupplierProduct> productsInOrder, double totalPriceBeforeDiscount, double totalPriceAfterDiscount, LocalDate deliveryDate, int branchID) {
@@ -55,6 +52,21 @@ public class Order {
         this.totalPriceAfterDiscount = totalPriceAfterDiscount;
     }
 
+    public Order(Order other, ArrayList<SupplierProduct> productsInOrder, double priceBeforeDiscount, double priceAfterDiscount) {
+        this.supplierName = other.supplierName;
+        this.supplierAddress = other.supplierAddress;
+        this.supplierId = other.supplierId;
+        this.orderID = other.orderID;
+        this.branchID = other.branchID;
+        this.collected = other.collected;
+        this.deliveryDate = other.deliveryDate;
+        this.contactPhoneNumber = other.contactPhoneNumber;
+        this.creationDate = other.creationDate;
+        this.itemsInOrder = productsInOrder;
+        this.totalPriceBeforeDiscount = priceBeforeDiscount;
+        this.totalPriceAfterDiscount = priceAfterDiscount;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -75,14 +87,6 @@ public class Order {
 
     }
 
-    public static int getId() {
-        return id;
-    }
-
-    public static void setId(int id) {
-        Order.id = id;
-    }
-
     public String getSupplierName() {
         return supplierName;
     }
@@ -95,9 +99,6 @@ public class Order {
         return supplierId;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
-    }
 
     public int getOrderID() {
         return orderID;
@@ -126,11 +127,6 @@ public class Order {
         return contactPhoneNumber;
     }
 
-
-
-    public ArrayList<Pair<SupplierProduct, Integer>> getProductsInOrder() {
-        return productsInOrder;
-    }
 
 
     public ArrayList<SupplierProduct> getItemsInOrder() {

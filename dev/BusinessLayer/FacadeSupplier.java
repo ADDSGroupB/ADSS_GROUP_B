@@ -162,6 +162,9 @@ public class FacadeSupplier {
         orderController.PrintOrders();
     }
 
+    public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderController.updateProductsInOrder(orderID, productsToAdd); }
+    public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderController.removeProductsFromOrder(orderID, productsToRemove); }
+
 
     public Response executePeriodicOrder(int periodicOrderID) {
         return orderController.executePeriodicOrder(periodicOrderID);

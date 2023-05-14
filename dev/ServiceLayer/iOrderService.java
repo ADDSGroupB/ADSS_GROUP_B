@@ -23,4 +23,8 @@ public interface iOrderService {
     Order getOrderByID(int orderID);
 
     HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday();
+
+    Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd);
+
+    Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove);
 }
