@@ -8,8 +8,6 @@ import java.util.*;
 
 public class ReportDaoImpl implements ReportDao {
     private Connection connection;
-    private ProductsDao productsDao;
-    private ItemsDao itemsDao;
     private MainController mainController;
     private Map<Integer, MissingProductsReport> identityMissingReportMap;
     private Map<Integer, DefectiveProductsReport> identityDefectiveReportMap;
@@ -26,8 +24,6 @@ public class ReportDaoImpl implements ReportDao {
         identityMissingReportMap = new HashMap<>();
         identityDefectiveReportMap = new HashMap<>();
         identityWeeklyReportMap = new HashMap<>();
-        productsDao = new ProductsDaoImpl();
-        itemsDao = new ItemsDaoImpl();
         mainController = m;
     }
 
@@ -217,7 +213,7 @@ public class ReportDaoImpl implements ReportDao {
                             }
                             productID = specificReportsTable.getInt("ProductID");
                             amountToOrder = specificReportsTable.getInt("AmountInBranch");
-                            reportProductsMap.put(productsDao.getProductByID(productID), amountToOrder);
+                            reportProductsMap.put(mainController.getProductsDao().getProductByID(productID), amountToOrder);
                         }
                         report = new WeeklyStorageReport(reportID, branchID, reportDate, weeklyCategoriesMap);
                         identityWeeklyReportMap.put(reportID, (WeeklyStorageReport)report);
@@ -277,7 +273,7 @@ public class ReportDaoImpl implements ReportDao {
                     WeeklyStorageReport weeklyReport = (WeeklyStorageReport) report;
                     identityWeeklyReportMap.put(weeklyReport.getReportID(), weeklyReport);
                     Map<Category, Map<Product, Integer>> weeklyReportMap = weeklyReport.getWeeklyReportMap();
-                    preparedStatement = connection.prepareStatement("INSERT INTO WeeklyReports (ReportID, CategoryID, ProductID, AmountToOrder) VALUES(?, ?, ?, ?)");
+                    preparedStatement = connection.prepareStatement("INSERT INTO WeeklyReports (ReportID, CategoryID, ProductID, AmountInBranch) VALUES(?, ?, ?, ?)");
                     for (Category category : weeklyReportMap.keySet()){
                         for (Map.Entry<Product, Integer> entry : weeklyReportMap.get(category).entrySet()) {
                             preparedStatement.setInt(1, weeklyReport.getReportID());
@@ -304,7 +300,7 @@ public class ReportDaoImpl implements ReportDao {
     public void addLineToWeeklyReport(int reportID, int categoryID, int productID, int amountInBranch) throws SQLException {
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO WeeklyReports (ReportID, CategoryID, ProductID, AmountToOrder) VALUES(?, ?, ?, ?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO WeeklyReports (ReportID, CategoryID, ProductID, AmountInBranch) VALUES(?, ?, ?, ?)");
             preparedStatement.setInt(1, reportID);
             preparedStatement.setInt(2, categoryID);
             preparedStatement.setInt(3, productID);
@@ -355,7 +351,16 @@ public class ReportDaoImpl implements ReportDao {
     }
     @Override
     public int getNewReportID() throws SQLException{
-        ResultSet rs = connection.createStatement().executeQuery("SELECT MAX(ReportID) FROM AllReports");
-        return (rs.getInt("ReportID") + 1);
+        try (Statement statement = connection.createStatement()) {
+            String sql = "SELECT MAX(ReportID) AS maxOrderID FROM AllReports";
+            ResultSet rs = statement.executeQuery(sql);
+            int maxOrderID = 0;
+            if (rs.next()) maxOrderID = rs.getInt("maxOrderID");
+            rs.close();
+            return maxOrderID+1;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -1;
     }
 }
