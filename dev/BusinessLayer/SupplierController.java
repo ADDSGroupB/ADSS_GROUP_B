@@ -408,7 +408,7 @@ public class SupplierController {
 
             for (int i = 0; i < supplierCanSupply.size() ; i++) {
                 Supplier currSup = supplierCanSupply.get(i);
-                amountLeftToOrder = Math.max(amountLeftToOrder - currSup.getAmountByProduct(productId), 0);
+                //               amountLeftToOrder = Math.max(amountLeftToOrder - currSup.getAmountByProduct(productId), 0);
                 for (int j = 0; j<i; j++ ){
                     Supplier prevSup = supplierCanSupply.get(j);
                     if (currSup.getSupplierClosestDaysToDelivery() == prevSup.getSupplierClosestDaysToDelivery()) {
@@ -416,9 +416,17 @@ public class SupplierController {
                             Collections.swap(supplierCanSupply, i, j);
                         }
                         if (currSup.getAmountByProduct(productId) == prevSup.getAmountByProduct(productId)) {
-                            if (currSup.calculatePricePerProduct(productId, amountLeftToOrder) < prevSup.calculatePricePerProduct(productId, amountLeftToOrder)){
+                            int amountCanSupply = Math.min(amountLeftToOrder, currSup.getAmountByProduct(productId));
+//                            System.out.println("im hereee1111111eeee");
+//                            System.out.println("cur");
+//                            System.out.println(currSup.calculatePricePerProduct(productId, amountCanSupply)+"\n");
+//                            System.out.println("prev");
+//                            System.out.println(prevSup.calculatePricePerProduct(productId, amountCanSupply)+"\n");
+                            if (currSup.calculatePricePerProduct(productId, amountCanSupply) < prevSup.calculatePricePerProduct(productId, amountCanSupply)){
+//                                System.out.println("im hereeee222222eeeeeeeee");
                                 Collections.swap(supplierCanSupply, i, j);
                             }
+                            amountLeftToOrder = Math.max(amountLeftToOrder - currSup.getAmountByProduct(productId), 0);
                         }
                     }
 

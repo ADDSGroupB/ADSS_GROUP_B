@@ -58,7 +58,7 @@ public class Order {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append("OrderId: ").append(orderID).append(", date: ").append(creationDate).append("\n");
+        s.append("OrderId: ").append(orderID).append(", creation date: ").append(creationDate).append(", delivery date: ").append(deliveryDate).append("\n");
         s.append("Supplier's details: \n");
         s.append("Supplier name: ").append(supplierName).append(", supplier address: ").append(supplierAddress).append(", supplierId: ").append(supplierId).append(", supplier's contact phone number: ").append(contactPhoneNumber).append("\n");
         s.append("Products details: \n");
@@ -72,6 +72,7 @@ public class Order {
         s.append("Total price before discount: ").append(totalPriceBeforeDiscount).append("\n");
         s.append("Total price after discount: ").append(totalPriceAfterDiscount).append("\n");
         return s.toString();
+
     }
 
     public static int getId() {

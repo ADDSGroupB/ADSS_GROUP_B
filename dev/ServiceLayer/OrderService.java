@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.TimerTask;
 
 public class OrderService  extends TimerTask {
-    private iOrderService orderService;
+    private final iOrderService orderService;
 
     public OrderService() {
         orderService = new SupplierService();
