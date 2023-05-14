@@ -27,22 +27,22 @@ public class WeeklyStorageReport extends Report {
         }
         reportCategories.put(category, productsAndAmonut);
     }
-    public String toString(Branch branch) {
-
-        StringBuilder output = new StringBuilder("** Weekly Storage Report **\n");
-        output.append("---------------------------").append("\n");
-        output.append("Production date: ").append(this.getReportDate()).append("\n");
-        output.append("---------------------------").append("\n");
-
-        for (Category category : reportCategories.keySet()){
-            output.append("** Category ID: ").append(category.getCategoryID()).append(" ** ").append("Category Name: ").append(category.getCategoryName()).append(" **\n");
-            for (Product product : reportCategories.get(category).keySet()) {
-                int amount = branch.getItemsInStore().get(product).size() + branch.getItemsInStorage().get(product).size();
-                output.append("   Product ID: ").append(product.getProductID()).append(", Product name: ").append(product.getProductName()).append(", Amount: ").append(amount).append("\n");
-                output.append("-------------------------------------------------------------").append("\n");
-            }
-        }
-        return output.toString();
-    }
+//    public String toString(Branch branch) {
+//
+//        StringBuilder output = new StringBuilder("** Weekly Storage Report **\n");
+//        output.append("---------------------------").append("\n");
+//        output.append("Production date: ").append(this.getReportDate()).append("\n");
+//        output.append("---------------------------").append("\n");
+//
+//        for (Category category : reportCategories.keySet()){
+//            output.append("** Category ID: ").append(category.getCategoryID()).append(" ** ").append("Category Name: ").append(category.getCategoryName()).append(" **\n");
+//            for (Product product : reportCategories.get(category).keySet()) {
+//                int amount = branch.getItemsInStore().get(product).size() + branch.getItemsInStorage().get(product).size();
+//                output.append("   Product ID: ").append(product.getProductID()).append(", Product name: ").append(product.getProductName()).append(", Amount: ").append(amount).append("\n");
+//                output.append("-------------------------------------------------------------").append("\n");
+//            }
+//        }
+//        return output.toString();
+//    }
     public Map<Product, Integer> getMap(){return productAmount;}
 }

@@ -22,4 +22,6 @@ public class ProductController {
     public boolean newProductToAllBranches(Product product) throws SQLException {
         return mainController.getProductMinAmountDao().addNewProductToAllBranches(product.getProductID());
     }
+
+
 }

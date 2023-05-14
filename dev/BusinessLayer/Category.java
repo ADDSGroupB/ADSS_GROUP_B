@@ -35,10 +35,6 @@ public class Category {
                 output.append("Product ID: ").append(product.getProductID()).append(", Product name: ").append(product.getProductName()).append("\n");
             }
         }
-        else
-        {
-            output.append("This category currently has no products " +"\n");
-        }
         return output.toString();
     }
 }

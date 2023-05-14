@@ -45,7 +45,7 @@ public class PopUpAlert {
 
         }
         else {
-            frame.setSize(550, 25 * productToOrder.size() + 50);
+            frame.setSize(550, 50 * productToOrder.size()+2 + 50);
         }
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setVisible(true);

@@ -1,5 +1,4 @@
-package DataAccess;
-import BusinessLayer.Category;
+package DataAccessLayer;
 import BusinessLayer.Product;
 import java.sql.SQLException;
 import java.util.List;

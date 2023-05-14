@@ -1,6 +1,6 @@
-package DataAccess;
+package DataAccessLayer;
 import BusinessLayer.Category;
-import BusinessLayer.Product;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;

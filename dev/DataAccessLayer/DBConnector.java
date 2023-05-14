@@ -1,4 +1,4 @@
-package DataAccess;
+package DataAccessLayer;
 import java.sql.*;
 public class DBConnector {
     private static final String DB_URL = "jdbc:sqlite:/Users/Dan/Desktop/Inventory.db";

@@ -1,8 +1,7 @@
-package DataAccess;
+package DataAccessLayer;
 
 import BusinessLayer.Category;
 import BusinessLayer.Discount;
-import BusinessLayer.Item;
 import BusinessLayer.Product;
 
 import java.sql.Connection;
@@ -221,12 +220,8 @@ public class DiscountDaoImpl implements DiscountsDao {
         } catch (Exception e) {
             System.out.println("Error while getting last discount of product in branch: " + e.getMessage());
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
         }
         return discount;
     }

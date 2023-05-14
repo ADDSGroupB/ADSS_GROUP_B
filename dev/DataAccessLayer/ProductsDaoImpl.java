@@ -1,4 +1,4 @@
-package DataAccess;
+package DataAccessLayer;
 
 import BusinessLayer.Category;
 import BusinessLayer.Product;

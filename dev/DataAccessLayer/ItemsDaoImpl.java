@@ -1,8 +1,6 @@
-package DataAccess;
+package DataAccessLayer;
 
-import BusinessLayer.StatusEnum;
-import BusinessLayer.Item;
-import BusinessLayer.Product;
+import BusinessLayer.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -15,13 +13,15 @@ public class ItemsDaoImpl implements ItemsDao{
     private Connection connection;
     private Map<Integer, Item> itemsMapFromDB;
     private ProductsDao productsDao;
+    private ProductMinAmountDao productMinAmountDao;
     public ItemsDaoImpl()throws SQLException
     {
         connection = DBConnector.connect();
         itemsMapFromDB = new HashMap<>();
         productsDao = new ProductsDaoImpl();
+        productMinAmountDao = new ProductMinAmountDaoImpl();
     }
-    public Map<Integer, Item> getItemsMapFromDB() {return itemsMapFromDB;}
+
     @Override
     public List<Item> getAllItems() throws SQLException {
         List<Item> items = new ArrayList<>();
@@ -107,6 +107,7 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
+
     @Override
     public Item addItem(int branchID, LocalDate expiredDate, LocalDate arrivalDate, double priceFromSupplier, double priceInBranch, int supplierID, Product product) throws SQLException {
         PreparedStatement statement = null;
@@ -138,8 +139,8 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
             if (rs != null) {rs.close();}
         }
-
     }
+
     @Override
     public Item updateItemStatus(int itemID, String status) throws SQLException {
         Item item ;
@@ -169,6 +170,7 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
+
     @Override
     public Item updateItemPriceAfterDiscount(int itemID, double priceAfterDiscount) throws SQLException {
         Item item;
@@ -190,7 +192,6 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-
 
     @Override
     public Item updateItemDefectiveDescription(int itemID, String description) throws SQLException {
@@ -214,14 +215,16 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-    public List<Item> getAllExpiredItems() throws SQLException
-    {
+
+    @Override
+    public List<Item> getAllExpiredItemsByBranchID(int branchID) throws SQLException {
         List<Item> items = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? ");
             statement.setString(1,"Expired");
+            statement.setInt(2,branchID);
             rs = statement.executeQuery();
             while (rs.next())
             {
@@ -245,14 +248,16 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-    public List<Item> getAllDamagedItems() throws SQLException
-    {
+
+    @Override
+    public List<Item> getAllDamagedItemsByBranchID(int branchID) throws SQLException {
         List<Item> items = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? ");
             statement.setString(1,"Damaged");
+            statement.setInt(2,branchID);
             rs = statement.executeQuery();
             while (rs.next())
             {
@@ -276,14 +281,16 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-    public List<Item> getAllSoldItems() throws SQLException
-    {
+
+    @Override
+    public List<Item> getAllSoldItemByBranchID(int branchID) throws SQLException {
         List<Item> items = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? ");
             statement.setString(1,"Sold");
+            statement.setInt(2,branchID);
             rs = statement.executeQuery();
             while (rs.next())
             {
@@ -307,14 +314,16 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
-    public List<Item> getAllStoreItems() throws SQLException
-    {
+
+    @Override
+    public List<Item> getAllStoreItemsByBranchID(int branchID) throws SQLException {
         List<Item> items = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ?");
             statement.setString(1,"Store");
+            statement.setInt(2,branchID);
             rs = statement.executeQuery();
             while (rs.next())
             {
@@ -337,15 +346,18 @@ public class ItemsDaoImpl implements ItemsDao{
             if (rs != null) {rs.close();}
             if (statement != null) {statement.close();}
         }
+
     }
-    public List<Item> getAllStorageItems() throws SQLException
-    {
+
+    @Override
+    public List<Item> getAllStorageItemsByBranchID(int branchID) throws SQLException {
         List<Item> items = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? ");
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? ");
             statement.setString(1,"Storage");
+            statement.setInt(2,branchID);
             rs = statement.executeQuery();
             while (rs.next())
             {
@@ -369,5 +381,222 @@ public class ItemsDaoImpl implements ItemsDao{
             if (statement != null) {statement.close();}
         }
     }
+
+    @Override
+    public Item getItemForSale(int productID, int branchID) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        Item itemToSell = null;
+        try
+        {
+            statement = connection.prepareStatement(
+                    "SELECT * FROM Items WHERE ProductID = ? AND BranchID = ? " +
+                            "AND ItemID = (SELECT MIN(ItemID) FROM Items WHERE ProductID = ? AND BranchID = ? AND Status =?)");
+            statement.setInt(1, productID);
+            statement.setInt(2, branchID);
+            statement.setInt(3, productID);
+            statement.setInt(4, branchID);
+            statement.setString(5, "Store");
+            rs = statement.executeQuery();
+            if (rs.next())
+            {
+                int itemToSellID = rs.getInt("ItemID");
+                if (itemsMapFromDB.containsKey(itemToSellID))
+                {
+                    itemToSell = itemsMapFromDB.get(itemToSellID);
+                }
+                else {
+                    itemToSell = getItemByID(itemToSellID);
+                    itemsMapFromDB.put(itemToSellID,itemToSell);
+                }
+            }
+            return itemToSell;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting item for sale: " + e.getMessage());
+            return null;
+        }
+        finally {
+            if (statement != null) {statement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
+    @Override
+    public Map<Integer, Item> getItemsMapFromDB() {
+        return itemsMapFromDB;
+    }
+
+    @Override
+    public void fromStorageToStore(Branch branch) throws SQLException
+    {
+        int minItemsStoreForAllProducts = branch.getMinItemsInShelf();
+        int maxItemsStoreForAllProducts = branch.getMaxItemsInShelf();
+        List<Product> missingProducts = new ArrayList<>();
+
+        List<Product> products = productsDao.getAllProducts();
+        // TODO : Use this function after New Sale
+        // TODO : Use this function after receiving an order from supplier -- >
+        //  in the default all the items will enter to the db with status "Storage " so after we receiving an order from supplier we need to do "Order" In the branch
+        List<Product> allProducts = productsDao.getAllProducts();
+        if (allProducts.size() >= 0) {
+            for (Product product : allProducts)
+            {
+                List<Item> storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(),product.getProductID());// 6
+                List<Item> storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(),product.getProductID()); // 50
+                if (storeItems.size() < minItemsStoreForAllProducts)
+                {
+                    int currNumItemsInStore = storeItems.size();
+                    int currNumItemsInStorage = storageItems.size();
+
+                    while (currNumItemsInStorage > 0 && currNumItemsInStore <= maxItemsStoreForAllProducts)
+                    {
+                        Item item = getMinIDItemInStorage(product.getProductID(),branch.getBranchID());
+                        item = updateItemStatus(item.getItemID(),"Store");
+                        currNumItemsInStore++;
+                        currNumItemsInStorage--;
+                    }
+                }
+                storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(),product.getProductID());
+                storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(),product.getProductID());
+                int totalSumItems = storeItems.size() + storageItems.size();
+                int minCurrProduct = productMinAmountDao.getMinAmountOfProductByBranch(product.getProductID(),branch.getBranchID());
+                if (totalSumItems < minCurrProduct)
+                {
+                    String status = productMinAmountDao.getOrderStatusByProductInBranch(product.getProductID(), branch.getBranchID());
+                    if (status.equals("Not Invited"))
+                    {
+                        missingProducts.add(product);
+                    }
+                }
+            }
+            if (missingProducts.size()>0)
+            {
+                PopUpAlert alert = new PopUpAlert();
+                alert.showPopupWindow(missingProducts); // pop up alert
+            }
+        }
+        //-- > create Order due to shortage
+
+
+        // for each product ++
+            // check how much items the product have in store - count !! ++
+            // if its under the minimum -- for example there is X(under min) items ++
+                // while the count not in the maximum or while the storage items(of the product) is empty  ++
+                    // take the min item id (of the product) and change status to "Store" ++
+            // make count of all items (of the product) in store and in storage -- > totalSumItems ++
+            // check in the min product table if totalSumItems is lower then the min in the table ++
+            // if totalSumItems is lower then the min in the table go to the min table and check the order status if its " Not Invited" -- > add to missingProducts array  ++
+                // if the order status if its "Invited" - continue ++
+        // Pop Up Alert with missingProducts array
+    }
+
+    @Override
+    public List<Item> getAllStoreItemsByBranchIDAndProductID(int branchID, int productID) throws SQLException {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? AND ProductID = ?");
+            statement.setString(1,"Store");
+            statement.setInt(2,branchID);
+            statement.setInt(3,productID);
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all store items by product : " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+
+    @Override
+    public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID, int productID) throws SQLException {
+        List<Item> items = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM Items WHERE Status = ? AND BranchID = ? AND ProductID = ?");
+            statement.setString(1,"Storage");
+            statement.setInt(2,branchID);
+            statement.setInt(3,productID);
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                Item item ;
+                int currItemID = rs.getInt("ItemID");
+                if (!itemsMapFromDB.containsKey(currItemID)) {
+                    item = this.getItemByID(rs.getInt("ItemID"));
+                    items.add(item);
+                    itemsMapFromDB.put(currItemID,item);
+                }
+                else {items.add(itemsMapFromDB.get(currItemID));}
+            }
+            return items;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting all storage items by product : " + e.getMessage());
+            return null;
+        } finally
+        {
+            if (rs != null) {rs.close();}
+            if (statement != null) {statement.close();}
+        }
+    }
+
+    @Override
+    public Item getMinIDItemInStorage(int productID, int branchID) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        Item itemToSell = null;
+        try
+        {
+            statement = connection.prepareStatement(
+                    "SELECT * FROM Items WHERE ProductID = ? AND BranchID = ? " +
+                            "AND ItemID = (SELECT MIN(ItemID) FROM Items WHERE ProductID = ? AND BranchID = ? AND Status =?)");
+            statement.setInt(1, productID);
+            statement.setInt(2, branchID);
+            statement.setInt(3, productID);
+            statement.setInt(4, branchID);
+            statement.setString(5, "Storage");
+            rs = statement.executeQuery();
+            if (rs.next())
+            {
+                int itemToSellID = rs.getInt("ItemID");
+                if (itemsMapFromDB.containsKey(itemToSellID))
+                {
+                    itemToSell = itemsMapFromDB.get(itemToSellID);
+                }
+                else {
+                    itemToSell = getItemByID(itemToSellID);
+                    itemsMapFromDB.put(itemToSellID,itemToSell);
+                }
+            }
+            return itemToSell;
+        }
+        catch (Exception e) {
+            System.out.println("Error while getting item with min id in storage: " + e.getMessage());
+            return null;
+        }
+        finally {
+            if (statement != null) {statement.close();}
+            if (rs != null) {rs.close();}
+        }
+    }
+
 }
 
