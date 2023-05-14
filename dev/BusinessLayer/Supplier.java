@@ -348,15 +348,6 @@ public class Supplier {
         return totalAmount;
     }
 
-    public int numberOfProductsCanSupply (HashMap<Integer, Integer> products){
-        int count = 0 ;
-        for (Map.Entry<Integer, Integer> entry : products.entrySet()) {
-            if (agreement.getSupllyingProducts().containsKey(entry))
-                count++;
-        }
-        return count;
-
-    }
     public double calculatePricePerProduct (int productId, int amountToOrder) {
         Pair<Integer, Integer> productAndAmount = new Pair<>(productId, amountToOrder);
         ArrayList<Pair<Integer, Integer>> toCalculate = new ArrayList<>();

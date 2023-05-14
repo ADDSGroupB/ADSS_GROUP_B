@@ -14,10 +14,10 @@ import java.util.Map;
 
 public class OrderController {
     private final HashMap<Integer, ArrayList<Order>> supplierOrders; //supplierId, Order
-    private SupplierOrderDAO supplierOrderDAO;
-    private PeriodicOrderDAO periodicOrderDAO;
-    private SupplierProductDAO supplierProductDAO;
-    private SupplierDAO supplierDAO;
+    private final SupplierOrderDAO supplierOrderDAO;
+    private final PeriodicOrderDAO periodicOrderDAO;
+    private final SupplierProductDAO supplierProductDAO;
+    private final SupplierDAO supplierDAO;
     private static int id;
 
     public OrderController(){
@@ -90,9 +90,9 @@ public class OrderController {
 //            ArrayList<Pair<SupplierProduct,Integer>> productsToOrder =new ArrayList<>();
             ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
 
-            for (int j = 0; j < suppliersProduct.size(); j++) {//run over all products to order from supplier
-                int productId = suppliersProduct.get(j).getFirst();
-                int amountToOrder = suppliersProduct.get(j).getSecond();
+            for (Pair<Integer, Integer> integerIntegerPair : suppliersProduct) {//run over all products to order from supplier
+                int productId = integerIntegerPair.getFirst();
+                int amountToOrder = integerIntegerPair.getSecond();
 
                 SupplierProduct product = new SupplierProduct(supplierToOrder.getProductById(productId));
                 product.setAmount(amountToOrder);
@@ -121,7 +121,8 @@ public class OrderController {
                 supplierOrders.put(supplierId, new ArrayList<>());
             }
             supplierOrders.get(supplierId).add(newOrderForSupplier);
-            supplierOrderDAO.addOrder(newOrderForSupplier);
+            Response response = supplierOrderDAO.addOrder(newOrderForSupplier);
+            if(response.errorOccurred()) return response;
         }
         return new Response(0);
 
@@ -169,7 +170,8 @@ public class OrderController {
         double priceBeforeDiscount = supplierToOrder.calculatePriceBeforeDiscountNew(productsToOrder);
         LocalDate deliveryDate = LocalDate.now().plusDays(supplierToOrder.getSupplierClosestDaysToDelivery());//create the arrival date
         Order newOrderForSupplier = new Order(id++, supplierToOrder.getName(), supplierToOrder.getAddress(), supplierToOrder.getSupplierId(), supplierToOrder.getContactPhoneNumber(), productsToOrder, priceBeforeDiscount, priceAfterDiscount,deliveryDate, periodicOrder.getBranchID());
-        supplierOrderDAO.addOrder(newOrderForSupplier);
+        Response response = supplierOrderDAO.addOrder(newOrderForSupplier);
+        if(response.errorOccurred()) return response;
         return new Response(newOrderForSupplier.getOrderID());
     }
 
@@ -216,7 +218,7 @@ public class OrderController {
     }
 
 
-
+    public Order getOrderByID(int orderID) { return supplierOrderDAO.getOrderByID(orderID); }
 
 
     public void PrintOrders() {
@@ -224,7 +226,7 @@ public class OrderController {
             for (Map.Entry<Integer, ArrayList<Order>> entry : supplierOrders.entrySet()) {
                 ArrayList<Order> orderArrayList = entry.getValue();
                 for(Order order: orderArrayList)
-                System.out.println(order);
+                    System.out.println(order);
                 System.out.println("\n");
             }
         }

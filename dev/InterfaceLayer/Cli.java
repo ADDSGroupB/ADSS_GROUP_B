@@ -20,11 +20,10 @@ public class Cli {
 
     private final ServiceContact serviceContact;
 
-    private final Connection connection;
 
 
     public Cli() {
-        connection = Database.connect();
+        Database.connect();
         Database.createTables();
         reader = new Scanner(System.in);
         supplierService = new SupplierService();
@@ -747,9 +746,9 @@ public class Cli {
         Timer timer = new Timer();
         // Schedule the task to execute every day at 10:00am
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 13);
-        calendar.set(Calendar.MINUTE, 17);
-        calendar.set(Calendar.SECOND, 30);
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         timer.scheduleAtFixedRate(supplierService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

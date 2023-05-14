@@ -1,6 +1,7 @@
 package ServiceLayer;
 
 import BusinessLayer.FacadeSupplier;
+import BusinessLayer.Order;
 import BusinessLayer.PeriodicOrder;
 import BusinessLayer.SupplierProduct;
 import Utillity.Response;
@@ -21,8 +22,19 @@ public class SupplierService extends TimerTask {
     @Override
     public void run()
     {
+        System.out.println("Periodic Orders That Executed Today: ");
         for(PeriodicOrder periodicOrder : getAllPeriodicOrderForToday().values())
-            executePeriodicOrder(periodicOrder.getPeriodicOrderID());
+        {
+            Response response = executePeriodicOrder(periodicOrder.getPeriodicOrderID());
+            if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+            else
+            {
+                System.out.println("Periodic Order ID: " + periodicOrder.getPeriodicOrderID());
+                System.out.println(getOrderByID(response.getSupplierId()));
+            }
+
+        }
+
     }
 
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement, ArrayList<ServiceContact> contactList) {
@@ -97,6 +109,8 @@ public class SupplierService extends TimerTask {
     {
         return facadeSupplier.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
     }
+
+    public Order getOrderByID(int orderID) { return facadeSupplier.getOrderByID(orderID); }
 
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return facadeSupplier.getAllPeriodicOrderForToday(); }
 
