@@ -7,19 +7,10 @@ enum ReportKind{Missing, Defective, Weekly}
 public abstract class Report
 {
     // Static variable to keep track of the last assigned ID
-    private static int lastAssignedId = 1;
     private final int reportID;
     protected ReportKind reportKind;
     private LocalDate reportDate;
     private int branchID;
-
-    public Report(LocalDate reportDate)
-    {
-        //TODO: add branchID ad an argument
-        this.reportID = lastAssignedId;
-        this.reportDate = reportDate;
-        Report.lastAssignedId++;
-    }
 
     public Report(int reportID, int branchID, LocalDate reportDate)
     {
