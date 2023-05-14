@@ -2,7 +2,6 @@ package BusinessLayer;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
 public class WeeklyStorageReport extends Report {
     private Map<Category, Map<Product, Integer>> reportCategories;
     public WeeklyStorageReport(int reportID, int branchID, LocalDate date,  Map<Category, Map<Product, Integer>> reportCategories)

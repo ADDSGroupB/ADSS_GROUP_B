@@ -6,12 +6,10 @@ import java.util.HashMap;
 enum ReportKind{Missing, Defective, Weekly}
 public abstract class Report
 {
-    // Static variable to keep track of the last assigned ID
     private final int reportID;
     protected ReportKind reportKind;
     private LocalDate reportDate;
     private int branchID;
-
     public Report(int reportID, int branchID, LocalDate reportDate)
     {
         this.reportID = reportID;
@@ -21,7 +19,6 @@ public abstract class Report
     public int getReportID(){
         return reportID;
     }
-
     public LocalDate getReportDate() {return reportDate;}
     public int getBranchID() {return branchID;}
     public String getReportType(){return reportKind.toString();}

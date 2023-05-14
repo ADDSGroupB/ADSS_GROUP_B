@@ -1,11 +1,8 @@
 package DataAccessLayer;
-
 import BusinessLayer.*;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
-
 public class ReportDaoImpl implements ReportDao {
     private Connection connection;
     private ProductsDao productsDao;
@@ -30,7 +27,6 @@ public class ReportDaoImpl implements ReportDao {
         itemsDao = new ItemsDaoImpl();
         mainController = m;
     }
-
     @Override
     public Map<Integer, MissingProductsReport> getAllMissingReports() throws SQLException {
         Map<Product, Integer> missingProductsMap = new HashMap<>();
@@ -43,7 +39,6 @@ public class ReportDaoImpl implements ReportDao {
             allReportTable = stmt1.executeQuery("SELECT * FROM AllReports WHERE ReportType = Missing");
             while (allReportTable.next()) {
                 int reportID = allReportTable.getInt("ReportID");
-                //if (!Objects.equals(allReportTable.getString("ReportType"), "Missing") || identityMissingReportMap.containsKey(reportID)) continue;
                 if (identityMissingReportMap.containsKey(reportID)) continue;
                 int branchID = allReportTable.getInt("BranchID");
                 LocalDate reportDate = LocalDate.parse(allReportTable.getString("ReportDate"));
@@ -69,7 +64,6 @@ public class ReportDaoImpl implements ReportDao {
             if (stmt2 != null) {stmt2.close();}
         }
     }
-
     @Override
     public Map<Integer, DefectiveProductsReport> getAllDefectiveReports() throws SQLException {
         ArrayList<Item> defectiveItemsMap = new ArrayList<>();
@@ -83,7 +77,6 @@ public class ReportDaoImpl implements ReportDao {
             allReportTable = stmt1.executeQuery("SELECT * FROM AllReports WHERE ReportType = Defective");
             while (allReportTable.next()) {
                 int reportID = allReportTable.getInt("ReportID");
-                //if (!Objects.equals(allReportTable.getString("ReportType"), "Defective") || identityDefectiveReportMap.containsKey(reportID)) continue;
                 if (identityDefectiveReportMap.containsKey(reportID)) continue;
                 int branchID = allReportTable.getInt("BranchID");
                 LocalDate reportDate = LocalDate.parse(allReportTable.getString("ReportDate"));
@@ -107,7 +100,6 @@ public class ReportDaoImpl implements ReportDao {
             if (stmt1 != null) {stmt1.close();}
             if (stmt2 != null) {stmt2.close();}        }
     }
-
     @Override
     public Map<Integer, WeeklyStorageReport> getAllWeeklyReports() throws SQLException {
         Map<Product, Integer> weeklyProductsMap = new HashMap<>();
@@ -122,7 +114,6 @@ public class ReportDaoImpl implements ReportDao {
             allReportTable = stmt1.executeQuery("SELECT * FROM AllReports WHERE ReportType = Weekly");
             while (allReportTable.next()) {
                 int reportID = allReportTable.getInt("ReportID");
-                //if (!Objects.equals(allReportTable.getString("ReportType"), "Weekly") || identityWeeklyReportMap.containsKey(reportID)) continue;
                 if (identityWeeklyReportMap.containsKey(reportID)) continue;
                 int branchID = allReportTable.getInt("BranchID");
                 LocalDate reportDate = LocalDate.parse(allReportTable.getString("ReportDate"));
@@ -154,7 +145,6 @@ public class ReportDaoImpl implements ReportDao {
             if (stmt2 != null) {stmt2.close();}
         }
     }
-
     @Override
     public Report getReportByID(int reportID) throws SQLException {
         Statement stmt1 = null;
@@ -237,7 +227,6 @@ public class ReportDaoImpl implements ReportDao {
             if (stmt2 != null) {stmt2.close();}
         }
     }
-
     @Override
     public void addReport(Report report) throws SQLException {
         String reportType = report.getReportType();
@@ -300,7 +289,6 @@ public class ReportDaoImpl implements ReportDao {
         }
     }
     @Override
-
     public void addLineToWeeklyReport(int reportID, int categoryID, int productID, int amountInBranch) throws SQLException {
         PreparedStatement preparedStatement = null;
         try {
@@ -319,7 +307,6 @@ public class ReportDaoImpl implements ReportDao {
         }
     }
     @Override
-
     public void addLineToMissingReport(int reportID, int productID, int amountInBranch) throws SQLException {
         PreparedStatement preparedStatement = null;
         try {
@@ -337,7 +324,6 @@ public class ReportDaoImpl implements ReportDao {
         }
     }
     @Override
-
     public void addLineToDefectiveReport(int reportID, int itemID) throws SQLException {
         PreparedStatement preparedStatement = null;
         try {

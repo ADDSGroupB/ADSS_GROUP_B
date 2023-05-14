@@ -53,5 +53,4 @@ public class Discount {
         returnString += "\n" + "Discount Amount : " + amount + " ";
         return returnString;
     }
-
 }

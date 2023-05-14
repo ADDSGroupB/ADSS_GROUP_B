@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MissingProductsReport extends Report {
-    // Integer-Left  --> productID
-    //Integer-Right --> Amount to order for each product
     private Map<Product,Integer> missingProducts;
-
     public MissingProductsReport(int reportID, int branchID, LocalDate reportDate, Map<Product,Integer> missingProducts)
     {
         super(reportID, branchID, reportDate);

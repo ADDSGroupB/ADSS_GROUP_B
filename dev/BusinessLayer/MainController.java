@@ -26,7 +26,7 @@ public class MainController {
             this.itemsDao = new ItemsDaoImpl();
             this.productMinAmountDao = new ProductMinAmountDaoImpl();
             this.productsDao = new ProductsDaoImpl();
-            this.reportDao = new ReportDaoImpl();
+            this.reportDao = new ReportDaoImpl(this);
             this.discountsDao = new DiscountDaoImpl();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -48,7 +48,6 @@ public class MainController {
     public CategoryController getCategoryController() {
         return categoryController;
     }
-
     public Item PriceCalculationAfterDiscount(Item item,int branchID) throws SQLException
     {
         if (item == null) {return null;}

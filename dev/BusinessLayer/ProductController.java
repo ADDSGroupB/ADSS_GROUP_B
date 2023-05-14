@@ -5,7 +5,6 @@ import java.util.List;
 
 public class ProductController {
     private MainController mainController;
-
     public ProductController(MainController m)
     {
         mainController = m;

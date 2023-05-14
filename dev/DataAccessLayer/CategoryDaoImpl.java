@@ -1,14 +1,11 @@
 package DataAccessLayer;
 import BusinessLayer.Category;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//The idea here is that I return categories in an empty form (only name and ID number) without the list of products of the category.
-//Later we will have to manipulate the DB to bring the products that are under the category.
 public class CategoryDaoImpl implements CategoryDao {
     private Connection connection;
     private Map<Integer, Category> categoryMapFromDB;
@@ -79,7 +76,6 @@ public class CategoryDaoImpl implements CategoryDao {
             if (rs != null) {rs.close();}
         }
     }
-
     @Override
     public Category addCategory(String categoryName) throws SQLException {
         PreparedStatement statement = null;
@@ -125,7 +121,6 @@ public class CategoryDaoImpl implements CategoryDao {
         } finally {
             if (statement != null) {statement.close();}
         }
-
     }
     public boolean checkNewCategoryName(String newCategoryName)throws SQLException
     {
@@ -146,5 +141,4 @@ public class CategoryDaoImpl implements CategoryDao {
             if (rs != null) {rs.close();}
         }
     }
-
 }

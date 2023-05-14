@@ -3,9 +3,7 @@ import java.sql.*;
 public class DBConnector {
     private static final String DB_URL = "jdbc:sqlite:/Users/Dan/Desktop/Inventory.db";
     private static Connection connection;
-
     private DBConnector() {}
-
     public static Connection connect()
     {
         if(connection == null)

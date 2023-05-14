@@ -14,7 +14,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     private Connection connection;
     private ProductsDao productsDao;
     private BranchesDao branchesDao;
-    // Map<Integer(BranchID), Map<Integer(ProductID), Pair<Integer(MinAmount), String(OrderStatus)>>> branchProductMinStatusFromDB ;
     private Map<Integer, Map<Integer, Pair<Integer, String>>> branchProductMinStatusFromDB ;
     public ProductMinAmountDaoImpl() throws SQLException
     {
@@ -25,7 +24,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     }
     @Override
     public Integer getMinAmountOfProductByBranch(int productID, int branchID) throws SQLException {
-        // Test Done
         if (branchProductMinStatusFromDB.containsKey(branchID))
         {
             Map<Integer, Pair<Integer, String>> currProduct = branchProductMinStatusFromDB.get(branchID);
@@ -59,10 +57,8 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
                 if (rs != null) {rs.close();}}
         }
     }
-
     @Override
     public Map<Product, Integer> getMinOfAllProductsByBranchID(int branchID) throws SQLException {
-        // Test Done
         PreparedStatement statement = null;
         ResultSet rs = null;
         Map<Product, Integer> productMinAmountMap = new HashMap<>();
@@ -124,10 +120,8 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
                 if (rs != null) {rs.close();}}
         }
     }
-
     @Override
     public boolean UpdateMinAmountToProductInBranch(int productID, int branchID,int newAmount) throws SQLException {
-        //Test Done
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
         ResultSet rs = null;
@@ -185,7 +179,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     @Override
     public boolean UpdateOrderStatusToProductInBranch(int productID, int branchID, String Status) throws SQLException
     {
-        //Test Done
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
         ResultSet rs = null;
@@ -244,11 +237,9 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
             if (rs != null) {rs.close();}
         }
     }
-
     @Override
     public boolean addNewProductToAllBranches(int productID) throws SQLException
     {
-        //Test Done
         PreparedStatement statement = null;
         PreparedStatement statement2 = null;
         ResultSet rs = null;
@@ -313,7 +304,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     }
     public boolean updateAllProductsToNewBranch(int branchID)throws SQLException
     {
-        //Test Done
         PreparedStatement statement = null;
         List<Product> products = productsDao.getAllProducts();
         try
@@ -344,7 +334,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     }
     public boolean checkAllBranchesKnowAllProducts()throws SQLException
     {
-        // Test Done
         List<Product> products = productsDao.getAllProducts();
         List<Branch> branches = branchesDao.getAllBranches();
         PreparedStatement statement = null;
@@ -358,7 +347,6 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
                 for (Product product : products)
                 {
                     Pair<Integer, String> currAmountStatus;
-                    // case branch know product
                     statement = connection.prepareStatement("SELECT * FROM  ProductMinAmount WHERE BranchID = ? AND ProductID = ?");
                     statement.setInt(1,branch.getBranchID());
                     statement.setInt(2,product.getProductID());
@@ -390,15 +378,9 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
             if (rs != null) {rs.close();}
         }
     }
-    public Map<Integer, Map<Integer, Pair<Integer, String>>> getBranchProductMinStatusFromDB()throws SQLException
-    {
-        //Test Done
-        return this.branchProductMinStatusFromDB;
-    }
-    // helper function
+    public Map<Integer, Map<Integer, Pair<Integer, String>>> getBranchProductMinStatusFromDB()throws SQLException {return this.branchProductMinStatusFromDB;}
     public void addToBranchProductMinStatusFromDB(int productID, int branchID,Pair<Integer, String> currPair) throws SQLException
     {
-        //Test Done
         if (!this.branchProductMinStatusFromDB.containsKey(branchID))
         {
             Map<Integer, Pair<Integer, String>> newProduct = new HashMap<>();
@@ -415,6 +397,4 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
             }
         }
     }
-
-
 }

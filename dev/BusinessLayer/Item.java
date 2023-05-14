@@ -28,8 +28,6 @@ public class Item {
         this.priceAfterDiscount = priceInBranch;
         this.product = product;
     }
-
-
     public Product getProduct() {return product;}
     public int getBranchID() {
         return BranchID;

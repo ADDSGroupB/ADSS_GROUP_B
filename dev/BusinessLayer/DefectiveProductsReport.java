@@ -4,28 +4,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class DefectiveProductsReport extends Report {
-    // Item-Left  --> specific item with all details
-    // String --> description
     private ArrayList<Item> defectiveOrExpiredProducts;
-
-//    public DefectiveProductsReport(LocalDate date, Map<Product, Queue<Item>> ExpiredItems, Map<Product, Queue<Item>> DemagedItems) {
-//        super(date);
-//        this.reportKind = ReportKind.Defective;
-//        this.defectiveOrExpiredProducts = new HashMap<>();
-//        for (Map.Entry<Product, Queue<Item>> entry : ExpiredItems.entrySet()) {
-//            Queue<Item> expiredItems = entry.getValue();
-//            for (Item item : expiredItems) {
-//                defectiveOrExpiredProducts.put(item, item.getDefectiveDiscription());
-//            }
-//        }
-//        for (Map.Entry<Product, Queue<Item>> entry : DemagedItems.entrySet()) {
-//            Queue<Item> damagedItems = entry.getValue();
-//            for (Item item : damagedItems) {
-//                defectiveOrExpiredProducts.put(item, item.getDefectiveDiscription());
-//            }
-//        }
-//    }
-
     public DefectiveProductsReport(int reportID, int branchID, LocalDate date, ArrayList<Item> defectiveItemsMap) {
         super(reportID, branchID, date);
         this.reportKind = ReportKind.Defective;
@@ -34,7 +13,6 @@ public class DefectiveProductsReport extends Report {
     public DefectiveProductsReport(int reportID, int branchID, LocalDate date) {
         this(reportID, branchID, date, new ArrayList<>());
     }
-
     public void addDefectiveItem(Item item){
         defectiveOrExpiredProducts.add(item);
     }

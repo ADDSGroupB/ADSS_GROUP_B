@@ -3,7 +3,6 @@ import BusinessLayer.Product;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
 public interface ProductsDao {
     public List<Product> getAllProducts() throws SQLException;
     public Product getProductByID(int productID) throws SQLException;

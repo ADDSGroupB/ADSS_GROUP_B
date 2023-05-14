@@ -3,7 +3,6 @@ package DataAccessLayer;
 import BusinessLayer.Category;
 import BusinessLayer.Discount;
 import BusinessLayer.Product;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class DiscountDaoImpl implements DiscountsDao {
     private Connection connection;
     private Map<Integer, Discount> discountsMapFromDB;
@@ -28,13 +26,11 @@ public class DiscountDaoImpl implements DiscountsDao {
     }
     @Override
     public Discount addNewDiscount(int branchID,LocalDate sDate, LocalDate eDate, double amount, Category categoryDiscount,Product productDiscount) throws SQLException {
-        //Test Done
         PreparedStatement statementCategory = null;
         ResultSet rsCategory = null;
         PreparedStatement statementProduct = null;
         ResultSet rsProduct = null;
         Discount discount;
-        // TODO : When we use this function we have to check that start date is before end date - we don't going to check this in this function
         try {
             if (categoryDiscount != null && productDiscount == null)
             {
@@ -80,7 +76,6 @@ public class DiscountDaoImpl implements DiscountsDao {
     }
     public Discount getDiscountByID(int discountID)throws SQLException
     {
-        //Test Done
         if (discountsMapFromDB.containsKey(discountID)){return discountsMapFromDB.get(discountID);}
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -121,13 +116,10 @@ public class DiscountDaoImpl implements DiscountsDao {
             if (rs != null) {rs.close();}
             if (statement != null) {statement.close();}
         }
-
     }
-
     @Override
     public List<Discount> getAllDiscount() throws SQLException
     {
-        //Test Done
         List<Discount> discounts = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -160,7 +152,6 @@ public class DiscountDaoImpl implements DiscountsDao {
             if (statement != null) {statement.close();}
         }
     }
-
     @Override
     public List<Discount> getAllDiscountByBranchID(int branchID) throws SQLException {
             List<Discount> discounts = new ArrayList<>();
@@ -198,7 +189,6 @@ public class DiscountDaoImpl implements DiscountsDao {
     }
     @Override
     public Discount getLastDiscountOfProductInBranch(int productID,int branchID) throws SQLException {
-        //Test Done
         PreparedStatement statement = null;
         ResultSet rs = null;
         Discount discount = null;
@@ -228,7 +218,6 @@ public class DiscountDaoImpl implements DiscountsDao {
 
     @Override
     public Discount getLastDiscountOfCategoryInBranch(int categoryID,int branchID) throws SQLException {
-        //Test Done
         PreparedStatement statement = null;
         ResultSet rs = null;
         Discount discount = null;
@@ -262,7 +251,6 @@ public class DiscountDaoImpl implements DiscountsDao {
 
     @Override
     public boolean checkValidDiscount(int discountID){
-        //Test Done
         if (discountsMapFromDB.containsKey(discountID))
         {
             Discount discount = discountsMapFromDB.get(discountID);
@@ -281,7 +269,6 @@ public class DiscountDaoImpl implements DiscountsDao {
     }
     @Override
     public Map<Integer, Discount> getDiscountsMapFromDB() {
-        //Test Done
         {return discountsMapFromDB;}
     }
 }

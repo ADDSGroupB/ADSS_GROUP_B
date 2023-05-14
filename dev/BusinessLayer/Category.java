@@ -12,14 +12,11 @@ public class Category {
         this.CategoryID = categoryID;
         this.CategoryName = name;
         this.productInCategory = new ArrayList<>();
-
     }
     public int getCategoryID() {return CategoryID;}
-
     public String getCategoryName() {
         return CategoryName;
     }
-
     public void setCategoryName(String categoryName) {
         CategoryName = categoryName;
     }

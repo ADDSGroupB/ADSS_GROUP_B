@@ -1,7 +1,6 @@
 package DataAccessLayer;
 
 import BusinessLayer.Branch;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,5 +97,4 @@ public class BranchesDaoImpl implements BranchesDao{
                 if (rs != null) {rs.close();}}
         }
     }
-
 }

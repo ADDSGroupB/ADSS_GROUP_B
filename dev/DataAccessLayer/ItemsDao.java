@@ -26,8 +26,8 @@ public interface ItemsDao {
     public void fromStorageToStore(Branch branch)throws SQLException;
     public List<Item> getAllStoreItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
-    //TODO : ADD FUNCTION TO POP UP ALERT !!!!!!
     public Item getMinIDItemInStorage(int productID,int branchID)throws SQLException;
+    public void checkExpiredItemsInAllBranches()throws SQLException;
 
 
 }

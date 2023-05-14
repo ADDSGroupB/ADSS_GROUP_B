@@ -9,7 +9,6 @@ public class Product
     private Category parentCategory;
     private Category subCategory;
     private Category subSubCategory;
-
     public Product(int productID, String name, String manufacturer, double productWeight, Category parentCategory, Category subCategory, Category subSubCategory) {
         this.productID = productID;
         this.productName = name;

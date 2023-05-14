@@ -6,14 +6,10 @@ import java.util.List;
 public class BranchController {
     private ReportController reportController;
     private MainController mainController;
-
-
     public BranchController(MainController m) {
-
         this.reportController = new ReportController();
         mainController =m ;
     }
-
     public ReportController getReportController() {
         return reportController;
     }
@@ -27,7 +23,6 @@ public class BranchController {
     public Branch getBranchID(int branchID) throws SQLException {
         return mainController.getBranchesDao().getBranchByID(branchID);
     }
-
 }
 
 
