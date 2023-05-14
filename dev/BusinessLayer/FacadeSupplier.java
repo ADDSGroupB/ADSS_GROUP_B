@@ -26,20 +26,23 @@ public class FacadeSupplier {
         agreementDAO = new AgreementDAO();
     }
 
-    public static void main(String[] args) {
-        FacadeSupplier facadeSupplier = new FacadeSupplier();
-        SupplierProductDAO supplierProductDAO = new SupplierProductDAO();
-        HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(3);
-        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
-        for (SupplierProduct supplierProduct : supplierProducts.values())
-        {
-            SupplierProduct product = new SupplierProduct(supplierProduct);
-            product.setAmount(30);
-            productsToOrder.add(product);
-        }
-        facadeSupplier.createPeriodicOrder(3, 1, DayOfWeek.SUNDAY, productsToOrder);
+//    public static void main(String[] args) {
+//        FacadeSupplier facadeSupplier = new FacadeSupplier();
+//        HashMap<Integer, Order> ordersForToday = facadeSupplier.getNoneCollectedOrdersForToday(1);
+//        facadeSupplier.markOrderAsCollected(1);
+//        ordersForToday = facadeSupplier.getNoneCollectedOrdersForToday(1);
+//        SupplierProductDAO supplierProductDAO = new SupplierProductDAO();
+//        HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(3);
+//        ArrayList<SupplierProduct> productsToOrder = new ArrayList<>();
+//        for (SupplierProduct supplierProduct : supplierProducts.values())
+//        {
+//            SupplierProduct product = new SupplierProduct(supplierProduct);
+//            product.setAmount(30);
+//            productsToOrder.add(product);
+//        }
+//        facadeSupplier.createPeriodicOrder(3, 1, DayOfWeek.SUNDAY, productsToOrder);
 //        facadeSupplier.executePeriodicOrder(1);
-    }
+//    }
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement,  ArrayList<ServiceContact> contactList) {
         Response res = supplierController.addSupplier(name, address, bankAccount);
         if (!res.errorOccurred()) {
@@ -150,9 +153,9 @@ public class FacadeSupplier {
 
     }
 
-    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, ArrayList<SupplierProduct> itemsInOrder)
+    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount)
     {
-        return periodicOrderController.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
+        return periodicOrderController.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
     }
 
     public void printOrders() {
@@ -163,6 +166,12 @@ public class FacadeSupplier {
     public Response executePeriodicOrder(int periodicOrderID) {
         return orderController.executePeriodicOrder(periodicOrderID);
     }
+
+    public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) { return orderController.getNoneCollectedOrdersForToday(branchID); }
+    public HashMap<Integer, Order> getOrdersFromSupplier(int supplierID) { return orderController.getOrdersFromSupplier(supplierID); }
+    public HashMap<Integer, Order> getOrdersToBranch(int branchID) { return orderController.getOrdersToBranch(branchID); }
+    public HashMap<Integer, Order> getAllOrderForToday() { return orderController.getAllOrderForToday(); }
+    public Response markOrderAsCollected(int orderID) { return orderController.markOrderAsCollected(orderID); }
 
     public Order getOrderByID(int orderID) { return orderController.getOrderByID(orderID); }
 

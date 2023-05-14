@@ -29,6 +29,12 @@ public class OrderController {
         id = supplierOrderDAO.getLastOrderID() + 1;
     }
 
+    public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) { return supplierOrderDAO.getNoneCollectedOrdersForToday(branchID); }
+    public HashMap<Integer, Order> getOrdersFromSupplier(int supplierID) { return supplierOrderDAO.getOrdersFromSupplier(supplierID); }
+    public HashMap<Integer, Order> getOrdersToBranch(int branchID) { return supplierOrderDAO.getOrdersToBranch(branchID); }
+    public HashMap<Integer, Order> getAllOrderForToday() { return supplierOrderDAO.getAllOrderForToday(); }
+    public Response markOrderAsCollected(int orderID) { return supplierOrderDAO.markOrderAsCollected(orderID); }
+
 //    public void createOrder(Response res) {
 //        ArrayList<ArrayList<Pair<SupplierProduct,Integer>>> supplierProductsAndAmount = res.getSupplyLists();
 //        ArrayList<Supplier> supplierArrayList = res.getSuppliersInOrder();

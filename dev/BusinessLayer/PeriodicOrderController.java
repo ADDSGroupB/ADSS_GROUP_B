@@ -23,13 +23,19 @@ public class PeriodicOrderController {
         id = periodicOrderDAO.getLastPeriodicOrderID() + 1;
     }
 
-    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, ArrayList<SupplierProduct> itemsInOrder)
+    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount)
     {
         HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(supplierID);
+        ArrayList<SupplierProduct> itemsInOrder = new ArrayList<>();
         // Check if the supplier supply all the products in the list, if one of the isn't supplied by him send informing response
-        for(SupplierProduct productInOrder : itemsInOrder)
-            if(supplierProducts.get(productInOrder.getProductID()) == null)
-                return new Response("The supplier with the ID: " + supplierID + " not supplying the product with the ID: " + productInOrder.getProductID());
+        for(int productID : productsAndAmount.keySet()) {
+            SupplierProduct productInSupplier = supplierProducts.get(productID);
+            if(productInSupplier == null)
+                return new Response("The supplier with the ID: " + supplierID + " not supplying the product with the ID: " + productID);
+            SupplierProduct productInOrder = new SupplierProduct(productInSupplier);
+            productInOrder.setAmount(productsAndAmount.get(productID));
+            itemsInOrder.add(productInOrder);
+        }
         PeriodicOrder periodicOrder = new PeriodicOrder(id++, supplierID, branchID, fixedDay, itemsInOrder);
         return periodicOrderDAO.addPeriodicOrder(periodicOrder);
     }

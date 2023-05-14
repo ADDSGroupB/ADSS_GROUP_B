@@ -1,10 +1,7 @@
 package InterfaceLayer;
 
 import DataAccessLayer.Database;
-import ServiceLayer.ServiceAgreement;
-import ServiceLayer.ServiceContact;
-import ServiceLayer.SupplierProductService;
-import ServiceLayer.SupplierService;
+import ServiceLayer.*;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -20,6 +17,8 @@ public class Cli {
 
     private final ServiceContact serviceContact;
 
+    private final OrderService orderService;
+
 
 
     public Cli() {
@@ -28,6 +27,7 @@ public class Cli {
         reader = new Scanner(System.in);
         supplierService = new SupplierService();
         serviceContact = new ServiceContact();
+        orderService = new OrderService();
         startDailyTask();
     }
 
@@ -72,7 +72,7 @@ public class Cli {
                         supplierService.createOrderByShortage(1 ,shortage.get(2));
                         printOrders();
                     }
-                    case 0 -> start();
+                    case 0 -> { createPeriodicOrder(); start(); }
                     default -> print("Please choose a valid number (1,2,3)");
                 }
             }
@@ -741,6 +741,40 @@ public class Cli {
         supplierService.printOrders();
     }
 
+    private void createPeriodicOrder()
+    {
+        print("Please Enter Branch ID: ");
+        int branchID = reader.nextInt();
+        reader.nextLine();
+        print("Please Enter Supplier ID: ");
+        int supplierID = reader.nextInt();
+        reader.nextLine();
+        print("Please Choose The Periodic Order Day");
+        print("1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday");
+        int day = reader.nextInt();
+        reader.nextLine();
+        while (day < 1 || day > 7)
+        {
+            print("Please enter a valid number : 1 to 7");
+            day = reader.nextInt();
+            reader.nextLine();
+        }
+        DayOfWeek fixedDay = DayOfWeek.of(day);
+        print("Choose Products And Amounts According To The Format: ProductID:Amount");
+        String[] arr = reader.nextLine().split("\\s*,\\s*");
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+        for(String s1 : arr)
+        {
+            String[] val = s1.split(":");
+            int productID = Integer.parseInt(val[0]);
+            int amount = Integer.parseInt(val[1]);
+            productsAndAmount.put(productID, amount);
+        }
+        Response response = orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Periodic Order With The ID " + response.getSupplierId() + "Has Successfully Benn Created");
+    }
+
     private void startDailyTask()
     {
         Timer timer = new Timer();
@@ -750,7 +784,9 @@ public class Cli {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        timer.scheduleAtFixedRate(supplierService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        if (calendar.getTimeInMillis() < System.currentTimeMillis())
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        timer.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             timer.cancel();
             Database.disconnect();

@@ -12,29 +12,11 @@ import java.util.HashMap;
 import java.util.TimerTask;
 
 
-public class SupplierService extends TimerTask {
+public class SupplierService implements iOrderService{
     private final FacadeSupplier facadeSupplier;
 
     public SupplierService() {
         facadeSupplier = new FacadeSupplier();
-    }
-
-    @Override
-    public void run()
-    {
-        System.out.println("Periodic Orders That Executed Today: ");
-        for(PeriodicOrder periodicOrder : getAllPeriodicOrderForToday().values())
-        {
-            Response response = executePeriodicOrder(periodicOrder.getPeriodicOrderID());
-            if(response.errorOccurred()) System.out.println(response.getErrorMessage());
-            else
-            {
-                System.out.println("Periodic Order ID: " + periodicOrder.getPeriodicOrderID());
-                System.out.println(getOrderByID(response.getSupplierId()));
-            }
-
-        }
-
     }
 
     public Response addSupplier(String name, String address, String bankAccount, ServiceAgreement serviceAgreement, ArrayList<ServiceContact> contactList) {
@@ -96,22 +78,25 @@ public class SupplierService extends TimerTask {
     public Response removeDiscounts(int supplierId, int productId, int ammount, double discount) {
         return facadeSupplier.removeDiscounts(supplierId, productId, ammount, discount);
     }
-
-    public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) {
-        facadeSupplier.createOrderByShortage(branchId ,shortage);
-    }
-
-    public Response executePeriodicOrder(int periodicOrderID) {
-        return facadeSupplier.executePeriodicOrder(periodicOrderID);
-    }
-
-    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, ArrayList<SupplierProduct> itemsInOrder)
-    {
-        return facadeSupplier.createPeriodicOrder(supplierID, branchID, fixedDay, itemsInOrder);
-    }
-
+    @Override
+    public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { facadeSupplier.createOrderByShortage(branchId ,shortage); }
+    @Override
+    public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) { return facadeSupplier.getNoneCollectedOrdersForToday(branchID); }
+    @Override
+    public HashMap<Integer, Order> getOrdersFromSupplier(int supplierID) { return facadeSupplier.getOrdersFromSupplier(supplierID); }
+    @Override
+    public HashMap<Integer, Order> getOrdersToBranch(int branchID) { return facadeSupplier.getOrdersToBranch(branchID); }
+    @Override
+    public HashMap<Integer, Order> getAllOrderForToday() { return facadeSupplier.getAllOrderForToday(); }
+    @Override
+    public Response markOrderAsCollected(int orderID) { return facadeSupplier.markOrderAsCollected(orderID); }
+    @Override
+    public Response executePeriodicOrder(int periodicOrderID) { return facadeSupplier.executePeriodicOrder(periodicOrderID); }
+    @Override
+    public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount); }
+    @Override
     public Order getOrderByID(int orderID) { return facadeSupplier.getOrderByID(orderID); }
-
+    @Override
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return facadeSupplier.getAllPeriodicOrderForToday(); }
 
     public void printOrders() {
