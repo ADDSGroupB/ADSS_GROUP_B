@@ -30,4 +30,6 @@ public interface iOrderService {
     Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd);
 
     Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove);
+
+    void printOrder(int supplierID);
 }

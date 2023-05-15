@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class PeriodicOrderDAO implements iPeriodicOrderDAO {
     private final Connection connection;
-    private final HashMap<Integer, PeriodicOrder> periodicOrderIM;
+    private HashMap<Integer, PeriodicOrder> periodicOrderIM;
     private final ItemsInPeriodicOrderDAO itemsInPeriodicOrderDAO;
 
     public PeriodicOrderDAO() {

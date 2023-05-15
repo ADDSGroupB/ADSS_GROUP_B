@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class ContactDAO implements iContactDAO {
     private final Connection connection;
-    private final HashMap<Pair<Integer, String>, Contact> contactIM;
+    private  HashMap<Pair<Integer, String>, Contact> contactIM;
 
     public ContactDAO()
     {

@@ -125,12 +125,11 @@ public class SupplierCLI {
         ArrayList<ServiceContact> contacts4 = new ArrayList<>();
         contacts3.add(new ServiceContact("Dan Weizmann", "dan@gmail.com", "050-5839494"));
         supplierService.addSupplier("Guy Biton", "Beer Sheva", "7891234", agreement4, contacts4);
-
     }
 
 
     private void supplierManagerCLI() {
-        print("Please choose one of the following option:\n1. Add new Supplier\n2. Delete Supplier \n3. Edit Supplier's information \n4. Print suppliers \n5. Back To Main Menu");
+        print("Please choose one of the following option:\n1. Add new Supplier\n2. Delete Supplier \n3. Edit Supplier's information \n4. Print suppliers \n5. Show Supplier Order History \n6. Back To Main Menu");
         int action =0;
         try {
             action = Integer.parseInt(reader.nextLine());
@@ -152,10 +151,19 @@ public class SupplierCLI {
             case 4:
                 printSuppliers();
             case 5:
+                supplierOrderHistory();
+            case 6:
                 return;
             default:
                 supplierManagerCLI();
         }
+    }
+
+    private void supplierOrderHistory() {
+        System.out.println("Please Enter Supplier ID: ");
+        int supplierID = reader.nextInt();
+        reader.nextLine();
+        orderService.printOrder(supplierID);
     }
 
     private void printSuppliers() {

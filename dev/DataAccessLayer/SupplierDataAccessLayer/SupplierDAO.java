@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class SupplierDAO implements iSupplierDAO {
     private final Connection connection;
-    private final HashMap<Integer, Supplier> suppliersIM;
+    private HashMap<Integer, Supplier> suppliersIM;
     private final iContactDAO contactDAO;
     private final iDiscountDAO discountDAO;
     private final iDiscountPerAmountDAO discountPerAmountDAO;

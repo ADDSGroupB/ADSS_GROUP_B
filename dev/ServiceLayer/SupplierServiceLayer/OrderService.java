@@ -45,4 +45,5 @@ public class OrderService extends TimerTask {
     public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromOrder(orderID, productsToRemove); }
     public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderService.updateProductsInPeriodicOrder(orderID, productsToAdd); }
     public Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromPeriodicOrder(orderID, productsToRemove); }
+    public void printOrder(int supplierID) { orderService.printOrder(supplierID); }
 }

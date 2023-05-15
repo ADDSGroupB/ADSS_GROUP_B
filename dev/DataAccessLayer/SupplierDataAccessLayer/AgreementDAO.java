@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AgreementDAO implements iAgreementDAO {
     private final Connection connection;
-    private final HashMap<Integer, Agreement> agreementIM;
+    private  HashMap<Integer, Agreement> agreementIM;
     private final iDiscountDAO discountDAO;
     private final iDiscountPerAmountDAO discountPerAmountDAO;
     private final iSupplierProductDAO supplierProductDAO;

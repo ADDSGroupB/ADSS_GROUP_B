@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class SupplierOrderDAO implements iSupplierOrderDAO {
     private final Connection connection;
-    private final HashMap<Integer, Order> supplierOrderIM;
+    private HashMap<Integer, Order> supplierOrderIM;
     private final ItemsInOrderDAO itemsInOrderDAO;
 
     public SupplierOrderDAO() {

@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class ItemsInOrderDAO implements iItemsInOrderDAO {
     private final Connection connection;
-    private final HashMap<Integer, ArrayList<SupplierProduct>> itemsInOrderIM;
+    private HashMap<Integer, ArrayList<SupplierProduct>> itemsInOrderIM;
     private final SupplierProductDAO supplierProductDAO;
 
     public ItemsInOrderDAO() {

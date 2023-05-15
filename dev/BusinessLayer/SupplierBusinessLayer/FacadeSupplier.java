@@ -176,6 +176,8 @@ public class FacadeSupplier {
     public Order getOrderByID(int orderID) { return orderController.getOrderByID(orderID); }
 
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return periodicOrderController.getAllPeriodicOrderForToday(); }
+
+    public void printOrder(int supplierID) { orderController.printOrder(supplierID); }
 }
 
 

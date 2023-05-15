@@ -336,4 +336,11 @@ public class OrderController {
             System.out.println(order);
         System.out.println("\n");
     }
+
+    public void printOrder(int supplierID) {
+        HashMap<Integer, Order> orders = supplierOrderDAO.getOrdersFromSupplier(supplierID);
+        if(orders == null || orders.size() == 0) System.out.println("There is not orders from this supplier");
+        for(Order order : orders.values())
+            System.out.println(order);
+    }
 }

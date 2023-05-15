@@ -50,13 +50,8 @@ public class Cli {
                     List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
                     if (allBranches.size() > 0)
                     {
-                        for (Branch branch : allBranches)
-                        {
-                            mainController.getItemsDao().fromStorageToStore(branch);
-                        }
                         mainController.getItemsDao().checkAllOrdersForToday(this.orderService,allBranches);
                     }
-
                     MainMenuUI();
                     break;
                 }
@@ -219,7 +214,7 @@ public class Cli {
                         List<Item> itemInStorage = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(),productToSell.getProductID());
                         if (itemInStore.size() == 0 && itemInStorage.size() == 0)
                         {
-                            System.out.println("At the moment we are unable to make a sale due to the lack of all the item of the product in the store. ");
+                            System.out.println("At the moment we are unable to make a sale due to the lack of all the products in the store. ");
                             break;
                         }
                         Item itemToSale = mainController.getItemsDao().getItemForSale(productID, branch.getBranchID());
@@ -1120,7 +1115,7 @@ public class Cli {
             }
         };
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 22); // 3pm
+        calendar2.set(Calendar.HOUR_OF_DAY, 20); // 3pm
         calendar2.set(Calendar.MINUTE, 0);
         calendar2.set(Calendar.SECOND, 0);
         if (calendar2.getTimeInMillis() < System.currentTimeMillis())
@@ -1137,16 +1132,20 @@ public class Cli {
         try {
             List<Branch> branches = mainController.getBranchesDao().getAllBranches();
             HashMap<Integer, Integer> shortage;
-            for(Branch branch: branches)
-            {
+            for(Branch branch: branches) {
                 shortage = mainController.getItemsDao().fromStorageToStore(branch);
                 Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
                 if (!response.errorOccurred())
                 {
-                    for (Integer productID : shortage.keySet())
+                    for (Integer productID : shortage.values())
                     {
                         Product product = mainController.getProductsDao().getProductByID(productID);
-                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
+                        if (product != null)
+                        {
+                            if (!mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited"))
+                            {throw new SQLException();}
+                        }
+                        else {throw new SQLException();}
                     }
                 }
                 else {throw new SQLException();}
@@ -1341,9 +1340,9 @@ public class Cli {
 // Items for all Branches
         for (int j=1;j<6;j++)
         {
-            for (int i = 0; i < 50; i++)
+            for (int i = 1; i < 50; i++)
             {
-                Item item1 = itemsDao.addItem(j, date1, date13, 2, 9, 1, p1);
+                Item item1 = itemsDao.addItem(j,date1,date13 , 2, 9 ,1,p1);
                 Item item2 = itemsDao.addItem(j,date1,date13 , 4, 12 ,2,p2);
                 Item item3 = itemsDao.addItem(j,date4,date13 , 1, 5 ,3,p3);
                 Item item4 = itemsDao.addItem(j,date4,date13 , 1, 4 ,4,p4);
@@ -1368,7 +1367,7 @@ public class Cli {
 
             }
         }
-             //add expired Items
+        // add expired Items
         for (int j=1;j<6;j++)
         {
             for (int i = 1; i < 6; i++)
