@@ -1,6 +1,8 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 
-import BusinessLayer.InventoryBusinessLayer.*;
+import BusinessLayer.InventoryBusinessLayer.Category;
+import BusinessLayer.InventoryBusinessLayer.Discount;
+import BusinessLayer.InventoryBusinessLayer.Product;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -8,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DiscountsDao {
-    public Discount addNewDiscount(int branchID,LocalDate sDate, LocalDate eDate, double amount, Category categoryDiscount,Product productDiscount) throws SQLException;
+    public Discount addNewDiscount(int branchID, LocalDate sDate, LocalDate eDate, double amount, Category categoryDiscount, Product productDiscount) throws SQLException;
     public Discount getDiscountByID(int discountID)throws SQLException;
     public List<Discount> getAllDiscount()throws SQLException;
     public List<Discount> getAllDiscountByBranchID(int branchID)throws SQLException;

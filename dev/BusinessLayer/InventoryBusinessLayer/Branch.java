@@ -1,4 +1,5 @@
 package BusinessLayer.InventoryBusinessLayer;
+
 public class Branch {
     private final int BranchID;
     private String BranchName;

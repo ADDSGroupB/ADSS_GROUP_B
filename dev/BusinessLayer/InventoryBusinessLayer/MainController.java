@@ -1,6 +1,7 @@
 package BusinessLayer.InventoryBusinessLayer;
 
 import DataAccessLayer.InventoryDataAccessLayer.*;
+import DataAccessLayer.InventoryDataAccessLayer.*;
 
 import java.sql.SQLException;
 

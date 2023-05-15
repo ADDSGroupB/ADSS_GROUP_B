@@ -2,7 +2,8 @@ package DataAccessLayer.InventoryDataAccessLayer;
 
 import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Product;
-import BusinessLayer.InventoryBusinessLayer.Pair;
+import Utillity.Pair;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

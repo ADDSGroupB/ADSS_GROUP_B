@@ -1,6 +1,9 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 
-import BusinessLayer.InventoryBusinessLayer.*;
+import BusinessLayer.InventoryBusinessLayer.DefectiveProductsReport;
+import BusinessLayer.InventoryBusinessLayer.MissingProductsReport;
+import BusinessLayer.InventoryBusinessLayer.Report;
+import BusinessLayer.InventoryBusinessLayer.WeeklyStorageReport;
 
 import java.sql.SQLException;
 import java.util.Map;

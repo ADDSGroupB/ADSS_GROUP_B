@@ -1,7 +1,7 @@
 package ServiceLayer.SupplierServiceLayer;
 
-import BusinessLayer.InventoryBusinessLayer.SupplierBusinessLayer.Order;
-import BusinessLayer.InventoryBusinessLayer.SupplierBusinessLayer.PeriodicOrder;
+import BusinessLayer.SupplierBusinessLayer.Order;
+import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
 import Utillity.Response;
 
 import java.time.DayOfWeek;

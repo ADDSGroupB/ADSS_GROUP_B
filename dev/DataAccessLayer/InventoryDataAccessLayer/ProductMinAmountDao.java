@@ -1,7 +1,8 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 
-import BusinessLayer.InventoryBusinessLayer.Pair;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import Utillity.Pair;
+
 import java.sql.SQLException;
 import java.util.Map;
 public interface ProductMinAmountDao {
