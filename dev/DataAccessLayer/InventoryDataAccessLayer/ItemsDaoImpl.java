@@ -255,6 +255,9 @@ public class ItemsDaoImpl implements ItemsDao {
                     items.add(item);
                     itemsMapFromDB.put(currItemID, item);
                 } else {
+                    item = itemsMapFromDB.get(currItemID);
+                    item.setDefectiveDiscription(rs.getString("DefectiveDiscription"));
+                    item.setStatusType(StatusEnum.Expired);
                     items.add(itemsMapFromDB.get(currItemID));
                 }
             }
@@ -289,6 +292,9 @@ public class ItemsDaoImpl implements ItemsDao {
                     items.add(item);
                     itemsMapFromDB.put(currItemID, item);
                 } else {
+                    item = itemsMapFromDB.get(currItemID);
+                    item.setDefectiveDiscription(rs.getString("DefectiveDiscription"));
+                    item.setStatusType(StatusEnum.Damaged);
                     items.add(itemsMapFromDB.get(currItemID));
                 }
             }
@@ -624,7 +630,7 @@ public class ItemsDaoImpl implements ItemsDao {
                 if (resultSet.getString("ExpiredDate") != null) {
                     expDate = LocalDate.parse(resultSet.getString("ExpiredDate"));
                     if (expDate.isBefore(LocalDate.now())) {
-                        preparedStatement2 = connection.prepareStatement("UPDATE Items SET Status = 'Expired' WHERE ItemID = ?");
+                        preparedStatement2 = connection.prepareStatement("UPDATE Items SET Status = 'Expired',DefectiveDiscription = 'The item has expired' WHERE ItemID = ?");
                         preparedStatement2.setInt(1, itemId);
                         preparedStatement2.executeUpdate();
                     }

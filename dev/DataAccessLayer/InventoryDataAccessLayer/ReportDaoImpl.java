@@ -72,7 +72,7 @@ public class ReportDaoImpl implements ReportDao {
         try {
             stmt1 = connection.createStatement();
             stmt2 = connection.createStatement();
-            allReportTable = stmt1.executeQuery("SELECT * FROM AllReports WHERE ReportType = Defective");
+            allReportTable = stmt1.executeQuery("SELECT * FROM AllReports WHERE ReportType = 'Defective'");
             while (allReportTable.next()) {
                 int reportID = allReportTable.getInt("ReportID");
                 if (identityDefectiveReportMap.containsKey(reportID)) continue;
@@ -89,7 +89,7 @@ public class ReportDaoImpl implements ReportDao {
             }
             return identityDefectiveReportMap;
         } catch (Exception e) {
-            System.out.println("Error while getting all missing reports: " + e.getMessage());
+            System.out.println("Error while getting all defective reports: " + e.getMessage());
             return null;
         } finally
         {
@@ -340,10 +340,10 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public int getNewReportID() throws SQLException{
         try (Statement statement = connection.createStatement()) {
-            String sql = "SELECT MAX(ReportID) AS maxOrderID FROM AllReports";
+            String sql = "SELECT MAX(ReportID) FROM AllReports";
             ResultSet rs = statement.executeQuery(sql);
             int maxOrderID = 0;
-            if (rs.next()) maxOrderID = rs.getInt("maxOrderID");
+            if (rs.next()) maxOrderID = rs.getInt(1);
             rs.close();
             return maxOrderID+1;
         } catch (SQLException e) {
@@ -351,4 +351,5 @@ public class ReportDaoImpl implements ReportDao {
         }
         return -1;
     }
+
 }

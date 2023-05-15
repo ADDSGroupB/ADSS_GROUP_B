@@ -1,12 +1,11 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 
-import BusinessLayer.InventoryBusinessLayer.DefectiveProductsReport;
-import BusinessLayer.InventoryBusinessLayer.MissingProductsReport;
-import BusinessLayer.InventoryBusinessLayer.Report;
-import BusinessLayer.InventoryBusinessLayer.WeeklyStorageReport;
+import BusinessLayer.InventoryBusinessLayer.*;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.Map;
+
 public interface ReportDao {
     public Map<Integer, MissingProductsReport> getAllMissingReports() throws SQLException;
     public Map<Integer, DefectiveProductsReport> getAllDefectiveReports() throws SQLException;

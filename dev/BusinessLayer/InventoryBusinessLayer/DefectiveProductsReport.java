@@ -13,6 +13,7 @@ public class DefectiveProductsReport extends Report {
     public DefectiveProductsReport(int reportID, int branchID, LocalDate date) {
         this(reportID, branchID, date, new ArrayList<>());
     }
+    public ArrayList<Item> getDefectiveOrExpiredProducts(int reportID) {return defectiveOrExpiredProducts;}
     public void addDefectiveItem(Item item){
         defectiveOrExpiredProducts.add(item);
     }
@@ -29,8 +30,8 @@ public class DefectiveProductsReport extends Report {
             }
             else
             {
-                output.append("Item ID: ").append(item.getItemID()).append(", Product ID: ").append(item.getProductID()).append(", Product name: ").append(item.getProduct().getProductName()).append("\n").append("DefectiveType: ")
-                        .append(item.getStatusType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append("ExpireDate: ").append(item.getExpiredDate()).append("\n");
+                output.append("Item ID: ").append(item.getItemID()).append(", Product ID: ").append(item.getProductID()).append(", Product name: ").append(item.getProduct().getProductName()).append("\n").append(", DefectiveType: ")
+                        .append(item.getStatusType()).append("\n").append("Defective Discription: ").append(item.getDefectiveDiscription()).append(", ExpireDate: ").append(item.getExpiredDate()).append("\n");
             }
         }
         return output.toString();
