@@ -18,7 +18,6 @@ public class SupplierCLI {
         supplierService = new SupplierService();
         serviceContact = new ServiceContact();
         orderService = new OrderService();
-        startDailyTask();
     }
 
 //    public static void main(String[] args) {
@@ -685,25 +684,5 @@ public class SupplierCLI {
 
     private void printOrders() {
         supplierService.printOrders();
-    }
-
-
-
-    private void startDailyTask()
-    {
-        Timer timer = new Timer();
-        // Schedule the task to execute every day at 10:00am
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
-        calendar.set(Calendar.MINUTE, 26);
-        calendar.set(Calendar.SECOND, 15);
-        calendar.set(Calendar.MILLISECOND, 0);
-        if (calendar.getTimeInMillis() < System.currentTimeMillis())
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-        timer.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            timer.cancel();
-            DBConnector.disconnect();
-        }));
     }
 }

@@ -67,6 +67,8 @@ public class Cli {
         supplierCLI.start();
     }
     public void MainMenuUI()throws SQLException {
+
+        //TODO : Receiving an order from supplier -- > add here the function
         Scanner mainMenuScanner = new Scanner(System.in);
         int mainMenuChoice = 0;
         while (mainMenuChoice != 3) {
@@ -167,8 +169,8 @@ public class Cli {
             System.out.println("5. Print all items in store ");
             System.out.println("6. Print all items in storage ");
             System.out.println("7. Print Product sales history ");
-            System.out.println("8. Orders");
-            System.out.println("9. Create Periodic Order ");
+            System.out.println("8. Orders"); // what we need to do here
+            System.out.println("9. Create Periodic Order "); // ADD ITEMS
             System.out.println("10. Report Manager ");
             System.out.println("11. Exit to Inventory Menu ");
             try {
