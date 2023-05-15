@@ -31,7 +31,7 @@ public interface ItemsDao {
     public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public Item getMinIDItemInStorage(int productID,int branchID)throws SQLException;
     public void checkExpiredItemsInAllBranches()throws SQLException;
-    public void EnteringNewOrder(Order order) throws SQLException;
+    public void EnteringNewOrder(Branch branch,Order order) throws SQLException;
     public  void checkAllOrdersForToday(OrderService orderService, List<Branch> allBranches)throws SQLException;
 
 }

@@ -455,7 +455,7 @@ public class ItemsDaoImpl implements ItemsDao {
         int maxItemsStoreForAllProducts = branch.getMaxItemsInShelf();
         List<Product> missingProducts = new ArrayList<>();
         List<Product> products = productsDao.getAllProducts();
-        //TODO : For each branch when we run the the system(when starting the system) do from storage to store (we make "Order" in the branch when we open him at the morning)
+        //TODO : For each branch when we run the the system(when starting the system) do from storage to store (we make "Order" in the branch when we open him at the morning) -Done
         // TODO : Use this function after receiving an order from supplier -- >
         //  in the default all the items will enter to the db with status "Storage " so after we receiving an order from supplier we need to do "Order" In the branch
         List<Product> allProducts = productsDao.getAllProducts();
@@ -609,7 +609,7 @@ public class ItemsDaoImpl implements ItemsDao {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 int itemId = resultSet.getInt("ItemID");
-                LocalDate expDate = null;
+                LocalDate expDate ;
                 if (resultSet.getString("ExpiredDate") != null) {
                     expDate = LocalDate.parse(resultSet.getString("ExpiredDate"));
                     if (expDate.isBefore(LocalDate.now())) {
@@ -625,18 +625,20 @@ public class ItemsDaoImpl implements ItemsDao {
             if (preparedStatement !=null){preparedStatement.close();}
             if (resultSet!=null) {resultSet.close();}
             if (preparedStatement2 !=null){preparedStatement2.close();}
-
         }
     }
     @Override
-    public void EnteringNewOrder(Order order) throws SQLException
+    public void EnteringNewOrder(Branch branch,Order order) throws SQLException
     {
         try {
             ArrayList<SupplierProduct> itemsInOrder = order.getItemsInOrder();
             int branchID = order.getBranchID();
+            if (branch.getBranchID() != branchID)
+            {
+                throw new SQLException();
+            }
             if (itemsInOrder.size() >0) {
                 for (SupplierProduct supplierProduct : itemsInOrder) {
-                    // From supplierProduct to Product
                     Product product = productsDao.getProductByID(supplierProduct.getProductID());
                     if (product == null) {
                         throw new SQLException();
@@ -655,40 +657,35 @@ public class ItemsDaoImpl implements ItemsDao {
                     }
                 }
             }
+            fromStorageToStore(branch);
         }
         catch (Exception e)
         {
             System.out.println("Error while trying enter new order to the branch : " + e.getMessage());
         }
     }
-
     @Override
     public void checkAllOrdersForToday(OrderService orderService, List<Branch> allBranches) throws SQLException {
         try {
-
-
             if (allBranches.size() > 0) {
-                for (Branch branch : allBranches) {
+                for (Branch branch : allBranches)
+                {
                     HashMap<Integer, Order> allOrdersForToday;
                     allOrdersForToday = orderService.getNoneCollectedOrdersForToday(branch.getBranchID());
-                    if (allOrdersForToday.size() > 0) {
-                        for (Order order : allOrdersForToday.values()) {
-                            if (order != null) {
-                                EnteringNewOrder(order);
+                    if (allOrdersForToday.size() > 0)
+                    {
+                        for (Order order : allOrdersForToday.values())
+                        {
+                            if (order != null)
+                            {
+                                EnteringNewOrder(branch,order);
                             }
                         }
                     }
                 }
-
             }
         }
-        catch (Exception e)
-        {
-            System.out.println("Error while trying to check all orders for today : " + e.getMessage());
-
-        }
+        catch (Exception e) {System.out.println("Error while trying to check all orders for today : " + e.getMessage());}
     }
-
-
 }
 
