@@ -53,6 +53,10 @@ public class Cli {
                     {
                         mainController.getItemsDao().checkAllOrdersForToday(this.orderService,allBranches);
                     }
+                    for(Branch branch : allBranches)
+                    {
+                        mainController.getItemsDao().fromStorageToStore(branch);
+                    }
                     MainMenuUI();
                     break;
                 }

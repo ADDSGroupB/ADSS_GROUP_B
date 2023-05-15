@@ -168,7 +168,7 @@ public class SupplierCLI {
         supllyingProducts4.put(22, new SupplierProductService("Orange juice 1 Liter", 22, 27, 25, 100, discountPerAmount4, "Spring", 14, 1000.0));
         ServiceAgreement agreement4 = new ServiceAgreement("TransitToAccount", true, deliveryDays4, supllyingProducts4, totalDiscountPerAmount4, totalDiscountPerPrice4, "ByDays", 0);
         ArrayList<ServiceContact> contacts4 = new ArrayList<>();
-        contacts3.add(new ServiceContact("Dan Weizmann", "dan@gmail.com", "050-5839494"));
+        contacts4.add(new ServiceContact("Dan Weizmann", "dan@gmail.com", "050-5839494"));
         supplierService.addSupplier("Guy Biton", "Beer Sheva", "7891234", agreement4, contacts4);
     }
 
