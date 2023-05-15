@@ -1208,18 +1208,11 @@ public class Cli {
                 Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
                 if (!response.errorOccurred())
                 {
-                    for (Integer productID : shortage.values())
+                    for (Integer productID : shortage.keySet())
                     {
-                        Product product = mainController.getProductsDao().getProductByID(productID);
-                        if (product != null)
-                        {
-                            if (!mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited"))
-                            {throw new SQLException();}
-                        }
-                        else {throw new SQLException();}
+                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
                     }
                 }
-                else {throw new SQLException();}
             }
         } catch (SQLException e) {
             System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
