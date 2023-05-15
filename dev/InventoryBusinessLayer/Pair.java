@@ -22,4 +22,5 @@ public class Pair<F, S> {
     public void setSecond(S second) {
         this.second = second;
     }
+
 }
