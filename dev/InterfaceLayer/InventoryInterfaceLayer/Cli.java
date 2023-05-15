@@ -1166,6 +1166,9 @@ public class Cli {
             System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
         }
     }
+
+
+
     public void LoadDataInventory(MainController mainController) throws SQLException
     {
         ProductsDao productsDao = mainController.getProductsDao();
