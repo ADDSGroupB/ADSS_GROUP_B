@@ -53,6 +53,10 @@ public class Cli {
                     {
                         mainController.getItemsDao().checkAllOrdersForToday(this.orderService,allBranches);
                     }
+                    for (Branch branch : allBranches)
+                    {
+                        mainController.getItemsDao().fromStorageToStore(branch);
+                    }
                     MainMenuUI();
                     break;
                 }
@@ -68,12 +72,9 @@ public class Cli {
     }
     public void SuppliersUI()throws SQLException
     {
-
         supplierCLI.start();
     }
     public void MainMenuUI()throws SQLException {
-
-        //TODO : Receiving an order from supplier -- > add here the function
         Scanner mainMenuScanner = new Scanner(System.in);
         int mainMenuChoice = 0;
         while (mainMenuChoice != 3) {
