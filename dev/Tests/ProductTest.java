@@ -10,11 +10,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 class ProductTest {
     private MainController mainController;
-
-
     @BeforeEach
     void setUp() throws SQLException {
         DBConnector.connect();
@@ -39,7 +36,7 @@ class ProductTest {
 
     @Test
     void getSubSubCategory() throws SQLException {
-        assertEquals(3, mainController.getProductsDao().getProductByID(1).getSubSubCategory().getCategoryID());
+        assertEquals(7, mainController.getProductsDao().getProductByID(1).getSubSubCategory().getCategoryID());
     }
 
     @Test
