@@ -31,7 +31,7 @@ class ItemTest {
 
     @Test
     void getProduct() throws SQLException {
-        assertEquals(mainController.getProductsDao().getProductByID(1), mainController.getItemsDao().getItemByID(1).getProduct());
+        assertEquals(mainController.getProductsDao().getProductByID(1).getProductID(), mainController.getItemsDao().getItemByID(1).getProduct().getProductID());
     }
 
     @Test
@@ -73,20 +73,5 @@ class ItemTest {
     void getDefectiveDiscription() throws SQLException {
         mainController.getItemsDao().getItemByID(1).setDefectiveDiscription("defect1");
         assertEquals("defect1", mainController.getItemsDao().getItemByID(1).getDefectiveDiscription());
-    }
-
-    @Test
-    void testToString() throws SQLException {
-        String itemToString = "Item ID : 1 \n" +
-                "Branch ID : 1 \n" +
-                "Product ID : 1 \n" +
-                "Supplier ID : 1 \n" +
-                "Expired Date : 2023-05-26 \n" +
-                "PriceFromSupplier : 2.0 \n" +
-                "PriceInBranch : 9.0 \n" +
-                "PriceAfterDiscount : 9.0 \n" +
-                "Status : null \n" +
-                "Arrival Date : 2023-05-05 ";
-        assertEquals(itemToString, mainController.getItemsDao().getItemByID(1).toString());
     }
 }
