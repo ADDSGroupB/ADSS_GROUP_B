@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 public class Agreement {
     private static int id = 0;
-    private int agreementID;
     private String paymentType;
     private Pair<Integer,Double> totalDiscountInPrecentageForOrderAmount; //
     private Pair<Double,Double> totalOrderDiscountPerOrderPrice;
@@ -80,9 +79,7 @@ public class Agreement {
     public HashMap <Integer, SupplierProduct> getSupllyingProducts(){
         return supllyingProducts;
     }
-    public int getAgreementID() {
-        return agreementID;
-    }
+
 
     public void setSupplyMethod(String supplyMethod) {
         this.supplyMethod = supplyMethod;

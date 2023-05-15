@@ -7,6 +7,7 @@ import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.SupplierInterfaceLayer.SupplierCLI;
 import ServiceLayer.SupplierServiceLayer.OrderService;
 import Utillity.Response;
+
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -19,19 +20,15 @@ public class Cli {
     private MainController mainController;
     private SupplierCLI supplierCLI;
     private OrderService orderService;
-
     public Cli() {
         mainController = new MainController();
         supplierCLI = new SupplierCLI();
         orderService = new OrderService();
         startDailyTask();
     }
-
-    public MainController getMainController() {
-        return this.mainController;
-    }
-
-    public void Start() throws SQLException {
+    public MainController getMainController() {return this.mainController;}
+    public void Start() throws SQLException
+    {
         Scanner startScanner = new Scanner(System.in);
         int startChoice = 0;
         while (startChoice != 3) {
@@ -39,53 +36,42 @@ public class Cli {
             System.out.println("1. Start with loaded data ");
             System.out.println("2. Start without loaded data ");
             System.out.println("3. Exit ");
-            try {
-                startChoice = startScanner.nextInt();
-            } catch (Exception e) {
+            try {startChoice = startScanner.nextInt();}
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-3 ");
                 startScanner.nextLine();
-                continue;
-            }
-            switch (startChoice) {
-                case 1: {
+                continue;}
+            switch (startChoice)
+            {
+                case 1:{
                     System.out.println("Initializing the information in the system... ");
                     LoadDataInventory(this.getMainController());
                     supplierCLI.loadDataSupplier();
                     mainController.getItemsDao().checkExpiredItemsInAllBranches();
                     List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
-                    if (allBranches.size() > 0) {
-                        mainController.getItemsDao().checkAllOrdersForToday(this.orderService, allBranches);
-                        for (Branch branch : allBranches) {
-                            mainController.getItemsDao().fromStorageToStore(branch);
-                        }
+                    if (allBranches.size() > 0)
+                    {
+                        mainController.getItemsDao().checkAllOrdersForToday(this.orderService,allBranches);
                     }
-
                     MainMenuUI();
                     break;
                 }
-                case 2: {
+                case 2:{
                     System.out.println("Initializes the system without information... ");
                     MainMenuUI();
                     break;
                 }
-                case 3: {
-                    System.out.println("Exiting from the system");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 3:{System.out.println("Exiting from the system");break;}
+                default: {System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
-
-    public void SuppliersUI() throws SQLException {
+    public void SuppliersUI()throws SQLException
+    {
 
         supplierCLI.start();
     }
-
-    public void MainMenuUI() throws SQLException {
+    public void MainMenuUI()throws SQLException {
 
         //TODO : Receiving an order from supplier -- > add here the function
         Scanner mainMenuScanner = new Scanner(System.in);
@@ -95,35 +81,21 @@ public class Cli {
             System.out.println("1. Inventory Menu ");
             System.out.println("2. Suppliers Menu ");
             System.out.println("3. Exit system");
-            try {
-                mainMenuChoice = mainMenuScanner.nextInt();
-            } catch (Exception e) {
+            try {mainMenuChoice = mainMenuScanner.nextInt();}
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-3 ");
                 mainMenuScanner.nextLine();
-                continue;
-            }
-            switch (mainMenuChoice) {
-                case 1: {
-                    InventoryUI();
-                    break;
-                }
-                case 2: {
-                    SuppliersUI();
-                    break;
-                }
-                case 3: {
-                    System.out.println("Exiting from the system");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                continue;}
+            switch (mainMenuChoice)
+            {
+                case 1:{InventoryUI();break;}
+                case 2:{SuppliersUI();break;}
+                case 3:{System.out.println("Exiting from the system");break;}
+                default:{System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
-
-    public void InventoryUI() throws SQLException {
+    public void InventoryUI()throws SQLException {
         Scanner InventoryScanner = new Scanner(System.in);
         int InventoryChoice = 0;
         while (InventoryChoice != 5) {
@@ -133,17 +105,18 @@ public class Cli {
             System.out.println("3. Entering the product menu");
             System.out.println("4. Entering the category menu");
             System.out.println("5. Exit to Main Menu ");
-            try {
-                InventoryChoice = InventoryScanner.nextInt();
-            } catch (Exception e) {
+            try {InventoryChoice = InventoryScanner.nextInt();}
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-5 ");
                 InventoryScanner.nextLine();
                 continue;
             }
-            switch (InventoryChoice) {
-                case 1: {
+            switch (InventoryChoice)
+            {
+                case 1:{
                     List<Branch> allBranches = mainController.getBranchController().getAllBranchesController();
-                    if (allBranches.size() >= 10) {
+                    if (allBranches.size() >= 10)
+                    {
                         System.out.println("We have reached the limit of branches in the network, you cannot open a new branch.");
                         break;
                     }
@@ -151,7 +124,8 @@ public class Cli {
                     System.out.println("What is the name of the branch?");
                     String newBranchName = newBranchScanner.next();
                     Branch newBranch = mainController.getBranchController().createNewBranch(newBranchName);
-                    if (newBranch == null) {
+                    if (newBranch == null)
+                    {
                         System.out.println("There is a problem creating a new branch, please try again.");
                         break;
                     }
@@ -160,9 +134,9 @@ public class Cli {
                     System.out.println(newBranch);
                     break;
                 }
-                case 2: {
+                case 2:{
                     System.out.println("Now you have to choose the number of the branch you want to work at : ");
-                    List<Branch> allBranches = mainController.getBranchController().getAllBranchesController();
+                    List<Branch> allBranches =  mainController.getBranchController().getAllBranchesController();
                     if (allBranches.size() == 0) {
                         System.out.println("There are currently no branches in the system, there is an option to create a new branch.");
                         break;
@@ -181,27 +155,14 @@ public class Cli {
                     BranchUI(chosenBranch);
                     break;
                 }
-                case 3: {
-                    productUI();
-                    break;
-                }
-                case 4: {
-                    categoryUI();
-                    break;
-                }
-                case 5: {
-                    System.out.println("Exiting to Main menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 3:{ productUI();break;}
+                case 4:{categoryUI();break;}
+                case 5:{System.out.println("Exiting to Main menu");break;}
+                default:{System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
-
-    public void BranchUI(Branch branch) throws SQLException {
+    public void BranchUI(Branch branch)throws SQLException {
         Scanner branchScanner = new Scanner(System.in);
         int branchChoice = 0;
         while (branchChoice != 13) {
@@ -251,29 +212,33 @@ public class Cli {
                             productSaleScanner.nextLine(); // clear input buffer
                             continue;
                         }
-                        List<Item> itemInStore = mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), productToSell.getProductID());
-                        List<Item> itemInStorage = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), productToSell.getProductID());
-                        if (itemInStore.size() == 0 && itemInStorage.size() == 0) {
+                        List<Item> itemInStore = mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(),productToSell.getProductID());
+                        List<Item> itemInStorage = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(),productToSell.getProductID());
+                        if (itemInStore.size() == 0 && itemInStorage.size() == 0)
+                        {
                             System.out.println("At the moment we are unable to make a sale due to the lack of all the products in the store. ");
                             break;
                         }
                         Item itemToSale = mainController.getItemsDao().getItemForSale(productID, branch.getBranchID());
-                        if (itemToSale == null) {
+                        if (itemToSale == null)
+                        {
                             System.out.println("We currently don't have items from product you want. Please try again");
                             productSaleScanner.nextLine(); // clear input buffer
                             continue;
                         }
-                        itemToSale = mainController.getItemsDao().updateItemStatus(itemToSale.getItemID(), "Sold");
+                        itemToSale = mainController.getItemsDao().updateItemStatus(itemToSale.getItemID(),"Sold");
                         itemsInSale.add(itemToSale);
                     }
-                    if (itemsInSale.size() == 0) {
+                    if (itemsInSale.size() == 0 )
+                    {
                         System.out.println("No products were added during the purchase.....");
                         break;
                     }
                     System.out.println("Receipt after purchase :");
-                    for (Item itemToCheckPrice : itemsInSale) {
+                    for (Item itemToCheckPrice : itemsInSale)
+                    {
                         itemToCheckPrice = mainController.PriceCalculationAfterDiscount(itemToCheckPrice, branch.getBranchID());
-                        System.out.println("Product Name : " + itemToCheckPrice.getProduct().getProductName() + ", Price before Discount : " + itemToCheckPrice.getPriceInBranch() + ", Price after Discount : " + itemToCheckPrice.getPriceAfterDiscount());
+                        System.out.println("Product Name : " +itemToCheckPrice.getProduct().getProductName() + ", Price before Discount : " + itemToCheckPrice.getPriceInBranch() + ", Price after Discount : " + itemToCheckPrice.getPriceAfterDiscount());
                     }
                     mainController.getItemsDao().fromStorageToStore(branch);
                     break;
@@ -286,31 +251,36 @@ public class Cli {
                         System.out.println("What is the id of the item you would like to report as defective ? ");
                         int itemIDDefective = HelperFunctions.positiveItegerInsertion();
                         Item itemDef = mainController.getItemsDao().getItemByID(itemIDDefective);
-                        if (itemDef == null) {
+                        if (itemDef == null)
+                        {
                             System.out.println("There is no item with the ID");
                             break;
                         }
-                        if (itemDef.getBranchID() != branch.getBranchID()) {
+                        if (itemDef.getBranchID() != branch.getBranchID())
+                        {
                             System.out.println("The item you specified does not belong to this branch");
                             break;
                         }
-                        if (itemDef.getStatusType() == StatusEnum.Damaged) {
+                        if (itemDef.getStatusType() == StatusEnum.Damaged)
+                        {
                             System.out.println("This item has already been reported as defective");
                             break;
                         }
-                        if (itemDef.getStatusType() == StatusEnum.Sold) {
+                        if (itemDef.getStatusType() == StatusEnum.Sold)
+                        {
                             System.out.println("This item has already been sold and you cannot report it as defective");
                             break;
                         }
-                        if (itemDef.getProduct().getProductID() != productDef.getProductID()) {
+                        if (itemDef.getProduct().getProductID() != productDef.getProductID())
+                        {
                             System.out.println("There is a mismatch between the product ID and the item ID");
                             break;
                         }
                         System.out.println("Please specify the defect in the item : ");
                         Scanner discriptionScanner = new Scanner(System.in);
                         String discription = discriptionScanner.nextLine();
-                        itemDef = mainController.getItemsDao().updateItemStatus(itemIDDefective, "Damaged");
-                        itemDef = mainController.getItemsDao().updateItemDefectiveDescription(itemDef.getItemID(), discription);
+                        itemDef = mainController.getItemsDao().updateItemStatus(itemIDDefective,"Damaged");
+                        itemDef = mainController.getItemsDao().updateItemDefectiveDescription(itemDef.getItemID(),discription);
                         mainController.getItemsDao().fromStorageToStore(branch);
                         System.out.println("The items have been successfully update");
                         System.out.println(itemDef + "\n");
@@ -323,7 +293,8 @@ public class Cli {
                     System.out.println("What is the id of the product you would like to add to him discount ? ");
                     int productID = HelperFunctions.positiveItegerInsertion();
                     Product productDiscount = mainController.getProductController().getProduct(productID);
-                    if (productDiscount == null) {
+                    if (productDiscount == null)
+                    {
                         System.out.println("The ID of the product you specified does not exist in the system");
                         break;
                     }
@@ -335,15 +306,15 @@ public class Cli {
                         date1 = validDate();
                         System.out.println("Enter the discount end date(YYYY-MM-DD): ");
                         date2 = validDate();
-                        if (date1.isAfter(date2)) {
+                        if (date1.isAfter(date2))
+                        {
                             System.out.print("The start date of the discount must be before the end date of the discount please try again : " + "\n");
-                        } else {
-                            isValid = true;
                         }
+                        else {isValid=true;}
                     } while (!isValid);
                     System.out.println("What percentage of discount is there? ");
                     double percentage = HelperFunctions.positiveDoubleInsertion();
-                    Discount newDiscount = mainController.getDiscountsDao().addNewDiscount(branch.getBranchID(), date1, date2, percentage, null, productDiscount);
+                    Discount newDiscount = mainController.getDiscountsDao().addNewDiscount(branch.getBranchID(), date1,date2,percentage,null,productDiscount);
                     System.out.println("The discount have been successfully added \n");
                     System.out.println("Below are the details of the newly created discount : \n");
                     System.out.println(newDiscount);
@@ -353,7 +324,8 @@ public class Cli {
                     System.out.println("What is the id of the category you would like to add to him discount ? ");
                     int categoryID = HelperFunctions.positiveItegerInsertion();
                     Category categoryDiscount = mainController.getCategoryController().getCategory(categoryID);
-                    if (categoryDiscount == null) {
+                    if (categoryDiscount == null)
+                    {
                         System.out.println("The ID of the category you specified does not exist in the system");
                         break;
                     }
@@ -365,15 +337,15 @@ public class Cli {
                         date1 = validDate();
                         System.out.println("Enter the discount end date(YYYY-MM-DD): ");
                         date2 = validDate();
-                        if (date1.isAfter(date2)) {
+                        if (date1.isAfter(date2))
+                        {
                             System.out.print("The start date of the discount must be before the end date of the discount please try again : " + "\n");
-                        } else {
-                            isValid = true;
                         }
+                        else {isValid=true;}
                     } while (!isValid);
                     System.out.println("What percentage of discount is there? ");
                     double percentage = HelperFunctions.positiveDoubleInsertion();
-                    Discount newDiscount = mainController.getDiscountsDao().addNewDiscount(branch.getBranchID(), date1, date2, percentage, categoryDiscount, null);
+                    Discount newDiscount = mainController.getDiscountsDao().addNewDiscount(branch.getBranchID(), date1,date2,percentage,categoryDiscount,null);
                     System.out.println("The discount have been successfully added \n");
                     System.out.println("Below are the details of the newly created discount : \n");
                     System.out.println(newDiscount);
@@ -381,13 +353,15 @@ public class Cli {
                 }
                 case 5: {
                     List<Item> storeItems = mainController.getItemsDao().getAllStoreItemsByBranchID(branch.getBranchID());
-                    if (storeItems.size() == 0) {
+                    if (storeItems.size()==0)
+                    {
                         System.out.println("We currently have no items in the store");
                         break;
                     }
-                    System.out.println("Branch Name : " + branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
+                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
                     System.out.println(" **Store Items** \n");
-                    for (Item item : storeItems) {
+                    for (Item item : storeItems)
+                    {
                         System.out.println(item);
                         System.out.println("------------------");
                     }
@@ -396,13 +370,15 @@ public class Cli {
                 }
                 case 6: {
                     List<Item> storageItems = mainController.getItemsDao().getAllStorageItemsByBranchID(branch.getBranchID());
-                    if (storageItems.size() == 0) {
+                    if (storageItems.size()==0)
+                    {
                         System.out.println("We currently have no items in the storage");
                         break;
                     }
-                    System.out.println("Branch Name : " + branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
+                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
                     System.out.println(" **Storage Items** \n");
-                    for (Item item : storageItems) {
+                    for (Item item : storageItems)
+                    {
                         System.out.println(item);
                         System.out.println("------------------");
                     }
@@ -419,7 +395,7 @@ public class Cli {
                             System.out.println("We currently have no items in the sold history of the product");
                             break;
                         }
-                        System.out.println(" **Sold Items History for the product : " + productID + " In the branch : " + branch.getBranchID() + " **" + "\n");
+                        System.out.println(" **Sold Items History for the product : "+ productID + " In the branch : "+ branch.getBranchID() +" **"+ "\n");
                         for (Item item : soldItems) {
                             if (item.getProduct().getProductID() == productID && item.getBranchID() == branch.getBranchID()) {
                                 System.out.println(item);
@@ -432,38 +408,35 @@ public class Cli {
                     System.out.println("The ID of the item you specified does not exist in the system");
                     break;
                 }
-                case 8: {
+                case 8: { 
                     OrdersUI(branch.getBranchID());
                     break;
                 }
                 case 9: {
-                    if (LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
+                    if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
                     else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
                     break;
                 }
-                case 10: {
-                    if (LocalTime.now().isAfter(LocalTime.of(20, 0))) autoShortage();
+                case 10:
+                {
+                    if(LocalTime.now().isAfter(LocalTime.of(20, 0))) autoShortage();
                     else System.out.println("Shortage Orders Will Execute Automatically at 8PM");
                     break;
                 }
-                case 11: {
-                    System.out.println("Branch Name : " + branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
+                case 11:
+                {
+                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
                     System.out.println(" **Orders History** \n");
                     printOrderToBranch(branch.getBranchID());
                     break;
                 }
-                case 12: {
+                case 12:
+                {
                     reportUI(branch);
                     break;
                 }
-                case 13: {
-                    System.out.println("Exiting to Inventory menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 13: {System.out.println("Exiting to Inventory menu");break;}
+                default: {System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
@@ -476,30 +449,23 @@ public class Cli {
             System.out.println("1. Periodic Order ");
             System.out.println("2. Existing Order ");
             System.out.println("3. Back To Branch Menu");
-            try {
-                startChoice = startScanner.nextInt();
-            } catch (Exception e) {
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-3 ");
                 startScanner.nextLine();
-                continue;
-            }
-            switch (startChoice) {
-                case 1: {
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
                     PeriodicOrderUI(branchID);
                     break;
                 }
-                case 2: {
+                case 2:{
                     ExistingOrderUI(branchID);
                     break;
                 }
-                case 3: {
-                    System.out.println("Exiting to Inventory menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 3: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
             }
         }
     }
@@ -512,30 +478,23 @@ public class Cli {
             System.out.println("1. Add / Update Products On Order ");
             System.out.println("2. Remove Products From Order ");
             System.out.println("3. Back To Orders Menu ");
-            try {
-                startChoice = startScanner.nextInt();
-            } catch (Exception e) {
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-4 ");
                 startScanner.nextLine();
-                continue;
-            }
-            switch (startChoice) {
-                case 1: {
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
                     updateProductsInOrder();
                     break;
                 }
-                case 2: {
+                case 2:{
                     removeProductsFromOrder();
                     break;
                 }
-                case 3: {
-                    System.out.println("Exiting to Inventory menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 3: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
             }
         }
     }
@@ -549,19 +508,18 @@ public class Cli {
             System.out.println("2. Add / Update Products On Periodic Order ");
             System.out.println("3. Remove Products From Periodic Order ");
             System.out.println("4. Back To Orders Menu ");
-            try {
-                startChoice = startScanner.nextInt();
-            } catch (Exception e) {
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-4 ");
                 startScanner.nextLine();
-                continue;
-            }
-            switch (startChoice) {
-                case 1: {
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
                     createPeriodicOrder(branchID);
                     break;
                 }
-                case 2: {
+                case 2:{
                     updateProductsInPeriodicOrder();
                     break;
                 }
@@ -569,19 +527,14 @@ public class Cli {
                     removeProductsFromPeriodicOrder();
                     break;
                 }
-                case 4: {
-                    System.out.println("Exiting to Inventory menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
+                case 4: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
             }
         }
     }
 
-    private void createPeriodicOrder(int branchID) {
+    private void createPeriodicOrder(int branchID)
+    {
         Scanner reader = new Scanner(System.in);
         System.out.println("Please Enter Supplier ID: ");
         int supplierID = reader.nextInt();
@@ -590,7 +543,8 @@ public class Cli {
         System.out.println("1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday");
         int day = reader.nextInt();
         reader.nextLine();
-        while (day < 1 || day > 7) {
+        while (day < 1 || day > 7)
+        {
             System.out.println("Please enter a valid number : 1 to 7");
             day = reader.nextInt();
             reader.nextLine();
@@ -598,7 +552,7 @@ public class Cli {
         DayOfWeek fixedDay = DayOfWeek.of(day);
         boolean correct = false;
         HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
-        while (!correct) {
+        while(!correct) {
             System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount, ProductID:Amount, ...");
             try {
                 String[] arr = reader.nextLine().split("\\s*,\\s*");
@@ -615,19 +569,20 @@ public class Cli {
             }
         }
         Response response = orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
-        if (response.errorOccurred()) System.out.println(response.getErrorMessage());
-        else
-            System.out.println("Periodic Order With The ID " + response.getSupplierId() + " Has Successfully Been Created");
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Periodic Order With The ID " + response.getSupplierId() + " Has Successfully Been Created");
     }
 
-    private void updateProductsInOrder() {
+    private void updateProductsInOrder()
+    {
         Scanner reader = new Scanner(System.in);
         System.out.println("Please Enter Order ID: ");
         int orderID = reader.nextInt();
         reader.nextLine();
         boolean correct = false;
         HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
-        while (!correct) {
+        while (!correct)
+        {
             System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount, ProductID:Amount, ...");
             try {
                 String[] arr = reader.nextLine().split("\\s*,\\s*");
@@ -638,49 +593,53 @@ public class Cli {
                     productsAndAmount.put(productID, amount);
                 }
                 correct = true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 System.out.println("Please Enter Only According To The Format!");
                 productsAndAmount.clear();
             }
         }
 
         Response response = orderService.updateProductsInOrder(orderID, productsAndAmount);
-        if (response.errorOccurred()) System.out.println(response.getErrorMessage());
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
         else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
     }
 
-    private void removeProductsFromOrder() {
+    private void removeProductsFromOrder()
+    {
         Scanner reader = new Scanner(System.in);
         System.out.println("Please Enter Order ID: ");
         int orderID = reader.nextInt();
         reader.nextLine();
         boolean correct = false;
         ArrayList<Integer> products = new ArrayList<>();
-        while (!correct) {
+        while (!correct)
+        {
             System.out.println("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
             try {
                 String[] arr = reader.nextLine().split("\\s*,\\s*");
                 for (String s1 : arr)
                     products.add(Integer.parseInt(s1));
                 correct = true;
-            } catch (Exception e) {
-                System.out.println("Please Enter Only Product IDs!");
-                products.clear();
             }
+            catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
         }
         Response response = orderService.removeProductsFromOrder(orderID, products);
-        if (response.errorOccurred()) System.out.println(response.getErrorMessage());
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
         else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
     }
 
-    private void updateProductsInPeriodicOrder() {
+    private void updateProductsInPeriodicOrder()
+    {
         Scanner reader = new Scanner(System.in);
         System.out.println("Please Enter Periodic Order ID: ");
         int orderID = reader.nextInt();
         reader.nextLine();
         boolean correct = false;
         HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
-        while (!correct) {
+        while (!correct)
+        {
             System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount");
             try {
                 String[] arr = reader.nextLine().split("\\s*,\\s*");
@@ -691,38 +650,40 @@ public class Cli {
                     productsAndAmount.put(productID, amount);
                 }
                 correct = true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 System.out.println("Please Enter Only According To The Format!");
                 productsAndAmount.clear();
             }
         }
 
         Response response = orderService.updateProductsInPeriodicOrder(orderID, productsAndAmount);
-        if (response.errorOccurred()) System.out.println(response.getErrorMessage());
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
         else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
     }
 
-    private void removeProductsFromPeriodicOrder() {
+    private void removeProductsFromPeriodicOrder()
+    {
         Scanner reader = new Scanner(System.in);
         System.out.println("Please Enter Periodic Order ID: ");
         int orderID = reader.nextInt();
         reader.nextLine();
         boolean correct = false;
         ArrayList<Integer> products = new ArrayList<>();
-        while (!correct) {
+        while (!correct)
+        {
             System.out.println("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
             try {
                 String[] arr = reader.nextLine().split("\\s*,\\s*");
                 for (String s1 : arr)
                     products.add(Integer.parseInt(s1));
                 correct = true;
-            } catch (Exception e) {
-                System.out.println("Please Enter Only Product IDs!");
-                products.clear();
             }
+            catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
         }
         Response response = orderService.removeProductsFromPeriodicOrder(orderID, products);
-        if (response.errorOccurred()) System.out.println(response.getErrorMessage());
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
         else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
     }
 
@@ -736,9 +697,8 @@ public class Cli {
             System.out.println("3. Print product details by ID ");
             System.out.println("4. Print all products");
             System.out.println("5. Exit to Inventory menu");
-            try {
-                productChoice = productScanner.nextInt();
-            } catch (Exception e) {
+            try {productChoice = productScanner.nextInt();}
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-5 ");
                 productScanner.nextLine();
                 continue;
@@ -750,7 +710,7 @@ public class Cli {
                     String newProductName = newProductScanner.nextLine();
                     System.out.println("What is the manufacturer's name of the new product? ");
                     String manufacturer = newProductScanner.next();
-                    if (mainController.getProductsDao().checkNewName(newProductName, manufacturer)) {
+                    if (mainController.getProductsDao().checkNewName(newProductName,manufacturer)) {
                         System.out.println("What is the weight of the new product? (in gr)");
                         double weight = HelperFunctions.positiveDoubleInsertion();
                         System.out.println("What is the parent category ID of the new product? ");
@@ -778,7 +738,8 @@ public class Cli {
                                 System.out.println(product);
                             }
                         }
-                    } else {
+                    } else
+                    {
                         System.out.println("The product name you provided already exists under the manufacturer you provided in the system");
                     }
                     break;
@@ -823,19 +784,13 @@ public class Cli {
                     }
                     break;
                 }
-                case 5: {
-                    System.out.println("Exiting to Inventory menu \n");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again \n");
-                    break;
-                }
+                case 5: {System.out.println("Exiting to Inventory menu \n");break;}
+                default: {System.out.println("Invalid choice, please try again \n");break;}
             }
         }
     }
-
-    public void categoryUI() throws SQLException {
+    public void categoryUI() throws SQLException
+    {
         Scanner categoryScanner = new Scanner(System.in);
         int categoryChoice = 0;
         while (categoryChoice != 4) {
@@ -844,21 +799,23 @@ public class Cli {
             System.out.println("2. Print category details by ID ");
             System.out.println("3. Print all categories");
             System.out.println("4. Exit to Inventory menu");
-            try {
-                categoryChoice = categoryScanner.nextInt();
-            } catch (Exception e) {
+            try {categoryChoice = categoryScanner.nextInt();}
+            catch (Exception e) {
                 System.out.println("Please enter an integer between 1-4 ");
                 categoryScanner.nextLine();
                 continue;
             }
-            switch (categoryChoice) {
-                case 1: {
+            switch (categoryChoice)
+            {
+                case 1:{
                     System.out.println("What is the name of the new category ? ");
                     Scanner newCategoryScanner = new Scanner(System.in);
                     String newCategoryName = newCategoryScanner.nextLine();
-                    if (mainController.getCategoryDao().checkNewCategoryName(newCategoryName)) {
+                    if (mainController.getCategoryDao().checkNewCategoryName(newCategoryName))
+                    {
                         Category category = mainController.getCategoryController().createCategory(newCategoryName);
-                        if (category != null) {
+                        if (category != null)
+                        {
                             System.out.println("The category has been successfully added \n");
                             System.out.println("Below are the details of the newly created category : \n");
                             System.out.println(category);
@@ -866,7 +823,7 @@ public class Cli {
                     }
                     break;
                 }
-                case 2: {
+                case 2:{
                     System.out.println("What is the id of the category you are looking for ? ");
                     int categoryID = HelperFunctions.positiveItegerInsertion();
                     Category category = mainController.getCategoryController().getCategory(categoryID);
@@ -875,13 +832,14 @@ public class Cli {
                         break;
                     }
                     List<Product> productsInCategory = mainController.getCategoryController().getProductInCategory(categoryID);
-                    if (productsInCategory != null) {
+                    if (productsInCategory != null)
+                    {
                         category.setProductsToCategory(productsInCategory);
                     }
                     System.out.println(category);
                     break;
                 }
-                case 3: {
+                case 3:{
                     List<Category> categories = mainController.getCategoryController().getAllCategories();
                     if (categories == null) {
                         System.out.println("We currently have no products in the system");
@@ -890,280 +848,14 @@ public class Cli {
                     System.out.println("The system includes the following categories:");
                     for (Category category : categories) {
                         List<Product> productsInCategory = mainController.getCategoryController().getProductInCategory(category.getCategoryID());
-                        if (productsInCategory != null) {
-                            category.setProductsToCategory(productsInCategory);
-                        }
+                        if (productsInCategory != null) {category.setProductsToCategory(productsInCategory);}
                         System.out.println(category);
                         System.out.println("----------------------");
                     }
                     break;
                 }
-                case 4: {
-                    System.out.println("Exiting to Inventory menu");
-                    break;
-                }
-                default: {
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
-            }
-        }
-    }
-    public void missingReportUI(Branch branch) throws SQLException {
-        Scanner missingScanner = new Scanner(System.in);
-
-        int choice = 0;
-        while (choice != 3) {
-            System.out.println("Missing Products Report Menu:");
-            System.out.println("1. Create a new Missing Products Report");
-            System.out.println("2. Print the current Missing Products Report");
-            System.out.println("3. Exit");
-            try {
-                choice = missingScanner.nextInt();
-            } catch (Exception e) {
-                System.out.println("Please enter an integer");
-                missingScanner.nextLine(); // clear input buffer
-                continue;
-            }
-            switch (choice)
-            {
-                case 1 :
-                {
-                    System.out.println("Creating new Missing Products Report...");
-                    int reportID = mainController.getReportDao().getNewReportID();
-                    MissingProductsReport report = mainController.getBranchController().getReportController().createNewMissingReport(reportID, branch.getBranchID());
-                    int productID = 0;
-                    while (productID != -1)
-                    {
-                        System.out.print("Enter the product ID (or -1 to finish): ");
-                        productID = HelperFunctions.positiveItegerInsertionWithCancel();
-                        if (productID == -1)
-                        {
-                            break;
-                        }
-                        Product product = mainController.getProductsDao().getProductByID(productID);
-                        if (product != null)
-                        {
-                            System.out.print("Enter the amount to order : ");
-                            int amount = HelperFunctions.positiveItegerInsertion();
-                            report.addMissingProduct(product, amount);
-                        }
-                        else
-                        {
-                            System.out.println("Unknown product ID. Please try again");
-                        }
-                    }
-                    System.out.println("The products have been successfully added to the report");
-                    branch.getBranchReportManager().addNewReport(report);
-                    mainController.getReportDao().addReport(report);
-                    break;
-                }
-                case 2 : {
-                    if (branch.getBranchReportManager().getCurrentMissingReport() != null)
-                    {
-                        System.out.println(branch.getBranchReportManager().getCurrentMissingReport().toString());
-                    }
-                    else
-                    {
-                        System.out.println("Missing Products Report has not been created yet");
-                    }
-                    break;
-                }
-                case 3:
-                {
-                    System.out.println("Exiting...");
-                    break;
-                }
-                default:{
-                    System.out.println("Invalid choice, please try again");
-                    break;
-                }
-            }
-            }
-        }
-    public void defectiveReportUI(Branch branch) throws SQLException {
-        Scanner defectiveScanner = new Scanner(System.in);
-
-        int choice = 0;
-        while (choice != 3) {
-            System.out.println("Defective Items Report Menu:");
-            System.out.println("1. Create a new Defective Items Report");
-            System.out.println("2. Print the current Defective Items Report");
-            System.out.println("3. Exit");
-            try {
-                choice = defectiveScanner.nextInt();
-            } catch (Exception e) {
-                System.out.println("Please enter an integer");
-                defectiveScanner.nextLine(); // clear input buffer
-                continue;
-            }
-            switch (choice)
-            {
-                case 1:{
-                    System.out.println("Creating new Defective Items Report...");
-                    int reportID = mainController.getReportDao().getNewReportID();
-                    DefectiveProductsReport report = mainController.getBranchController().getReportController().createNewDefectiveReport(reportID, branch.getBranchID());
-                    List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
-                    List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
-                    if (report == null) {
-                        System.out.println("Defective Items Report has not been created yet");
-                        break;
-                    }
-                    if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
-                        System.out.println("We currently have no damaged or expired items to report...");
-                    } else
-                    {
-                        Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
-                        allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
-                        if (allDefectiveReports != null) {
-                            List<Item> allItemsInReports = new ArrayList<>();
-                            for (DefectiveProductsReport defectiveProductsReport : allDefectiveReports.values()) {
-                                if (defectiveProductsReport.getBranchID() == branch.getBranchID()) {
-                                    List<Item> currItemsInReport = defectiveProductsReport.getDefectiveOrExpiredProducts(defectiveProductsReport.getReportID());
-                                    allItemsInReports.addAll(currItemsInReport);
-                                }
-                            }
-                            for (Item item : defectiveItems)
-                            {
-                                boolean check = false;
-                                if (allItemsInReports.size() > 0) {
-                                    for (Item item1 : allItemsInReports)
-                                    {
-                                        if (item1.getItemID() == item.getItemID())
-                                        {
-                                            check = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!check)
-                                    {
-                                        report.addDefectiveItem(item);
-                                    }
-                                }
-                                else {report.addDefectiveItem(item);}
-                            }
-                            for (Item item : expiredItems) {
-                                boolean check = false;
-                                if (allItemsInReports.size()>0) {
-                                    for (Item item1 : allItemsInReports) {
-                                        if (item1.getItemID() == item.getItemID()) {
-                                            check = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!check) {
-                                        report.addDefectiveItem(item);
-                                    }
-                                }
-                                else {report.addDefectiveItem(item);}
-                            }
-                            branch.getBranchReportManager().addNewReport(report);
-                            mainController.getReportDao().addReport(report);
-                            System.out.println("Adding items to the report has been successfully completed");
-                            break;
-                        }
-                        else
-                        {
-                            for (Item item : defectiveItems)
-                            {
-                                report.addDefectiveItem(item);
-                            }
-                            for (Item item : expiredItems)
-                            {
-                                report.addDefectiveItem(item);
-                            }
-                            branch.getBranchReportManager().addNewReport(report);
-                            mainController.getReportDao().addReport(report);
-                            System.out.println("Adding items to the report has been successfully completed");
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case 2:{
-                    if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
-                        System.out.println(branch.getBranchReportManager().getCurrentDefectiveReport().toString());
-                    } else
-                        System.out.println("Defective Items Report has not been created yet");
-                    break;
-                }
-                case 3:{System.out.println("Exiting...");
-                    break;}
-                default:{System.out.println("Invalid choice, please try again");
-                    break;}
-            }
-        }
-    }
-    public void weeklyReportUI(Branch branch) throws SQLException {
-        Scanner weeklyScanner = new Scanner(System.in);
-        int choice =0;
-        while (choice != 3) {
-            System.out.println("Defective Items Report Menu:");
-            System.out.println("1. Create a new Defective Items Report");
-            System.out.println("2. Print the current Defective Items Report");
-            System.out.println("3. Exit");
-            try {
-                choice = weeklyScanner.nextInt();
-            } catch (Exception e) {
-                System.out.println("Please enter an integer");
-                weeklyScanner.nextLine(); // clear input buffer
-                continue;
-            }
-            switch (choice)
-            {
-                case 1:{
-                    System.out.println("Creating new Weekly Storages Report...");
-                    int reportID = mainController.getReportDao().getNewReportID();
-                    WeeklyStorageReport report = mainController.getBranchController().getReportController().createNewWeeklyReport(reportID, branch.getBranchID());
-                    int categoryID = 0;
-                    while (categoryID != -1) {
-                        System.out.print("Enter the category ID (or -1 to finish): ");
-                        try {
-                            categoryID = weeklyScanner.nextInt();
-                        } catch (Exception e) {
-                            System.out.println("Please enter an integer");
-                            weeklyScanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        if (categoryID == -1) {
-                            break;
-                        }
-                        Category category = mainController.getCategoryDao().getCategoryByID(categoryID);
-                        if (category == null) {
-                            System.out.println("Unknown category ID. Please try again");
-                            weeklyScanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        if (report.getWeeklyReportMap().containsKey(category)) {
-                            System.out.println("The category is already in the report");
-                            weeklyScanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        List<Product> products = mainController.getProductsDao().getAllProductsInCategory(categoryID);
-                        Map<Product, Integer> productCurrAmount = new HashMap<>();
-                        for (Product product : products) {
-                            int productAmount = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
-                            productAmount += mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
-                            productCurrAmount.put(product, productAmount);
-                        }
-                        report.addCategoryToReport(category, productCurrAmount);
-                    }
-
-                    branch.getBranchReportManager().addNewReport(report);
-                    mainController.getReportDao().addReport(report);
-                    System.out.println("Adding categories to the report has been successfully completed");
-                    break;
-                }
-                case 2:{
-                    if (branch.getBranchReportManager().getCurrentWeeklyReport() != null) {
-                        System.out.println(branch.getBranchReportManager().getCurrentWeeklyReport().toString(branch));
-                    } else System.out.println("Weekly Storage Report has not been created yet");
-                    break;
-                }
-                case 3:{System.out.println("Exiting...");
-                    break;}
-                default:{System.out.println("Invalid choice, please try again");
-                    break;}
+                case 4:{  System.out.println("Exiting to Inventory menu");break;}
+                default:{ System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
@@ -1183,20 +875,218 @@ public class Cli {
                 scanner.nextLine(); // clear input buffer
                 continue;
             }
-            switch (choice)
-            {
-                case 1:{missingReportUI(branch);
-                break;}
-                case 2:{defectiveReportUI(branch);
-                break;}
-                case 3:{weeklyReportUI(branch);
-                break;}
-                default:{System.out.println("Invalid choice, please try again");
+            switch (choice) {
+                case 1:{
+                    choice = 0;
+                    while (choice != 4) {
+                        System.out.println("Missing Products Report Menu:");
+                        System.out.println("1. Create a new Missing Products Report");
+                        System.out.println("2. Add new product to the current Missing Products Report");
+                        System.out.println("3. Print the current Missing Products Report");
+                        System.out.println("4. Exit");
+                        try {
+                            choice = scanner.nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Please enter an integer");
+                            scanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        switch (choice) {
+                            case 1:
+                                System.out.println("Creating new Missing Products Report...");
+                                int reportID = mainController.getReportDao().getNewReportID();
+                                MissingProductsReport report = mainController.getBranchController().getReportController().createNewMissingReport(reportID, branch.getBranchID());
+                                branch.getBranchReportManager().addNewReport(report);
+                                mainController.getReportDao().addReport(report);
+                                continue;
+                            case 2:
+                                MissingProductsReport report_curr = branch.getBranchReportManager().getCurrentMissingReport();
+                                if (report_curr == null){
+                                    System.out.println("Missing Items Report has not been created yet");
+                                    break;
+                                }
+                                System.out.println("Adds new product to the current Missing Products Report...");
+                                int productID = 0;
+                                while (productID != -1) {
+                                    System.out.print("Enter the product ID (or -1 to finish): ");
+                                    productID = HelperFunctions.positiveItegerInsertionWithCancel();
+                                    if (productID == -1){break;}
+                                    Product product = mainController.getProductsDao().getProductByID(productID);
+                                    if (product != null)
+                                    {
+                                        System.out.print("Enter the amount to order : ");
+                                        int amount = HelperFunctions.positiveItegerInsertion();
+                                        report_curr.addMissingProduct(product, amount);
+                                        //mainController.getReportDao().addLineToMissingReport(report_curr.getReportID(), productID, amount);
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Unknown product ID. Please try again");
+                                    }
+                                }
+                                branch.getBranchReportManager().setCurrentMissingReport(report_curr);
+                                System.out.println("The products have been successfully added to the report");
+                                break;
+                            case 3:
+                                if (branch.getBranchReportManager().getCurrentMissingReport() != null) {
+                                    System.out.println(branch.getBranchReportManager().getCurrentMissingReport().toString());
+                                } else System.out.println("Missing Products Report has not been created yet");
+                                break;
+                            case 4:
+                                System.out.println("Exiting...");
+                                break;
+                            default:
+                                System.out.println("Invalid choice, please try again");
+                                break;
+                        }
+                    }
+                    break;
+                }
+                case 2:{
+                    choice = 0;
+                    while (choice != 4) {
+                        System.out.println("Defective Items Report Menu:");
+                        System.out.println("1. Create a new Defective Items Report");
+                        System.out.println("2. Updating the damaged items report");
+                        System.out.println("3. Print the current Defective Items Report");
+                        System.out.println("4. Exit");
+                        try {
+                            choice = scanner.nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Please enter an integer");
+                            scanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        switch (choice) {
+                            case 1:
+                                System.out.println("Creating new Defective Items Report...");
+                                int reportID = mainController.getReportDao().getNewReportID();
+                                DefectiveProductsReport report = mainController.getBranchController().getReportController().createNewDefectiveReport(reportID, branch.getBranchID());
+                                branch.getBranchReportManager().addNewReport(report);
+                                continue;
+                            case 2: {
+                                DefectiveProductsReport report_curr = branch.getBranchReportManager().getCurrentDefectiveReport();
+                                if (report_curr == null){
+                                    System.out.println("Defective Items Report has not been created yet");
+                                    break;
+                                }
+                                System.out.println("Updating the damaged items report...");
+                                List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
+                                List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
+                                if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
+                                    System.out.println("We currently have no damaged or expired items to report...");
+                                } else {
+                                    for (Item item : defectiveItems){
+                                        report_curr.addDefectiveItem(item);
+                                    }
+                                    for (Item item : expiredItems){
+                                        report_curr.addDefectiveItem(item);
+                                    }
+                                    //reprt_curr = mainController.getBranchController().getReportController().updateProductsInReport(reprt_curr, branch);
+                                    System.out.println("The update was successful");
+                                }
+                                branch.getBranchReportManager().setCurrentDefectiveReport(report_curr);
+                                mainController.getReportDao().addReport(report_curr);
+                                break;
+                            }
+                            case 3:
+                                if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
+                                    System.out.println(branch.getBranchReportManager().getCurrentDefectiveReport().toString());
+                                } else System.out.println("Defective Items Report has not been created yet");
+                                break;
+                            case 4:
+                                System.out.println("Exiting...");
+                                break;
+                            default:
+                                System.out.println("Invalid choice, please try again");
+                                break;
+                        }
+                    }
                     break;}
+                case 3:{
+                    choice = 0;
+                    while (choice != 4) {
+                        System.out.println("Weekly Storage Report Menu:");
+                        System.out.println("1. Create a new Weekly Storage Report");
+                        System.out.println("2. Add new category to the current Weekly Storage Report");
+                        System.out.println("3. Print the current Weekly Storage Report");
+                        System.out.println("4. Exit");
+                        try {
+                            choice = scanner.nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Please enter an integer");
+                            scanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        switch (choice) {
+                            case 1:
+                                System.out.println("Creating new Weekly Storages Report...");
+                                int reportID = mainController.getReportDao().getNewReportID();
+                                WeeklyStorageReport report = mainController.getBranchController().getReportController().createNewWeeklyReport(reportID, branch.getBranchID());
+                                branch.getBranchReportManager().addNewReport(report);
+                                continue;
+                            case 2:
+                                System.out.println("Adds new category to the current Weekly Storages Report...");
+                                WeeklyStorageReport curr = branch.getBranchReportManager().getCurrentWeeklyReport();
+                                if (curr == null){
+                                    System.out.println("Weekly Storages Report has not been created yet");
+                                    break;
+                                }
+                                int categoryID = 0;
+                                while (categoryID != -1) {
+                                    System.out.print("Enter the category ID (or -1 to finish): ");
+                                    try {
+                                        categoryID = scanner.nextInt();
+                                    } catch (Exception e) {
+                                        System.out.println("Please enter an integer");
+                                        scanner.nextLine(); // clear input buffer
+                                        continue;
+                                    }
+                                    if (categoryID == -1){break;}
+                                    Category category = mainController.getCategoryDao().getCategoryByID(categoryID);
+                                    if (category == null) {
+                                        System.out.println("Unknown category ID. Please try again");
+                                        scanner.nextLine(); // clear input buffer
+                                        continue;
+                                    }
+                                    if (curr.getWeeklyReportMap().containsKey(category)){
+                                        System.out.println("The category is already in the report");
+                                        scanner.nextLine(); // clear input buffer
+                                        continue;
+                                    }
+                                    List<Product> products = mainController.getProductsDao().getAllProductsInCategory(categoryID);
+                                    Map<Product, Integer> productCurrAmount = new HashMap<>();
+                                    for (Product product : products){
+                                        int productAmount = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                                        productAmount += mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                                        productCurrAmount.put(product, productAmount);
+                                        //mainController.getReportDao().addLineToWeeklyReport(curr.getReportID(), categoryID, product.getProductID(), productAmount);
+                                    }
+                                    curr.addCategoryToReport(category, productCurrAmount);
+                                }
+                                branch.getBranchReportManager().setCurrentWeeklyReport(curr);
+                                mainController.getReportDao().addReport(curr);
+                                System.out.println("Adding categories to the report has been successfully completed");
+                                break;
+                            case 3:
+                                if (branch.getBranchReportManager().getCurrentWeeklyReport() != null) {
+                                    System.out.println(branch.getBranchReportManager().getCurrentWeeklyReport().toString(branch));
+                                } else System.out.println("Weekly Storage Report has not been created yet");
+                                break;
+                            case 4:
+                                System.out.println("Exiting...");
+                                break;
+                            default:
+                                System.out.println("Invalid choice, please try again");
+                                break;
+                        }
+                    }
+                    break;
+                }
             }
         }
     }
-    public LocalDate validDate () {
+    public LocalDate validDate() {
         LocalDate date = null;
         Scanner scannerValidDate = new Scanner(System.in);
         String dateString;
@@ -1232,7 +1122,7 @@ public class Cli {
         Timer timerForShortageOrder = new Timer();
         TimerTask otherTask = new TimerTask() {
             @Override
-            public void run() {
+            public void run()  {
                 autoShortage();
             }
         };
@@ -1254,29 +1144,29 @@ public class Cli {
         try {
             List<Branch> branches = mainController.getBranchesDao().getAllBranches();
             HashMap<Integer, Integer> shortage;
-            for (Branch branch : branches) {
+            for(Branch branch: branches) {
                 shortage = mainController.getItemsDao().fromStorageToStore(branch);
                 Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
-                if (!response.errorOccurred()) {
-                    for (Integer productID : shortage.values()) {
+                if (!response.errorOccurred())
+                {
+                    for (Integer productID : shortage.values())
+                    {
                         Product product = mainController.getProductsDao().getProductByID(productID);
-                        if (product != null) {
-                            if (!mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(), "Invited")) {
-                                throw new SQLException();
-                            }
-                        } else {
-                            throw new SQLException();
+                        if (product != null)
+                        {
+                            if (!mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited"))
+                            {throw new SQLException();}
                         }
+                        else {throw new SQLException();}
                     }
-                } else {
-                    throw new SQLException();
                 }
+                else {throw new SQLException();}
             }
         } catch (SQLException e) {
             System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
         }
     }
-    public void LoadDataInventory (MainController mainController) throws SQLException
+    public void LoadDataInventory(MainController mainController) throws SQLException
     {
         ProductsDao productsDao = mainController.getProductsDao();
         ItemsDao itemsDao = mainController.getItemsDao();
@@ -1293,33 +1183,33 @@ public class Cli {
         Branch b4 = branchesDao.addBranch("SuperLi Herzliya");
         Branch b5 = branchesDao.addBranch("SuperLi Eilat");
 // Categories
-        Category c1 = categoryDao.addCategory("Dairy products");
-        Category c2 = categoryDao.addCategory("Milk");
-        Category c3 = categoryDao.addCategory("Cottage");
-        Category c4 = categoryDao.addCategory("Cream Cheese");
-        Category c5 = categoryDao.addCategory("Yellow Cheese");
-        Category c6 = categoryDao.addCategory("1% fat");
-        Category c7 = categoryDao.addCategory("3% fat");
-        Category c8 = categoryDao.addCategory("5% fat");
-        Category c9 = categoryDao.addCategory("9% fat");
-        Category c10 = categoryDao.addCategory("Vegetables");
-        Category c11 = categoryDao.addCategory("Onions");
-        Category c12 = categoryDao.addCategory("Potatoes");
-        Category c13 = categoryDao.addCategory("Green Onions");
-        Category c14 = categoryDao.addCategory("White Onions");
-        Category c15 = categoryDao.addCategory("Red Potatoes");
-        Category c16 = categoryDao.addCategory("Fruits");
-        Category c17 = categoryDao.addCategory("Apples");
-        Category c18 = categoryDao.addCategory("Red Apples");
-        Category c19 = categoryDao.addCategory("Green Apples");
-        Category c20 = categoryDao.addCategory("Citrus Fruits");
-        Category c21 = categoryDao.addCategory("Oranges");
-        Category c22 = categoryDao.addCategory("Sweet Drinks");
-        Category c23 = categoryDao.addCategory("0.5 Liters");
-        Category c24 = categoryDao.addCategory("Sodas");
-        Category c25 = categoryDao.addCategory("1 Liters");
-        Category c26 = categoryDao.addCategory("1.5 Liters");
-        Category c27 = categoryDao.addCategory("Soft Drinks");
+        Category c1 =categoryDao.addCategory("Dairy products");
+        Category c2 =categoryDao.addCategory("Milk");
+        Category c3 =categoryDao.addCategory("Cottage");
+        Category c4 =categoryDao.addCategory("Cream Cheese");
+        Category c5 =categoryDao.addCategory("Yellow Cheese");
+        Category c6 =categoryDao.addCategory("1% fat");
+        Category c7 =categoryDao.addCategory("3% fat");
+        Category c8 =categoryDao.addCategory("5% fat");
+        Category c9 =categoryDao.addCategory("9% fat");
+        Category c10 =categoryDao.addCategory("Vegetables");
+        Category c11 =categoryDao.addCategory("Onions");
+        Category c12 =categoryDao.addCategory("Potatoes");
+        Category c13 =categoryDao.addCategory("Green Onions");
+        Category c14 =categoryDao.addCategory("White Onions");
+        Category c15 =categoryDao.addCategory("Red Potatoes");
+        Category c16 =categoryDao.addCategory("Fruits");
+        Category c17 =categoryDao.addCategory("Apples");
+        Category c18 =categoryDao.addCategory("Red Apples");
+        Category c19 =categoryDao.addCategory("Green Apples");
+        Category c20 =categoryDao.addCategory("Citrus Fruits");
+        Category c21 =categoryDao.addCategory("Oranges");
+        Category c22 =categoryDao.addCategory("Sweet Drinks");
+        Category c23 =categoryDao.addCategory("0.5 Liters");
+        Category c24 =categoryDao.addCategory("Sodas");
+        Category c25 =categoryDao.addCategory("1 Liters");
+        Category c26 =categoryDao.addCategory("1.5 Liters");
+        Category c27 =categoryDao.addCategory("Soft Drinks");
 
 // Products
         Product p1 = productsDao.addProduct("Milk 3%", "Tara", 500, 1, 2, 7);
@@ -1338,7 +1228,7 @@ public class Cli {
         productMinAmountDao.addNewProductToAllBranches(7);
         Product p8 = productsDao.addProduct("Cottage 9%", "Tara", 250, 1, 3, 9);
         productMinAmountDao.addNewProductToAllBranches(8);
-        Product p9 = productsDao.addProduct("Milk 9%", "Tnova", 500, 1, 2, 9);
+        Product p9 =  productsDao.addProduct("Milk 9%", "Tnova", 500, 1, 2, 9);
         productMinAmountDao.addNewProductToAllBranches(9);
         Product p10 = productsDao.addProduct("Milk 1%", "Tnova", 500, 1, 2, 6);
         productMinAmountDao.addNewProductToAllBranches(10);
@@ -1368,9 +1258,11 @@ public class Cli {
         productMinAmountDao.addNewProductToAllBranches(22);
 
 // Product Min Amount Table
-        for (int j = 1; j < 6; j++) {
-            for (int i = 1; i < 23; i++) {
-                productMinAmountDao.UpdateMinAmountToProductInBranch(i, j, 30);
+        for (int j=1;j<6;j++)
+        {
+            for (int i = 1; i < 23; i++)
+            {
+                productMinAmountDao.UpdateMinAmountToProductInBranch(i,j,30);
             }
         }
 //Dates
@@ -1397,107 +1289,111 @@ public class Cli {
 //Discounts
 
 // discounts on p1 for all branches
-        Discount d1 = discountsDao.addNewDiscount(1, date9, date12, 15, null, p1);
-        Discount d2 = discountsDao.addNewDiscount(2, date9, date12, 15, null, p1);
-        Discount d3 = discountsDao.addNewDiscount(3, date9, date12, 15, null, p1);
-        Discount d4 = discountsDao.addNewDiscount(4, date9, date12, 15, null, p1);
-        Discount d5 = discountsDao.addNewDiscount(5, date9, date12, 15, null, p1);
+        Discount d1 = discountsDao.addNewDiscount(1,date9, date12, 15, null,p1);
+        Discount d2 = discountsDao.addNewDiscount(2,date9, date12, 15, null,p1);
+        Discount d3 = discountsDao.addNewDiscount(3,date9, date12, 15, null,p1);
+        Discount d4 = discountsDao.addNewDiscount(4,date9, date12, 15, null,p1);
+        Discount d5 = discountsDao.addNewDiscount(5,date9, date12, 15, null,p1);
 // discounts on p1 for all branches
-        Discount d6 = discountsDao.addNewDiscount(1, date10, date3, 15, null, p1);
-        Discount d7 = discountsDao.addNewDiscount(2, date10, date3, 15, null, p1);
-        Discount d8 = discountsDao.addNewDiscount(3, date10, date3, 15, null, p1);
-        Discount d9 = discountsDao.addNewDiscount(4, date10, date3, 15, null, p1);
-        Discount d10 = discountsDao.addNewDiscount(5, date10, date3, 15, null, p1);
+        Discount d6 = discountsDao.addNewDiscount(1,date10, date3, 15, null,p1);
+        Discount d7 = discountsDao.addNewDiscount(2,date10, date3, 15, null,p1);
+        Discount d8 = discountsDao.addNewDiscount(3,date10, date3, 15, null,p1);
+        Discount d9 = discountsDao.addNewDiscount(4,date10, date3, 15, null,p1);
+        Discount d10 = discountsDao.addNewDiscount(5,date10, date3, 15, null,p1);
 // discounts on p2 for all branches
-        Discount d11 = discountsDao.addNewDiscount(1, date10, date3, 10, null, p2);
-        Discount d12 = discountsDao.addNewDiscount(2, date10, date3, 10, null, p2);
-        Discount d13 = discountsDao.addNewDiscount(3, date10, date3, 10, null, p2);
-        Discount d14 = discountsDao.addNewDiscount(4, date10, date3, 10, null, p2);
-        Discount d15 = discountsDao.addNewDiscount(5, date10, date3, 10, null, p2);
+        Discount d11 = discountsDao.addNewDiscount(1,date10, date3, 10, null,p2);
+        Discount d12 = discountsDao.addNewDiscount(2,date10, date3, 10, null,p2);
+        Discount d13 = discountsDao.addNewDiscount(3,date10, date3, 10, null,p2);
+        Discount d14 = discountsDao.addNewDiscount(4,date10, date3, 10, null,p2);
+        Discount d15 = discountsDao.addNewDiscount(5,date10, date3, 10, null,p2);
 // discounts on p3 for all branches
-        Discount d16 = discountsDao.addNewDiscount(1, date10, date3, 15, null, p3);
-        Discount d17 = discountsDao.addNewDiscount(2, date10, date3, 15, null, p3);
-        Discount d18 = discountsDao.addNewDiscount(3, date10, date3, 15, null, p3);
-        Discount d19 = discountsDao.addNewDiscount(4, date10, date3, 15, null, p3);
-        Discount d20 = discountsDao.addNewDiscount(5, date10, date3, 15, null, p3);
+        Discount d16 = discountsDao.addNewDiscount(1,date10, date3, 15, null,p3);
+        Discount d17 = discountsDao.addNewDiscount(2,date10, date3, 15, null,p3);
+        Discount d18 = discountsDao.addNewDiscount(3,date10, date3, 15, null,p3);
+        Discount d19 = discountsDao.addNewDiscount(4,date10, date3, 15, null,p3);
+        Discount d20 = discountsDao.addNewDiscount(5,date10, date3, 15, null,p3);
 // discounts on p4 for all branches
-        Discount d21 = discountsDao.addNewDiscount(1, date14, date4, 20, null, p4);
-        Discount d22 = discountsDao.addNewDiscount(2, date14, date4, 20, null, p4);
-        Discount d23 = discountsDao.addNewDiscount(3, date14, date4, 20, null, p4);
-        Discount d24 = discountsDao.addNewDiscount(4, date14, date4, 20, null, p4);
-        Discount d25 = discountsDao.addNewDiscount(5, date14, date4, 20, null, p4);
+        Discount d21 = discountsDao.addNewDiscount(1,date14, date4, 20, null,p4);
+        Discount d22 = discountsDao.addNewDiscount(2,date14, date4, 20, null,p4);
+        Discount d23 = discountsDao.addNewDiscount(3,date14, date4, 20, null,p4);
+        Discount d24 = discountsDao.addNewDiscount(4,date14, date4, 20, null,p4);
+        Discount d25 = discountsDao.addNewDiscount(5,date14, date4, 20, null,p4);
 // discounts on p5 for all branches
-        Discount d26 = discountsDao.addNewDiscount(1, date1, date6, 5, null, p5);
-        Discount d27 = discountsDao.addNewDiscount(2, date1, date6, 5, null, p5);
-        Discount d28 = discountsDao.addNewDiscount(3, date1, date6, 5, null, p5);
-        Discount d29 = discountsDao.addNewDiscount(4, date1, date6, 5, null, p5);
-        Discount d30 = discountsDao.addNewDiscount(5, date1, date6, 5, null, p5);
+        Discount d26 = discountsDao.addNewDiscount(1,date1, date6, 5, null,p5);
+        Discount d27 = discountsDao.addNewDiscount(2,date1, date6, 5, null,p5);
+        Discount d28 = discountsDao.addNewDiscount(3,date1, date6, 5, null,p5);
+        Discount d29 = discountsDao.addNewDiscount(4,date1, date6, 5, null,p5);
+        Discount d30 = discountsDao.addNewDiscount(5,date1, date6, 5, null,p5);
 // discounts on c1 for all branches
-        Discount d31 = discountsDao.addNewDiscount(1, date14, date4, 12, c1, null);
-        Discount d32 = discountsDao.addNewDiscount(2, date14, date4, 12, c1, null);
-        Discount d33 = discountsDao.addNewDiscount(3, date14, date4, 12, c1, null);
-        Discount d34 = discountsDao.addNewDiscount(4, date14, date4, 12, c1, null);
-        Discount d35 = discountsDao.addNewDiscount(5, date14, date4, 12, c1, null);
+        Discount d31 = discountsDao.addNewDiscount(1,date14, date4, 12, c1,null);
+        Discount d32 = discountsDao.addNewDiscount(2,date14, date4, 12, c1,null);
+        Discount d33 = discountsDao.addNewDiscount(3,date14, date4, 12, c1,null);
+        Discount d34 = discountsDao.addNewDiscount(4,date14, date4, 12, c1,null);
+        Discount d35 = discountsDao.addNewDiscount(5,date14, date4, 12, c1,null);
 // discounts on c10 for all branches
-        Discount d36 = discountsDao.addNewDiscount(1, date14, date19, 12, c10, null);
-        Discount d37 = discountsDao.addNewDiscount(2, date14, date19, 12, c10, null);
-        Discount d38 = discountsDao.addNewDiscount(3, date14, date19, 12, c10, null);
-        Discount d39 = discountsDao.addNewDiscount(4, date14, date19, 12, c10, null);
-        Discount d40 = discountsDao.addNewDiscount(5, date14, date19, 12, c10, null);
+        Discount d36 = discountsDao.addNewDiscount(1,date14, date19, 12, c10,null);
+        Discount d37 = discountsDao.addNewDiscount(2,date14, date19, 12, c10,null);
+        Discount d38 = discountsDao.addNewDiscount(3,date14, date19, 12, c10,null);
+        Discount d39 = discountsDao.addNewDiscount(4,date14, date19, 12, c10,null);
+        Discount d40 = discountsDao.addNewDiscount(5,date14, date19, 12, c10,null);
 // discounts on c8 for all branches
-        Discount d41 = discountsDao.addNewDiscount(1, date14, date4, 7, c8, null);
-        Discount d42 = discountsDao.addNewDiscount(2, date14, date4, 7, c8, null);
-        Discount d43 = discountsDao.addNewDiscount(3, date14, date4, 7, c8, null);
-        Discount d44 = discountsDao.addNewDiscount(4, date14, date4, 7, c8, null);
-        Discount d45 = discountsDao.addNewDiscount(5, date14, date4, 7, c8, null);
+        Discount d41 = discountsDao.addNewDiscount(1,date14, date4, 7, c8,null);
+        Discount d42 = discountsDao.addNewDiscount(2,date14, date4, 7, c8,null);
+        Discount d43 = discountsDao.addNewDiscount(3,date14, date4, 7, c8,null);
+        Discount d44 = discountsDao.addNewDiscount(4,date14, date4, 7, c8,null);
+        Discount d45 = discountsDao.addNewDiscount(5,date14, date4, 7, c8,null);
 // discounts on c21 for all branches
-        Discount d46 = discountsDao.addNewDiscount(1, date16, date17, 25, c10, null);
-        Discount d47 = discountsDao.addNewDiscount(2, date16, date17, 25, c10, null);
-        Discount d48 = discountsDao.addNewDiscount(3, date16, date17, 25, c10, null);
-        Discount d49 = discountsDao.addNewDiscount(4, date16, date17, 25, c10, null);
-        Discount d50 = discountsDao.addNewDiscount(5, date16, date17, 25, c10, null);
+        Discount d46 = discountsDao.addNewDiscount(1,date16, date17, 25, c10,null);
+        Discount d47 = discountsDao.addNewDiscount(2,date16, date17, 25, c10,null);
+        Discount d48 = discountsDao.addNewDiscount(3,date16, date17, 25, c10,null);
+        Discount d49 = discountsDao.addNewDiscount(4,date16, date17, 25, c10,null);
+        Discount d50 = discountsDao.addNewDiscount(5,date16, date17, 25, c10,null);
 
 // Items for all Branches
-        for (int j = 1; j < 6; j++) {
-            for (int i = 1; i < 50; i++) {
-                Item item1 = itemsDao.addItem(j, date1, date13, 2, 9, 1, p1);
-                Item item2 = itemsDao.addItem(j, date1, date13, 4, 12, 2, p2);
-                Item item3 = itemsDao.addItem(j, date4, date13, 1, 5, 3, p3);
-                Item item4 = itemsDao.addItem(j, date4, date13, 1, 4, 4, p4);
-                Item item5 = itemsDao.addItem(j, date4, date13, 0.5, 3, 5, p5);
-                Item item6 = itemsDao.addItem(j, date4, date13, 1, 3, 6, p6);
-                Item item7 = itemsDao.addItem(j, date4, date13, 1, 4, 7, p7);
-                Item item8 = itemsDao.addItem(j, date1, date13, 4, 9, 3, p8);
-                Item item9 = itemsDao.addItem(j, date1, date13, 3, 10, 4, p9);
-                Item item10 = itemsDao.addItem(j, date1, date13, 5, 11, 5, p10);
-                Item item11 = itemsDao.addItem(j, date1, date13, 5, 12, 6, p11);
-                Item item12 = itemsDao.addItem(j, date1, date13, 5, 14, 7, p12);
-                Item item13 = itemsDao.addItem(j, date1, date13, 6, 15, 3, p13);
-                Item item14 = itemsDao.addItem(j, date1, date13, 5, 9, 4, p14);
-                Item item15 = itemsDao.addItem(j, date1, date13, 4, 12, 5, p15);
-                Item item16 = itemsDao.addItem(j, date1, date13, 5, 9, 6, p16);
-                Item item17 = itemsDao.addItem(j, date1, date13, 5, 9, 7, p17);
-                Item item18 = itemsDao.addItem(j, null, date13, 2, 6, 3, p18);
-                Item item19 = itemsDao.addItem(j, null, date13, 4, 9, 4, p19);
-                Item item20 = itemsDao.addItem(j, null, date13, 6, 12, 5, p20);
-                Item item21 = itemsDao.addItem(j, null, date13, 4, 9, 9, p21);
-                Item item22 = itemsDao.addItem(j, null, date13, 4, 9, 7, p22);
+        for (int j=1;j<6;j++)
+        {
+            for (int i = 1; i < 50; i++)
+            {
+                Item item1 = itemsDao.addItem(j,date1,date13 , 2, 9 ,1,p1);
+                Item item2 = itemsDao.addItem(j,date1,date13 , 4, 12 ,2,p2);
+                Item item3 = itemsDao.addItem(j,date4,date13 , 1, 5 ,3,p3);
+                Item item4 = itemsDao.addItem(j,date4,date13 , 1, 4 ,4,p4);
+                Item item5 = itemsDao.addItem(j,date4,date13 , 0.5, 3 ,5,p5);
+                Item item6 = itemsDao.addItem(j,date4,date13 , 1, 3 ,6,p6);
+                Item item7 = itemsDao.addItem(j,date4,date13 , 1, 4 ,7,p7);
+                Item item8 = itemsDao.addItem(j,date1,date13 , 4, 9 ,3,p8);
+                Item item9 = itemsDao.addItem(j,date1,date13 , 3, 10 ,4,p9);
+                Item item10 = itemsDao.addItem(j,date1,date13 , 5, 11 ,5,p10);
+                Item item11 = itemsDao.addItem(j,date1,date13 , 5, 12 ,6,p11);
+                Item item12 = itemsDao.addItem(j,date1,date13 , 5, 14 ,7,p12);
+                Item item13 = itemsDao.addItem(j,date1,date13 , 6, 15 ,3,p13);
+                Item item14 = itemsDao.addItem(j,date1,date13 , 5, 9 ,4,p14);
+                Item item15 = itemsDao.addItem(j,date1,date13 , 4, 12 ,5,p15);
+                Item item16 = itemsDao.addItem(j,date1,date13 , 5, 9 ,6,p16);
+                Item item17 = itemsDao.addItem(j,date1,date13 , 5, 9 ,7,p17);
+                Item item18 = itemsDao.addItem(j,null,date13 , 2, 6 ,3,p18);
+                Item item19 = itemsDao.addItem(j,null,date13 , 4, 9 ,4,p19);
+                Item item20 = itemsDao.addItem(j,null,date13 , 6, 12 ,5,p20);
+                Item item21 = itemsDao.addItem(j,null,date13 , 4,  9,9,p21);
+                Item item22 = itemsDao.addItem(j,null,date13 ,4 , 9 ,7,p22);
+
             }
         }
         // add expired Items
-        for (int j = 1; j < 6; j++) {
-            for (int i = 1; i < 6; i++) {
-                Item item1 = itemsDao.addItem(j, date20, date13, 2, 9, 1, p1);
-                Item item2 = itemsDao.addItem(j, date20, date13, 4, 12, 2, p2);
+        for (int j=1;j<6;j++)
+        {
+            for (int i = 1; i < 6; i++)
+            {
+                Item item1 = itemsDao.addItem(j,date20,date13 , 2, 9 ,1,p1);
+                Item item2 = itemsDao.addItem(j,date20,date13 , 4, 12 ,2,p2);
             }
         }
     }
-    public void printOrderToBranch(int branchID){
+    public void printOrderToBranch(int branchID) {
         HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branchID);
-        if (orders == null || orders.size() == 0) System.out.println("There is not orders in this branch");
-        for (Order order : orders.values()) {
+        if(orders == null || orders.size() == 0) System.out.println("There is not orders in this branch");
+        for(Order order : orders.values())
             System.out.println(order);
-        }
     }
-        }
+}
 
