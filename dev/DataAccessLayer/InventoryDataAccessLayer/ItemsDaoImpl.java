@@ -1,5 +1,6 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 import BusinessLayer.InventoryBusinessLayer.*;
+import DataAccessLayer.DBConnector;
 
 import java.sql.*;
 import java.time.LocalDate;

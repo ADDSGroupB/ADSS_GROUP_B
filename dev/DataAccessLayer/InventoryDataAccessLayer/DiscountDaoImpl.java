@@ -3,6 +3,8 @@ package DataAccessLayer.InventoryDataAccessLayer;
 import BusinessLayer.InventoryBusinessLayer.Category;
 import BusinessLayer.InventoryBusinessLayer.Discount;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import DataAccessLayer.DBConnector;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

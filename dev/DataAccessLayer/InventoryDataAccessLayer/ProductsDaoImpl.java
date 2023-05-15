@@ -1,6 +1,8 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 import BusinessLayer.InventoryBusinessLayer.Category;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import DataAccessLayer.DBConnector;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;

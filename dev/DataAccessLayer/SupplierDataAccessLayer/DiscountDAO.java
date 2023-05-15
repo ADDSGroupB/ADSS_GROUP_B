@@ -1,5 +1,6 @@
 package DataAccessLayer.SupplierDataAccessLayer;
 
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.iDiscountDAO;
 import Utillity.Pair;
 import Utillity.Response;
@@ -13,7 +14,7 @@ public class DiscountDAO implements iDiscountDAO {
     private HashMap<Pair<Integer, String>, Pair<Double, Double>> discountIM;
 
     public DiscountDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

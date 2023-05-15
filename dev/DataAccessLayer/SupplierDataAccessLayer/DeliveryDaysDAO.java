@@ -1,5 +1,6 @@
 package DataAccessLayer.SupplierDataAccessLayer;
 
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.iDeliveryDaysDAO;
 import Utillity.Response;
 
@@ -13,7 +14,7 @@ public class DeliveryDaysDAO implements iDeliveryDaysDAO {
     private HashMap<Integer, ArrayList<DayOfWeek>> deliveryDaysIM;
 
     public DeliveryDaysDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

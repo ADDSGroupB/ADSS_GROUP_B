@@ -1,6 +1,7 @@
 package DataAccessLayer.SupplierDataAccessLayer;
 
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.iItemsInPeriodicOrderDAO;
 import Utillity.Response;
 
@@ -14,7 +15,7 @@ public class ItemsInPeriodicOrderDAO implements iItemsInPeriodicOrderDAO {
     private final SupplierProductDAO supplierProductDAO;
 
     public ItemsInPeriodicOrderDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

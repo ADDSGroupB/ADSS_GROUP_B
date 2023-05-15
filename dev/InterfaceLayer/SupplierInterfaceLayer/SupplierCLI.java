@@ -1,6 +1,6 @@
 package InterfaceLayer.SupplierInterfaceLayer;
 
-import DataAccessLayer.SupplierDataAccessLayer.Database;
+import DataAccessLayer.DBConnector;
 import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Pair;
 import Utillity.Response;
@@ -21,8 +21,6 @@ public class SupplierCLI {
 
 
     public SupplierCLI() {
-        Database.connect();
-        Database.createTables();
         reader = new Scanner(System.in);
         supplierService = new SupplierService();
         serviceContact = new ServiceContact();
@@ -30,12 +28,12 @@ public class SupplierCLI {
         startDailyTask();
     }
 
-    public static void main(String[] args) {
-        SupplierCLI supplierCLI = new SupplierCLI();
-//        supplierCLI.createPeriodicOrder();
-        supplierCLI.updateProductsInOrder();
-        supplierCLI.removeProductsFromOrder();
-    }
+//    public static void main(String[] args) {
+//        SupplierCLI supplierCLI = new SupplierCLI();
+////        supplierCLI.createPeriodicOrder();
+//        supplierCLI.updateProductsInOrder();
+//        supplierCLI.removeProductsFromOrder();
+//    }
 
     public void print(String message){
         System.out.println(message);
@@ -45,79 +43,78 @@ public class SupplierCLI {
     public void start() {
 
 
-
         int userInput;
-
-        print("Hello! and Welcome to Super Lee- supplier module, I am available to assist you with any requests you may have\nDo you want to upload existing data or start over?  \n1. Load Data\n2. New Data \n3. EXIT\n");
-        int n = reader.nextInt();
-        //reader.nextLine();
-        if (n == 1) {
-            loadData();
-            start();
-            ArrayList<HashMap<Integer, Integer>> shortage = enterShortage();
-            boolean valid = false;
-            while (!valid) {
-                print("For scenario one press 1- create an order from one supplier (only one supplier can supply all the products)\n");
-                print("For scenario two press 2- The order will be split into several orders according to different suppliers\n");
-                print("For scenario three press 3- the order can't be created\n");
-                print("Press 0- back to the menu");
-//                printOrders();
-                int choose = reader.nextInt();
-                switch (choose) {
-                    case 1 -> {
-                        valid = true;
-                        supplierService.createOrderByShortage(1 ,shortage.get(0));
-                        printOrders();
-                    }
-                    case 2 -> {
-                        valid = true;
-                        supplierService.createOrderByShortage(1 ,shortage.get(1));
-                        printOrders();
-                    }
-                    case 3 -> {
-                        valid = true;
-                        supplierService.createOrderByShortage(1 ,shortage.get(2));
-                        printOrders();
-                    }
-                    case 0 -> { createPeriodicOrder(); start(); }
-                    default -> print("Please choose a valid number (1,2,3)");
-                }
-            }
-        }
-        if (n == 3) {
-            print("Hope you enjoyed, see you next time :)");
-            Database.disconnect();
-            System.exit(0);
-        }
-        //if the user pressed 2 we play the next section
-        if (n == 2) {
-            while (true) {
-                    print("Which module are you interested in?  \n1. Supplier\n2. EXIT\n3. Back");
-                    userInput = reader.nextInt();
-                    reader.nextLine();
-                    if (userInput < 1 || userInput > 3) {
-                        print("Please choose one of the following options:\n1. Supplier\n2. EXIT\n3. Back");
-                        userInput = reader.nextInt();
-                        reader.nextLine();
-                }
-                if (userInput == 1) {
-                    supplierManagerCLI();
-                }
-                if (userInput == 2) {
-                    print("Hope you enjoyed, see you next time :)");
-                    Database.disconnect();
-                    System.exit(0);
-                }
-                else {
-                    start();
-                }
-            }
-        }
-        else{
-            print("Input out of range, please choose again");
-            start();
-        }
+        supplierManagerCLI();
     }
+//        print("Hello! and Welcome to Super Lee- supplier module, I am available to assist you with any requests you may have\nDo you want to upload existing data or start over?  \n1. Load Data\n2. New Data \n3. EXIT\n");
+//        int n = reader.nextInt();
+//        //reader.nextLine();
+//        if (n == 1) {
+//            loadData();
+//            start();
+//            ArrayList<HashMap<Integer, Integer>> shortage = enterShortage();
+//            boolean valid = false;
+//            while (!valid) {
+//                print("For scenario one press 1- create an order from one supplier (only one supplier can supply all the products)\n");
+//                print("For scenario two press 2- The order will be split into several orders according to different suppliers\n");
+//                print("For scenario three press 3- the order can't be created\n");
+//                print("Press 0- back to the menu");
+////                printOrders();
+//                int choose = reader.nextInt();
+//                switch (choose) {
+//                    case 1 -> {
+//                        valid = true;
+//                        supplierService.createOrderByShortage(1 ,shortage.get(0));
+//                        printOrders();
+//                    }
+//                    case 2 -> {
+//                        valid = true;
+//                        supplierService.createOrderByShortage(1 ,shortage.get(1));
+//                        printOrders();
+//                    }
+//                    case 3 -> {
+//                        valid = true;
+//                        supplierService.createOrderByShortage(1 ,shortage.get(2));
+//                        printOrders();
+//                    }
+//                    case 0 -> { createPeriodicOrder(); start(); }
+//                    default -> print("Please choose a valid number (1,2,3)");
+//                }
+//            }
+//        }
+//        if (n == 3) {
+//            print("Hope you enjoyed, see you next time :)");
+//            System.exit(0);
+//        }
+//        //if the user pressed 2 we play the next section
+//        if (n == 2) {
+//            while (true) {
+//                    print("Which module are you interested in?  \n1. Supplier\n2. EXIT\n3. Back");
+//                    userInput = reader.nextInt();
+//                    reader.nextLine();
+//                    if (userInput < 1 || userInput > 3) {
+//                        print("Please choose one of the following options:\n1. Supplier\n2. EXIT\n3. Back");
+//                        userInput = reader.nextInt();
+//                        reader.nextLine();
+//                }
+//                if (userInput == 1) {
+//                    supplierManagerCLI();
+//                }
+//                if (userInput == 2) {
+//                    print("Hope you enjoyed, see you next time :)");
+//                    DBConnector.disconnect();
+//                    System.exit(0);
+//                }
+//                else {
+//                    start();
+//                }
+//            }
+//        }
+//        else{
+//            print("Input out of range, please choose again");
+//            start();
+//        }
+//    }
 
         private ArrayList<HashMap<Integer, Integer>> enterShortage() {
         HashMap <Integer,Integer> productsToOrder1 = new HashMap<>();//order 1
@@ -141,7 +138,7 @@ public class SupplierCLI {
         return shortage;
     }
 
-    private void loadData() {
+    public void loadDataSupplier() {
         //  supplier1   //
         ArrayList<DayOfWeek> deliveryDays1 = new ArrayList<>();
         deliveryDays1.add(DayOfWeek.MONDAY);
@@ -879,7 +876,7 @@ public class SupplierCLI {
         timer.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             timer.cancel();
-            Database.disconnect();
+            DBConnector.disconnect();
         }));
     }
 }

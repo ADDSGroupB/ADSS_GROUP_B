@@ -1,6 +1,7 @@
 package DataAccessLayer.SupplierDataAccessLayer;
 
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.iSupplierProductDAO;
 import Utillity.Pair;
 import Utillity.Response;
@@ -14,7 +15,7 @@ public class SupplierProductDAO implements iSupplierProductDAO {
     private final DiscountPerAmountDAO discountPerAmountDAO;
 
     public SupplierProductDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

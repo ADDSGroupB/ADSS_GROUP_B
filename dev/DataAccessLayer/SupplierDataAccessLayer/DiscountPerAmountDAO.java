@@ -1,5 +1,6 @@
 package DataAccessLayer.SupplierDataAccessLayer;
 
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.iDiscountPerAmountDAO;
 import Utillity.Pair;
 import Utillity.Response;
@@ -12,7 +13,7 @@ public class DiscountPerAmountDAO implements iDiscountPerAmountDAO {
     private HashMap<Pair<Integer, Integer>, HashMap<Integer, Double>> discountIM;
 
     public DiscountPerAmountDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

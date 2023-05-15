@@ -2,6 +2,7 @@ package DataAccessLayer.InventoryDataAccessLayer;
 
 import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import DataAccessLayer.DBConnector;
 import Utillity.Pair;
 
 

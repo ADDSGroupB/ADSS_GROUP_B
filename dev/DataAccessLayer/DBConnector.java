@@ -1,19 +1,20 @@
-package DataAccessLayer.SupplierDataAccessLayer;
+package DataAccessLayer;
 import java.sql.*;
 
-public class Database {
+public class DBConnector {
     private static final String DB_URL = "jdbc:sqlite:res/superlee.db";
     private static Connection connection;
 
-    private Database() {
+    private DBConnector() {
     }
 
     public static Connection connect()
     {
         if(connection == null)
         {
-            try { connection = DriverManager.getConnection(DB_URL); }
+            try { connection = DriverManager.getConnection(DB_URL); createTables(); }
             catch (SQLException e) { System.out.println(e.getMessage()); }
+
         }
         //TODO: Add branchID FOREIGN KEY in supplierOrder table and periodicOrder table.
         return connection;

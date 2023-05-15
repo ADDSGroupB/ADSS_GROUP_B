@@ -2,7 +2,7 @@ package DataAccessLayer.SupplierDataAccessLayer;
 
 import BusinessLayer.SupplierBusinessLayer.Agreement;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
-import DataAccessLayer.SupplierDataAccessLayer.Interfaces.*;
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.SupplierDataAccessLayer.Interfaces.*;
 import Utillity.Pair;
 import Utillity.Response;
@@ -22,7 +22,7 @@ public class AgreementDAO implements iAgreementDAO {
     private final iDeliveryDaysDAO deliveryDaysDAO;
 
     public AgreementDAO() {
-        connection = Database.connect();
+        connection = DBConnector.connect();
         try {
             Statement statement = connection.createStatement();
             statement.execute("PRAGMA foreign_keys=ON;");

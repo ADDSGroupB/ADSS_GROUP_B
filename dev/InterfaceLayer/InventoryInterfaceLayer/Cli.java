@@ -2,17 +2,19 @@ package InterfaceLayer.InventoryInterfaceLayer;
 
 import BusinessLayer.InventoryBusinessLayer.*;
 import DataAccessLayer.InventoryDataAccessLayer.*;
-import DataAccessLayer.InventoryDataAccessLayer.*;
+import InterfaceLayer.SupplierInterfaceLayer.SupplierCLI;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-public class InventoryCli {
+public class Cli {
     private MainController mainController;
-    public InventoryCli() {
+    private SupplierCLI supplierCLI;
+    public Cli() {
         mainController = new MainController();
+        supplierCLI = new SupplierCLI();
     }
     public MainController getMainController() {return this.mainController;}
     public void Start() throws SQLException
@@ -35,6 +37,7 @@ public class InventoryCli {
                     System.out.println("Initializing the information in the system... ");
                     LoadDataInventory(this.getMainController());
                     mainController.getItemsDao().checkExpiredItemsInAllBranches();
+                    supplierCLI.loadDataSupplier();
                     MainMenuUI();
                     break;
                 }
@@ -48,7 +51,11 @@ public class InventoryCli {
             }
         }
     }
-    public void SuppliersUI()throws SQLException { }
+    public void SuppliersUI()throws SQLException
+    {
+
+        supplierCLI.start();
+    }
     public void MainMenuUI()throws SQLException {
 
         //TODO : Receiving an order from supplier -- > add here the function
