@@ -278,6 +278,7 @@ public class Cli {
                         String discription = discriptionScanner.nextLine();
                         itemDef = mainController.getItemsDao().updateItemStatus(itemIDDefective,"Damaged");
                         itemDef = mainController.getItemsDao().updateItemDefectiveDescription(itemDef.getItemID(),discription);
+                        mainController.getItemsDao().fromStorageToStore(branch);
                         System.out.println("The items have been successfully update");
                         System.out.println(itemDef + "\n");
                         break;
