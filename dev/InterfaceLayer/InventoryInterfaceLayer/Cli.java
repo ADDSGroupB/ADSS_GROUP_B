@@ -727,7 +727,8 @@ public class Cli {
                                 System.out.println(product);
                             }
                         }
-                    } else {
+                    } else
+                    {
                         System.out.println("The product name you provided already exists under the manufacturer you provided in the system");
                     }
                     break;

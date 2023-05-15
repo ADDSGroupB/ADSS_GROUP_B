@@ -639,7 +639,7 @@ public class ItemsDaoImpl implements ItemsDao {
         }
     }
     @Override
-    public void EnteringNewOrder(Branch branch,Order order) throws SQLException
+    public void EnteringNewOrder(OrderService orderService,Branch branch,Order order) throws SQLException
     {
         try {
             ArrayList<SupplierProduct> itemsInOrder = order.getItemsInOrder();
@@ -669,6 +669,7 @@ public class ItemsDaoImpl implements ItemsDao {
                 }
             }
             fromStorageToStore(branch);
+            orderService.markOrderAsCollected(order.getOrderID());
         }
         catch (Exception e)
         {
@@ -689,7 +690,7 @@ public class ItemsDaoImpl implements ItemsDao {
                         {
                             if (order != null)
                             {
-                                EnteringNewOrder(branch,order);
+                                EnteringNewOrder(orderService,branch,order);
                             }
                         }
                     }
