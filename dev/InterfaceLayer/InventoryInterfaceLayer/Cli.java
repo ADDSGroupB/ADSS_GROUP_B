@@ -859,6 +859,264 @@ public class Cli {
             }
         }
     }
+    public void missingReportUI(Branch branch) throws SQLException {
+        Scanner missingScanner = new Scanner(System.in);
+
+        int choice = 0;
+        while (choice != 3) {
+            System.out.println("Missing Products Report Menu:");
+            System.out.println("1. Create a new Missing Products Report");
+            System.out.println("2. Print the current Missing Products Report");
+            System.out.println("3. Exit");
+            try {
+                choice = missingScanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Please enter an integer");
+                missingScanner.nextLine(); // clear input buffer
+                continue;
+            }
+            switch (choice)
+            {
+                case 1 :
+                {
+                    System.out.println("Creating new Missing Products Report...");
+                    int reportID = mainController.getReportDao().getNewReportID();
+                    MissingProductsReport report = mainController.getBranchController().getReportController().createNewMissingReport(reportID, branch.getBranchID());
+                    int productID = 0;
+                    while (productID != -1)
+                    {
+                        System.out.print("Enter the product ID (or -1 to finish): ");
+                        productID = HelperFunctions.positiveItegerInsertionWithCancel();
+                        if (productID == -1)
+                        {
+                            break;
+                        }
+                        Product product = mainController.getProductsDao().getProductByID(productID);
+                        if (product != null)
+                        {
+                            System.out.print("Enter the amount to order : ");
+                            int amount = HelperFunctions.positiveItegerInsertion();
+                            report.addMissingProduct(product, amount);
+                        }
+                        else
+                        {
+                            System.out.println("Unknown product ID. Please try again");
+                        }
+                    }
+                    System.out.println("The products have been successfully added to the report");
+                    branch.getBranchReportManager().addNewReport(report);
+                    mainController.getReportDao().addReport(report);
+                    break;
+                }
+                case 2 : {
+                    if (branch.getBranchReportManager().getCurrentMissingReport() != null)
+                    {
+                        System.out.println(branch.getBranchReportManager().getCurrentMissingReport().toString());
+                    }
+                    else
+                    {
+                        System.out.println("Missing Products Report has not been created yet");
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    System.out.println("Exiting...");
+                    break;
+                }
+                default:{
+                    System.out.println("Invalid choice, please try again");
+                    break;
+                }
+            }
+        }
+    }
+    public void defectiveReportUI(Branch branch) throws SQLException {
+        Scanner defectiveScanner = new Scanner(System.in);
+
+        int choice = 0;
+        while (choice != 3) {
+            System.out.println("Defective Items Report Menu:");
+            System.out.println("1. Create a new Defective Items Report");
+            System.out.println("2. Print the current Defective Items Report");
+            System.out.println("3. Exit");
+            try {
+                choice = defectiveScanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Please enter an integer");
+                defectiveScanner.nextLine(); // clear input buffer
+                continue;
+            }
+            switch (choice)
+            {
+                case 1:{
+                    System.out.println("Creating new Defective Items Report...");
+                    int reportID = mainController.getReportDao().getNewReportID();
+                    DefectiveProductsReport report = mainController.getBranchController().getReportController().createNewDefectiveReport(reportID, branch.getBranchID());
+                    List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
+                    List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
+                    if (report == null) {
+                        System.out.println("Defective Items Report has not been created yet");
+                        break;
+                    }
+                    if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
+                        System.out.println("We currently have no damaged or expired items to report...");
+                    } else
+                    {
+                        Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
+                        allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
+                        if (allDefectiveReports != null) {
+                            List<Item> allItemsInReports = new ArrayList<>();
+                            for (DefectiveProductsReport defectiveProductsReport : allDefectiveReports.values()) {
+                                if (defectiveProductsReport.getBranchID() == branch.getBranchID()) {
+                                    List<Item> currItemsInReport = defectiveProductsReport.getDefectiveOrExpiredProducts(defectiveProductsReport.getReportID());
+                                    allItemsInReports.addAll(currItemsInReport);
+                                }
+                            }
+                            for (Item item : defectiveItems)
+                            {
+                                boolean check = false;
+                                if (allItemsInReports.size() > 0) {
+                                    for (Item item1 : allItemsInReports)
+                                    {
+                                        if (item1.getItemID() == item.getItemID())
+                                        {
+                                            check = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!check)
+                                    {
+                                        report.addDefectiveItem(item);
+                                    }
+                                }
+                                else {report.addDefectiveItem(item);}
+                            }
+                            for (Item item : expiredItems) {
+                                boolean check = false;
+                                if (allItemsInReports.size()>0) {
+                                    for (Item item1 : allItemsInReports) {
+                                        if (item1.getItemID() == item.getItemID()) {
+                                            check = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!check) {
+                                        report.addDefectiveItem(item);
+                                    }
+                                }
+                                else {report.addDefectiveItem(item);}
+                            }
+                            branch.getBranchReportManager().addNewReport(report);
+                            mainController.getReportDao().addReport(report);
+                            System.out.println("Adding items to the report has been successfully completed");
+                            break;
+                        }
+                        else
+                        {
+                            for (Item item : defectiveItems)
+                            {
+                                report.addDefectiveItem(item);
+                            }
+                            for (Item item : expiredItems)
+                            {
+                                report.addDefectiveItem(item);
+                            }
+                            branch.getBranchReportManager().addNewReport(report);
+                            mainController.getReportDao().addReport(report);
+                            System.out.println("Adding items to the report has been successfully completed");
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 2:{
+                    if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
+                        System.out.println(branch.getBranchReportManager().getCurrentDefectiveReport().toString());
+                    } else
+                        System.out.println("Defective Items Report has not been created yet");
+                    break;
+                }
+                case 3:{System.out.println("Exiting...");
+                    break;}
+                default:{System.out.println("Invalid choice, please try again");
+                    break;}
+            }
+        }
+    }
+    public void weeklyReportUI(Branch branch) throws SQLException {
+        Scanner weeklyScanner = new Scanner(System.in);
+        int choice =0;
+        while (choice != 3) {
+            System.out.println("Defective Items Report Menu:");
+            System.out.println("1. Create a new Defective Items Report");
+            System.out.println("2. Print the current Defective Items Report");
+            System.out.println("3. Exit");
+            try {
+                choice = weeklyScanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Please enter an integer");
+                weeklyScanner.nextLine(); // clear input buffer
+                continue;
+            }
+            switch (choice)
+            {
+                case 1:{
+                    System.out.println("Creating new Weekly Storages Report...");
+                    int reportID = mainController.getReportDao().getNewReportID();
+                    WeeklyStorageReport report = mainController.getBranchController().getReportController().createNewWeeklyReport(reportID, branch.getBranchID());
+                    int categoryID = 0;
+                    while (categoryID != -1) {
+                        System.out.print("Enter the category ID (or -1 to finish): ");
+                        try {
+                            categoryID = weeklyScanner.nextInt();
+                        } catch (Exception e) {
+                            System.out.println("Please enter an integer");
+                            weeklyScanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        if (categoryID == -1) {
+                            break;
+                        }
+                        Category category = mainController.getCategoryDao().getCategoryByID(categoryID);
+                        if (category == null) {
+                            System.out.println("Unknown category ID. Please try again");
+                            weeklyScanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        if (report.getWeeklyReportMap().containsKey(category)) {
+                            System.out.println("The category is already in the report");
+                            weeklyScanner.nextLine(); // clear input buffer
+                            continue;
+                        }
+                        List<Product> products = mainController.getProductsDao().getAllProductsInCategory(categoryID);
+                        Map<Product, Integer> productCurrAmount = new HashMap<>();
+                        for (Product product : products) {
+                            int productAmount = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                            productAmount += mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
+                            productCurrAmount.put(product, productAmount);
+                        }
+                        report.addCategoryToReport(category, productCurrAmount);
+                    }
+
+                    branch.getBranchReportManager().addNewReport(report);
+                    mainController.getReportDao().addReport(report);
+                    System.out.println("Adding categories to the report has been successfully completed");
+                    break;
+                }
+                case 2:{
+                    if (branch.getBranchReportManager().getCurrentWeeklyReport() != null) {
+                        System.out.println(branch.getBranchReportManager().getCurrentWeeklyReport().toString(branch));
+                    } else System.out.println("Weekly Storage Report has not been created yet");
+                    break;
+                }
+                case 3:{System.out.println("Exiting...");
+                    break;}
+                default:{System.out.println("Invalid choice, please try again");
+                    break;}
+            }
+        }
+    }
     public void reportUI(Branch branch) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
@@ -875,214 +1133,16 @@ public class Cli {
                 scanner.nextLine(); // clear input buffer
                 continue;
             }
-            switch (choice) {
-                case 1:{
-                    choice = 0;
-                    while (choice != 4) {
-                        System.out.println("Missing Products Report Menu:");
-                        System.out.println("1. Create a new Missing Products Report");
-                        System.out.println("2. Add new product to the current Missing Products Report");
-                        System.out.println("3. Print the current Missing Products Report");
-                        System.out.println("4. Exit");
-                        try {
-                            choice = scanner.nextInt();
-                        } catch (Exception e) {
-                            System.out.println("Please enter an integer");
-                            scanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        switch (choice) {
-                            case 1:
-                                System.out.println("Creating new Missing Products Report...");
-                                int reportID = mainController.getReportDao().getNewReportID();
-                                MissingProductsReport report = mainController.getBranchController().getReportController().createNewMissingReport(reportID, branch.getBranchID());
-                                branch.getBranchReportManager().addNewReport(report);
-                                mainController.getReportDao().addReport(report);
-                                continue;
-                            case 2:
-                                MissingProductsReport report_curr = branch.getBranchReportManager().getCurrentMissingReport();
-                                if (report_curr == null){
-                                    System.out.println("Missing Items Report has not been created yet");
-                                    break;
-                                }
-                                System.out.println("Adds new product to the current Missing Products Report...");
-                                int productID = 0;
-                                while (productID != -1) {
-                                    System.out.print("Enter the product ID (or -1 to finish): ");
-                                    productID = HelperFunctions.positiveItegerInsertionWithCancel();
-                                    if (productID == -1){break;}
-                                    Product product = mainController.getProductsDao().getProductByID(productID);
-                                    if (product != null)
-                                    {
-                                        System.out.print("Enter the amount to order : ");
-                                        int amount = HelperFunctions.positiveItegerInsertion();
-                                        report_curr.addMissingProduct(product, amount);
-                                        //mainController.getReportDao().addLineToMissingReport(report_curr.getReportID(), productID, amount);
-                                    }
-                                    else
-                                    {
-                                        System.out.println("Unknown product ID. Please try again");
-                                    }
-                                }
-                                branch.getBranchReportManager().setCurrentMissingReport(report_curr);
-                                System.out.println("The products have been successfully added to the report");
-                                break;
-                            case 3:
-                                if (branch.getBranchReportManager().getCurrentMissingReport() != null) {
-                                    System.out.println(branch.getBranchReportManager().getCurrentMissingReport().toString());
-                                } else System.out.println("Missing Products Report has not been created yet");
-                                break;
-                            case 4:
-                                System.out.println("Exiting...");
-                                break;
-                            default:
-                                System.out.println("Invalid choice, please try again");
-                                break;
-                        }
-                    }
-                    break;
-                }
-                case 2:{
-                    choice = 0;
-                    while (choice != 4) {
-                        System.out.println("Defective Items Report Menu:");
-                        System.out.println("1. Create a new Defective Items Report");
-                        System.out.println("2. Updating the damaged items report");
-                        System.out.println("3. Print the current Defective Items Report");
-                        System.out.println("4. Exit");
-                        try {
-                            choice = scanner.nextInt();
-                        } catch (Exception e) {
-                            System.out.println("Please enter an integer");
-                            scanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        switch (choice) {
-                            case 1:
-                                System.out.println("Creating new Defective Items Report...");
-                                int reportID = mainController.getReportDao().getNewReportID();
-                                DefectiveProductsReport report = mainController.getBranchController().getReportController().createNewDefectiveReport(reportID, branch.getBranchID());
-                                branch.getBranchReportManager().addNewReport(report);
-                                continue;
-                            case 2: {
-                                DefectiveProductsReport report_curr = branch.getBranchReportManager().getCurrentDefectiveReport();
-                                if (report_curr == null){
-                                    System.out.println("Defective Items Report has not been created yet");
-                                    break;
-                                }
-                                System.out.println("Updating the damaged items report...");
-                                List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
-                                List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
-                                if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
-                                    System.out.println("We currently have no damaged or expired items to report...");
-                                } else {
-                                    for (Item item : defectiveItems){
-                                        report_curr.addDefectiveItem(item);
-                                    }
-                                    for (Item item : expiredItems){
-                                        report_curr.addDefectiveItem(item);
-                                    }
-                                    //reprt_curr = mainController.getBranchController().getReportController().updateProductsInReport(reprt_curr, branch);
-                                    System.out.println("The update was successful");
-                                }
-                                branch.getBranchReportManager().setCurrentDefectiveReport(report_curr);
-                                mainController.getReportDao().addReport(report_curr);
-                                break;
-                            }
-                            case 3:
-                                if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
-                                    System.out.println(branch.getBranchReportManager().getCurrentDefectiveReport().toString());
-                                } else System.out.println("Defective Items Report has not been created yet");
-                                break;
-                            case 4:
-                                System.out.println("Exiting...");
-                                break;
-                            default:
-                                System.out.println("Invalid choice, please try again");
-                                break;
-                        }
-                    }
+            switch (choice)
+            {
+                case 1:{missingReportUI(branch);
                     break;}
-                case 3:{
-                    choice = 0;
-                    while (choice != 4) {
-                        System.out.println("Weekly Storage Report Menu:");
-                        System.out.println("1. Create a new Weekly Storage Report");
-                        System.out.println("2. Add new category to the current Weekly Storage Report");
-                        System.out.println("3. Print the current Weekly Storage Report");
-                        System.out.println("4. Exit");
-                        try {
-                            choice = scanner.nextInt();
-                        } catch (Exception e) {
-                            System.out.println("Please enter an integer");
-                            scanner.nextLine(); // clear input buffer
-                            continue;
-                        }
-                        switch (choice) {
-                            case 1:
-                                System.out.println("Creating new Weekly Storages Report...");
-                                int reportID = mainController.getReportDao().getNewReportID();
-                                WeeklyStorageReport report = mainController.getBranchController().getReportController().createNewWeeklyReport(reportID, branch.getBranchID());
-                                branch.getBranchReportManager().addNewReport(report);
-                                continue;
-                            case 2:
-                                System.out.println("Adds new category to the current Weekly Storages Report...");
-                                WeeklyStorageReport curr = branch.getBranchReportManager().getCurrentWeeklyReport();
-                                if (curr == null){
-                                    System.out.println("Weekly Storages Report has not been created yet");
-                                    break;
-                                }
-                                int categoryID = 0;
-                                while (categoryID != -1) {
-                                    System.out.print("Enter the category ID (or -1 to finish): ");
-                                    try {
-                                        categoryID = scanner.nextInt();
-                                    } catch (Exception e) {
-                                        System.out.println("Please enter an integer");
-                                        scanner.nextLine(); // clear input buffer
-                                        continue;
-                                    }
-                                    if (categoryID == -1){break;}
-                                    Category category = mainController.getCategoryDao().getCategoryByID(categoryID);
-                                    if (category == null) {
-                                        System.out.println("Unknown category ID. Please try again");
-                                        scanner.nextLine(); // clear input buffer
-                                        continue;
-                                    }
-                                    if (curr.getWeeklyReportMap().containsKey(category)){
-                                        System.out.println("The category is already in the report");
-                                        scanner.nextLine(); // clear input buffer
-                                        continue;
-                                    }
-                                    List<Product> products = mainController.getProductsDao().getAllProductsInCategory(categoryID);
-                                    Map<Product, Integer> productCurrAmount = new HashMap<>();
-                                    for (Product product : products){
-                                        int productAmount = mainController.getItemsDao().getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
-                                        productAmount += mainController.getItemsDao().getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()).size();
-                                        productCurrAmount.put(product, productAmount);
-                                        //mainController.getReportDao().addLineToWeeklyReport(curr.getReportID(), categoryID, product.getProductID(), productAmount);
-                                    }
-                                    curr.addCategoryToReport(category, productCurrAmount);
-                                }
-                                branch.getBranchReportManager().setCurrentWeeklyReport(curr);
-                                mainController.getReportDao().addReport(curr);
-                                System.out.println("Adding categories to the report has been successfully completed");
-                                break;
-                            case 3:
-                                if (branch.getBranchReportManager().getCurrentWeeklyReport() != null) {
-                                    System.out.println(branch.getBranchReportManager().getCurrentWeeklyReport().toString(branch));
-                                } else System.out.println("Weekly Storage Report has not been created yet");
-                                break;
-                            case 4:
-                                System.out.println("Exiting...");
-                                break;
-                            default:
-                                System.out.println("Invalid choice, please try again");
-                                break;
-                        }
-                    }
-                    break;
-                }
+                case 2:{defectiveReportUI(branch);
+                    break;}
+                case 3:{weeklyReportUI(branch);
+                    break;}
+                default:{System.out.println("Invalid choice, please try again");
+                    break;}
             }
         }
     }
