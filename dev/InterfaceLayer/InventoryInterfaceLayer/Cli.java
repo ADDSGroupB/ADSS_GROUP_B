@@ -1091,7 +1091,21 @@ public class Cli {
 
     private void startDailyTask()
     {
-        Timer timer = new Timer();
+        Timer timerForShortageOrder = new Timer();
+        TimerTask otherTask = new TimerTask() {
+            @Override
+            public void run() {
+                // Check shortage
+                // Create Shortage Order
+                // Make products as orderd (setStatus)
+            }
+        };
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 20); // 3pm
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Timer timerPeriodicOrder = new Timer();
         // Schedule the task to execute every day at 10:00am
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 10);
@@ -1100,9 +1114,10 @@ public class Cli {
         calendar.set(Calendar.MILLISECOND, 0);
         if (calendar.getTimeInMillis() < System.currentTimeMillis())
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-        timer.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        timerPeriodicOrder.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            timer.cancel();
+            timerPeriodicOrder.cancel();
+            timerForShortageOrder.cancel();
             DBConnector.disconnect();
         }));
     }
