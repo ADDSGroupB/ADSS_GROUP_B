@@ -12,7 +12,7 @@ public class DBConnector {
     {
         if(connection == null)
         {
-            try { connection = DriverManager.getConnection(DB_URL); createTables(); }
+            try { connection = DriverManager.getConnection(DB_URL); createTablesInventory(); createTables(); }
             catch (SQLException e) { System.out.println(e.getMessage()); }
 
         }
@@ -145,7 +145,6 @@ public class DBConnector {
                 + "FOREIGN KEY(ProductID) REFERENCES Products(ProductID),\n"
                 + "PRIMARY KEY(ProductID,BranchID)\n"
                 + ");";
-
         String sql7 = "CREATE TABLE IF NOT EXISTS AllReports (\n"
                 + "ReportID INTEGER,\n"
                 + "ReportType TEXT,\n"
@@ -329,38 +328,33 @@ public class DBConnector {
         }
     }
 
-    public static void deleteRecordsOfInventoryTables() throws SQLException {
-        {
-            Statement stmt = null;
-            String dropQuery1 = "DROP TABLE IF EXISTS WeeklyReports";
-            String dropQuery2 = "DROP TABLE IF EXISTS MissingReports";
-            String dropQuery3 = "DROP TABLE IF EXISTS DefectiveReport";
-            String dropQuery4 = "DROP TABLE IF EXISTS AllReports";
-            String dropQuery5 = "DROP TABLE IF EXISTS ProductMinAmount";
-            String dropQuery6 = "DROP TABLE IF EXISTS Items";
-            String dropQuery7 = "DROP TABLE IF EXISTS Discounts";
-            String dropQuery8 = "DROP TABLE IF EXISTS Products";
-            String dropQuery9 = "DROP TABLE IF EXISTS Categories";
-            String dropQuery10 = "DROP TABLE IF EXISTS Branches";
-            try  {
-                stmt = connection.createStatement();
-                stmt.execute(dropQuery1);
-                stmt.execute(dropQuery2);
-                stmt.execute(dropQuery3);
-                stmt.execute(dropQuery4);
-                stmt.execute(dropQuery5);
-                stmt.execute(dropQuery6);
-                stmt.execute(dropQuery7);
-                stmt.execute(dropQuery8);
-                stmt.execute(dropQuery9);
-                stmt.execute(dropQuery10);
-                createTablesInventory();
-            } catch (SQLException e) {
-                throw e;
-            }
-            finally {
-                if (stmt != null ) {stmt.close();}
-            }
+
+    public static void deleteRecordsOfInventoryTables() throws SQLException
+    {
+        String dropQuery1 = "DROP TABLE IF EXISTS WeeklyReports";
+        String dropQuery2 = "DROP TABLE IF EXISTS MissingReports";
+        String dropQuery3 = "DROP TABLE IF EXISTS DefectiveReport";
+        String dropQuery4 = "DROP TABLE IF EXISTS AllReports";
+        String dropQuery5 = "DROP TABLE IF EXISTS ProductMinAmount";
+        String dropQuery6 = "DROP TABLE IF EXISTS Items";
+        String dropQuery7 = "DROP TABLE IF EXISTS Discounts";
+        String dropQuery8 = "DROP TABLE IF EXISTS Products";
+        String dropQuery9 = "DROP TABLE IF EXISTS Categories";
+        String dropQuery10 = "DROP TABLE IF EXISTS Branches";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(dropQuery1);
+            stmt.execute(dropQuery2);
+            stmt.execute(dropQuery3);
+            stmt.execute(dropQuery4);
+            stmt.execute(dropQuery5);
+            stmt.execute(dropQuery6);
+            stmt.execute(dropQuery7);
+            stmt.execute(dropQuery8);
+            stmt.execute(dropQuery9);
+            stmt.execute(dropQuery10);
+            createTablesInventory();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

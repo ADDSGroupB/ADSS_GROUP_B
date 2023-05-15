@@ -15,6 +15,7 @@ class ProductTest {
     @BeforeEach
     void setUp() throws SQLException {
         DBConnector.connect();
+        DBConnector.deleteRecordsOfInventoryTables();
         DBConnector.deleteRecordsOfTables();
 
         mainController = new MainController();
@@ -36,7 +37,7 @@ class ProductTest {
 
     @Test
     void getSubSubCategory() throws SQLException {
-        assertEquals(7, mainController.getProductsDao().getProductByID(1).getSubSubCategory().getCategoryID());
+        assertEquals(3, mainController.getProductsDao().getProductByID(1).getSubSubCategory().getCategoryID());
     }
 
     @Test

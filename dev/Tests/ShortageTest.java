@@ -1,9 +1,10 @@
 package Tests;
 
 import BusinessLayer.InventoryBusinessLayer.*;
-import BusinessLayer.SupplierBusinessLayer.*;
-import ServiceLayer.SupplierServiceLayer.*;
+import BusinessLayer.SupplierBusinessLayer.Order;
+import BusinessLayer.SupplierBusinessLayer.SupplierController;
 import DataAccessLayer.DBConnector;
+import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +15,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class InventorySupplierTests {
+public class ShortageTest {
     private SupplierController sc;
     private SupplierService ssl;
     private OrderService orderService;
@@ -83,60 +85,29 @@ public class InventorySupplierTests {
 
     }
     @Test
-    public void createPeriodicOrder()
-    {
-        HashMap<Integer, Integer> productsToOrder = new HashMap<>();
-        productsToOrder.put(1, 10);
-        productsToOrder.put(2, 2);
-        int num = ssl.createPeriodicOrder(1, 1, DayOfWeek.MONDAY, productsToOrder).getSupplierId();
-        assertEquals(1, num);
-    }
-    @Test
-    public void executePeriodicOrder() {
-        HashMap<Integer, Integer> productsToOrder = new HashMap<>();
-        productsToOrder.put(1, 50);
-        productsToOrder.put(2, 35);
-        // System.out.println(ssl.createPeriodicOrder(1, 1, DayOfWeek.MONDAY, productsToOrder).getErrorMessage())
-        int num1 = ssl.createPeriodicOrder(1, 1, DayOfWeek.MONDAY, productsToOrder).getSupplierId();
-        int num2 = ssl.createPeriodicOrder(1, 1, DayOfWeek.TUESDAY, productsToOrder).getSupplierId();
-        int num3 = ssl.createPeriodicOrder(1, 1, DayOfWeek.WEDNESDAY, productsToOrder).getSupplierId();
-        int num4 = ssl.createPeriodicOrder(1, 1, DayOfWeek.THURSDAY, productsToOrder).getSupplierId();
-        int num5 = ssl.createPeriodicOrder(1, 1, DayOfWeek.FRIDAY, productsToOrder).getSupplierId();
-        int num6 = ssl.createPeriodicOrder(1, 1, DayOfWeek.SATURDAY, productsToOrder).getSupplierId();
-        int num7 = ssl.createPeriodicOrder(1, 1, DayOfWeek.SUNDAY, productsToOrder).getSupplierId();
-        assertEquals(1, num1);
-        assertEquals(2, num2);
-        assertEquals(3, num3);
-        assertEquals(4, num4);
-        assertEquals(5, num5);
-        assertEquals(6, num6);
-        assertEquals(7, num7);
-        Response response = ssl.executePeriodicOrder(2);
-        if (!response.errorOccurred()) assertEquals(1, response.getSupplierId());
-    }
+    public void createShortageOrder() throws SQLException {
 
-//    @Test
-//    public void notCreateShortageOrder() throws SQLException {
-//        mainController.getProductMinAmountDao().UpdateMinAmountToProductInBranch(1,1,5);
-//        Product p = mainController.getProductsDao().getProductByID(1);
-//
-//        LocalDate date1 = LocalDate.of(2023, 5, 26);
-//        LocalDate date18 = LocalDate.of(2023, 10, 16);
-//
-//        for (int i = 0; i < 8 ;i++)
-//        {
-//            Item item1 = mainController.getItemsDao().addItem(1,date18,date1, 2, 9 ,1,p);
-//        }
-//
-//        HashMap<Integer, Integer> shortage;
-//        shortage = mainController.getItemsDao().fromStorageToStore(mainController.getBranchesDao().getBranchByID(1));
-//
-//        Response response = orderService.createOrderByShortage(1, shortage);
-//        HashMap<Integer, Order > check = orderService.getOrdersToBranch(1);
-//        Order order = check.get(1);
-//        assertNull(order);
-//
-//    }
+        mainController.getProductMinAmountDao().UpdateMinAmountToProductInBranch(1,1,10);
+        Category category1 =mainController.getCategoryDao().addCategory("Dairy products");
+        Category category2 =mainController.getCategoryDao().addCategory("Milk");
+        Category category3 =mainController.getCategoryDao().addCategory("Cottage");
+        Branch branch1 = mainController.getBranchesDao().addBranch("SuperLi Beer Sheva");
+        Product product1 = mainController.getProductsDao().addProduct("Cofffeeee", "Tara", 500, 1, 2, 3);
+        mainController.getProductMinAmountDao().addNewProductToAllBranches(1);
+        mainController.getProductMinAmountDao().UpdateMinAmountToProductInBranch(1, 1, 6);
+        LocalDate date1 = LocalDate.of(2023, 5, 26);
+        LocalDate date18 = LocalDate.of(2023, 10, 16);
+
+        for (int i = 0; i < 8 ;i++)
+        {
+            Item item1 = mainController.getItemsDao().addItem(branch1.getBranchID(), date18,date1, 2, 9 ,1,product1);
+        }
+        HashMap<Integer, Integer> shortage;
+        shortage = mainController.getItemsDao().fromStorageToStore(mainController.getBranchesDao().getBranchByID(1));
+        Response response = orderService.createOrderByShortage(1, shortage);
+        HashMap<Integer, Order > check = orderService.getOrdersToBranch(1);
+        Order order = check.get(1);
+        assertEquals(1,order.getOrderID());
+    }
 
 }
-
