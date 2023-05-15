@@ -1048,7 +1048,7 @@ public class Cli {
         Scanner weeklyScanner = new Scanner(System.in);
         int choice =0;
         while (choice != 3) {
-            System.out.println("Defective Items Report Menu:");
+            System.out.println("Weekly Items Report Menu:");
             System.out.println("1. Create a new Defective Items Report");
             System.out.println("2. Print the current Defective Items Report");
             System.out.println("3. Exit");
