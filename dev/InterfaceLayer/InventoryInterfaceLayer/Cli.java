@@ -1,6 +1,7 @@
 package InterfaceLayer.InventoryInterfaceLayer;
 
 import BusinessLayer.InventoryBusinessLayer.*;
+import BusinessLayer.SupplierBusinessLayer.Order;
 import DataAccessLayer.DBConnector;
 import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.SupplierInterfaceLayer.SupplierCLI;
@@ -164,7 +165,7 @@ public class Cli {
     public void BranchUI(Branch branch)throws SQLException {
         Scanner branchScanner = new Scanner(System.in);
         int branchChoice = 0;
-        while (branchChoice != 12) {
+        while (branchChoice != 13) {
             System.out.println("Branch Menu - Please choose one of the following options : ");
             System.out.println("1. New sale ");
             System.out.println("2. Update damaged item ");
@@ -176,8 +177,9 @@ public class Cli {
             System.out.println("8. Orders"); // what we need to do here
             System.out.println("9. Execute Periodic Orders For Today "); // ADD ITEMS
             System.out.println("10. Execute Shortage Orders For Today "); // ADD ITEMS
-            System.out.println("11. Report Manager ");
-            System.out.println("12. Exit to Inventory Menu ");
+            System.out.println("11. Print branch's report history "); // ADD ITEMS
+            System.out.println("12. Report Manager ");
+            System.out.println("13. Exit to Inventory Menu ");
             try {
                 branchChoice = branchScanner.nextInt();
             } catch (Exception e) {
@@ -415,16 +417,25 @@ public class Cli {
                     else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
                     break;
                 }
-                case 10: {
+                case 10:
+                {
                     if(LocalTime.now().isAfter(LocalTime.of(20, 0))) autoShortage();
                     else System.out.println("Shortage Orders Will Execute Automatically at 8PM");
                     break;
                 }
-                case 11: {
+                case 11:
+                {
+                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
+                    System.out.println(" **Orders History** \n");
+                    printOrderToBranch(branch.getBranchID());
+                    break;
+                }
+                case 12:
+                {
                     reportUI(branch);
                     break;
                 }
-                case 12: {System.out.println("Exiting to Inventory menu");break;}
+                case 13: {System.out.println("Exiting to Inventory menu");break;}
                 default: {System.out.println("Invalid choice, please try again");break;}
             }
         }
@@ -1377,6 +1388,12 @@ public class Cli {
                 Item item2 = itemsDao.addItem(j,date20,date13 , 4, 12 ,2,p2);
             }
         }
+    }
+    public void printOrderToBranch(int branchID) {
+        HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branchID);
+        if(orders == null || orders.size() == 0) System.out.println("There is not orders in this branch");
+        for(Order order : orders.values())
+            System.out.println(order);
     }
 }
 
