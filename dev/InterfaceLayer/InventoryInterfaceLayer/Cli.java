@@ -956,14 +956,15 @@ public class Cli {
                     DefectiveProductsReport report = mainController.getBranchController().getReportController().createNewDefectiveReport(reportID, branch.getBranchID());
                     List<Item> defectiveItems = mainController.getItemsDao().getAllDamagedItemsByBranchID(branch.getBranchID());
                     List<Item> expiredItems = mainController.getItemsDao().getAllExpiredItemsByBranchID(branch.getBranchID());
+                    if (defectiveItems.size() == 0 && expiredItems.size() == 0)
+                    {
+                        System.out.println("We currently have no damaged or expired items to report...");
+                        break;
+                    }
                     if (report == null) {
                         System.out.println("Defective Items Report has not been created yet");
                         break;
                     }
-                    if (defectiveItems.size() == 0 && expiredItems.size() == 0) {
-                        System.out.println("We currently have no damaged or expired items to report...");
-                    } else
-                    {
                         Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
                         allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
                         if (allDefectiveReports != null) {
@@ -1028,8 +1029,6 @@ public class Cli {
                             System.out.println("Adding items to the report has been successfully completed");
                             break;
                         }
-                    }
-                    break;
                 }
                 case 2:{
                     if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
@@ -1099,7 +1098,6 @@ public class Cli {
                         }
                         report.addCategoryToReport(category, productCurrAmount);
                     }
-
                     branch.getBranchReportManager().addNewReport(report);
                     mainController.getReportDao().addReport(report);
                     System.out.println("Adding categories to the report has been successfully completed");
