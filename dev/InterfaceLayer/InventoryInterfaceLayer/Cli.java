@@ -412,7 +412,6 @@ public class Cli {
                 case 9: {System.out.println("9. Receiving an order from supplier ");
                     if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
                     else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
-
                     break;
                 }
                 case 10: {
