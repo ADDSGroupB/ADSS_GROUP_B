@@ -2,7 +2,7 @@ package DataAccessLayer;
 import java.sql.*;
 
 public class DBConnector {
-    private static final String DB_URL = "jdbc:sqlite:/Users/Dan/Desktop/superlee.db";
+    private static final String DB_URL = "jdbc:sqlite:res/superlee.db";
     private static Connection connection;
 
     private DBConnector() {
@@ -26,6 +26,57 @@ public class DBConnector {
         catch (SQLException e) { System.out.println(e.getMessage()); }
     }
 
+    public static void deleteRecordsOfTables() throws SQLException {
+//        AgreementDAO agreementDAO = new AgreementDAO();
+//        ContactDAO contactDAO = new ContactDAO();
+//        DeliveryDaysDAO deliveryDaysDAO = new DeliveryDaysDAO();
+//        DiscountDAO discountDAO = new DiscountDAO();
+//        DiscountPerAmountDAO discountPerAmountDAO = new DiscountPerAmountDAO();
+//        ItemsInOrderDAO itemsInOrderDAO = new ItemsInOrderDAO();
+//        ItemsInPeriodicOrderDAO itemsInPeriodicOrderDAO = new ItemsInPeriodicOrderDAO();
+//        PeriodicOrderDAO periodicOrderDAO = new PeriodicOrderDAO();
+//        SupplierDAO supplierDAO = new SupplierDAO();
+//        SupplierOrderDAO supplierOrderDAO = new SupplierOrderDAO();
+//        SupplierProductDAO supplierProductDAO = new SupplierProductDAO();
+//        agreementDAO.reset();
+//        contactDAO.reset();
+//        deliveryDaysDAO.reset();
+//        discountDAO.reset();
+//        discountPerAmountDAO.reset();
+//        itemsInOrderDAO.reset();
+//        itemsInPeriodicOrderDAO.reset();
+//        periodicOrderDAO.reset();
+//        supplierDAO.reset();
+//        supplierOrderDAO.reset();
+
+        String query1 = "DROP TABLE IF EXISTS supplier";
+        String query2 = "DROP TABLE IF EXISTS contact";
+        String query3 = "DROP TABLE IF EXISTS agreement";
+        String query4 = "DROP TABLE IF EXISTS discount";
+        String query5 = "DROP TABLE IF EXISTS supplierProduct";
+        String query6 = "DROP TABLE IF EXISTS discountPerAmount";
+        String query7 = "DROP TABLE IF EXISTS supplierOrder";
+        String query8 = "DROP TABLE IF EXISTS itemsInOrder";
+        String query9 = "DROP TABLE IF EXISTS periodicOrder";
+        String query10 = "DROP TABLE IF EXISTS itemsInPeriodicOrder";
+        String query11 = "DROP TABLE IF EXISTS deliveryDays";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(query1);
+            stmt.execute(query2);
+            stmt.execute(query3);
+            stmt.execute(query4);
+            stmt.execute(query6);
+            stmt.execute(query7);
+            stmt.execute(query8);
+            stmt.execute(query9);
+            stmt.execute(query10);
+            stmt.execute(query11);
+            stmt.execute(query5);
+            createTables();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
     public static void createTables()
     {
         String sql1 = "CREATE TABLE IF NOT EXISTS supplier (\n"
