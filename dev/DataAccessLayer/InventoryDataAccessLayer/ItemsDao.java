@@ -4,9 +4,11 @@ import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Item;
 import BusinessLayer.InventoryBusinessLayer.Product;
 import BusinessLayer.SupplierBusinessLayer.Order;
+import ServiceLayer.SupplierServiceLayer.OrderService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public interface ItemsDao {
     public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public Item getMinIDItemInStorage(int productID,int branchID)throws SQLException;
     public void checkExpiredItemsInAllBranches()throws SQLException;
-    public boolean EnteringNewOrder(Order order) throws SQLException;
+    public void EnteringNewOrder(Order order) throws SQLException;
+    public  void checkAllOrdersForToday(OrderService orderService, List<Branch> allBranches)throws SQLException;
 
 }

@@ -41,8 +41,13 @@ public class Cli {
                 case 1:{
                     System.out.println("Initializing the information in the system... ");
                     LoadDataInventory(this.getMainController());
-                    mainController.getItemsDao().checkExpiredItemsInAllBranches();
                     supplierCLI.loadDataSupplier();
+                    mainController.getItemsDao().checkExpiredItemsInAllBranches();
+                    List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
+                    if (allBranches.size() > 0)
+                    {
+                        mainController.getItemsDao().checkAllOrdersForToday(this.orderService,allBranches);
+                    }
                     MainMenuUI();
                     break;
                 }
@@ -1292,8 +1297,7 @@ public class Cli {
 
             }
         }
-
-// add expired Items
+        // add expired Items
         for (int j=1;j<6;j++)
         {
             for (int i = 1; i < 6; i++)

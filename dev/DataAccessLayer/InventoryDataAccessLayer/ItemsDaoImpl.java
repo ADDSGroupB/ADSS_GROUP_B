@@ -3,6 +3,7 @@ import BusinessLayer.InventoryBusinessLayer.*;
 import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import DataAccessLayer.DBConnector;
+import ServiceLayer.SupplierServiceLayer.OrderService;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -628,7 +629,7 @@ public class ItemsDaoImpl implements ItemsDao {
         }
     }
     @Override
-    public boolean EnteringNewOrder(Order order) throws SQLException
+    public void EnteringNewOrder(Order order) throws SQLException
     {
         try {
             ArrayList<SupplierProduct> itemsInOrder = order.getItemsInOrder();
@@ -653,14 +654,38 @@ public class ItemsDaoImpl implements ItemsDao {
                         Item item = addItem(branchID, expiredDate, arrivalDate, priceFromSupplier, priceInBranch, supplierID, product);
                     }
                 }
-                return true;
             }
-            return false;
         }
         catch (Exception e)
         {
-            System.out.println("Error while getting item with min id in storage: " + e.getMessage());
-            return false;
+            System.out.println("Error while trying enter new order to the branch : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void checkAllOrdersForToday(OrderService orderService, List<Branch> allBranches) throws SQLException {
+        try {
+
+
+            if (allBranches.size() > 0) {
+                for (Branch branch : allBranches) {
+                    HashMap<Integer, Order> allOrdersForToday;
+                    allOrdersForToday = orderService.getNoneCollectedOrdersForToday(branch.getBranchID());
+                    if (allOrdersForToday.size() > 0) {
+                        for (Order order : allOrdersForToday.values()) {
+                            if (order != null) {
+                                EnteringNewOrder(order);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error while trying to check all orders for today : " + e.getMessage());
+
         }
     }
 
