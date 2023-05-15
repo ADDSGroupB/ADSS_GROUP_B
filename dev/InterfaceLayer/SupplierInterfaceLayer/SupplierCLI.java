@@ -67,7 +67,7 @@ public class SupplierCLI {
         HashMap<Integer, SupplierProductService> supllyingProducts1 = new HashMap<>();
         HashMap<Integer, Double> discountPerAmount1 = new HashMap<>();
         discountPerAmount1.put(10, 15.0);
-        supllyingProducts1.put(5, new SupplierProductService("Bamba", 5, 7, 6.9, 30, discountPerAmount1, "Osem", 120, 0.4));
+        supllyingProducts1.put(1, new SupplierProductService("Bamba", 1, 7, 6.9, 100, discountPerAmount1, "Osem", 120, 0.4));
         supllyingProducts1.put(29, new SupplierProductService("Shoko", 29, 11, 4.9, 20, discountPerAmount1, "Tnuva", 25, 0.3));
         supllyingProducts1.put(17, new SupplierProductService("Coffee", 17, 86, 12.5, 50, discountPerAmount1, "Elite", 90, 0.7));
         supllyingProducts1.put(68, new SupplierProductService("Nutella", 68, 5, 29.9, 45, discountPerAmount1, "Ferraro", 100, 1.0));
@@ -82,7 +82,7 @@ public class SupplierCLI {
         HashMap<Integer, Double> discountPerAmount2 = new HashMap<>();
 //        discountPerAmount2.put(10, 15.0);
 //        discountPerAmount2.put(30, 20.0);
-        supllyingProducts2.put(5, new SupplierProductService("Bamba", 5, 15, 7, 20, discountPerAmount2, "Osem", 120, 0.4));
+        supllyingProducts2.put(1, new SupplierProductService("Bamba", 1, 15, 7, 20, discountPerAmount2, "Osem", 120, 0.4));
         supllyingProducts2.put(17, new SupplierProductService("Coffee", 17, 100, 10, 40, discountPerAmount2, "Elite", 90, 0.3));
         supllyingProducts2.put(45, new SupplierProductService("Shampoo", 45, 9, 17.9, 100, discountPerAmount2, "Head and Shoulders", 180, 1.2));
         ServiceAgreement agreement2 = new ServiceAgreement("net 30 EOM", true, deliveryDays2, supllyingProducts2, "ByOrder", 3);
@@ -99,7 +99,7 @@ public class SupplierCLI {
         Pair<Integer, Double> totalDiscountPerAmount3 =new Pair<>(30,5.0);
         Pair<Double, Double> totalDiscountPerPrice3 =new Pair<>(200.0,20.0);
         discountPerAmount3.put(30, 20.0);
-        supllyingProducts3.put(5, new SupplierProductService("Bamba", 5, 31, 5.9, 30, discountPerAmount3, "Osem", 120, 0.4));
+        supllyingProducts3.put(1, new SupplierProductService("Bamba", 1, 31, 5.9, 30, discountPerAmount3, "Osem", 120, 0.4));
         supllyingProducts3.put(17, new SupplierProductService("Coffee", 17, 99, 5, 80, discountPerAmount3, "Elite", 90, 0.7));
         supllyingProducts3.put(68, new SupplierProductService("Nutella", 68, 4, 39.9, 20, discountPerAmount3, "Ferraro", 100, 1.0));
         ServiceAgreement agreement3 = new ServiceAgreement("TransitToAccount", true, deliveryDays3, supllyingProducts3, totalDiscountPerAmount3, totalDiscountPerPrice3, "ByDays", 0);

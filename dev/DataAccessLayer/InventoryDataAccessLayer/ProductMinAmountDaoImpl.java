@@ -189,11 +189,13 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
             {
                 throw new SQLException();
             }
+            // update in db
             statement = connection.prepareStatement("UPDATE ProductMinAmount SET OrderStatus = ? WHERE BranchID = ? AND ProductID = ?");
             statement.setString(1,Status);
             statement.setInt(2,branchID);
             statement.setInt(3,productID);
             statement.executeUpdate();
+
             if (branchProductMinStatusFromDB.containsKey(branchID))
             {
                 Map<Integer, Pair<Integer, String>> currProduct = branchProductMinStatusFromDB.get(branchID);
@@ -392,11 +394,11 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
         else
         {
             Map<Integer, Pair<Integer, String>> currProducts = this.branchProductMinStatusFromDB.get(branchID);
-            if (!currProducts.containsKey(productID))
-            {
+//            if (!currProducts.containsKey(productID))
+//            {
                 currProducts.put(productID,currPair);
                 this.branchProductMinStatusFromDB.put(branchID,currProducts);
-            }
+//            }
         }
     }
 }

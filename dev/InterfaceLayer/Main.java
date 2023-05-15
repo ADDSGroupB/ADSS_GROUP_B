@@ -1,5 +1,8 @@
 package InterfaceLayer;
 
+import BusinessLayer.InventoryBusinessLayer.Branch;
+import BusinessLayer.InventoryBusinessLayer.Category;
+import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.InventoryInterfaceLayer.Cli;
 
 import java.sql.SQLException;

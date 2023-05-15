@@ -2,7 +2,7 @@ package DataAccessLayer;
 import java.sql.*;
 
 public class DBConnector {
-    private static final String DB_URL = "jdbc:sqlite:res/superlee.db";
+    private static final String DB_URL = "jdbc:sqlite:/Users/Dan/Desktop/superlee.db";
     private static Connection connection;
 
     private DBConnector() {
