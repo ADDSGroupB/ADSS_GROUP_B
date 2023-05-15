@@ -164,7 +164,7 @@ public class Cli {
     public void BranchUI(Branch branch)throws SQLException {
         Scanner branchScanner = new Scanner(System.in);
         int branchChoice = 0;
-        while (branchChoice != 11) {
+        while (branchChoice != 12) {
             System.out.println("Branch Menu - Please choose one of the following options : ");
             System.out.println("1. New sale ");
             System.out.println("2. Update damaged item ");
@@ -175,8 +175,9 @@ public class Cli {
             System.out.println("7. Print Product sales history ");
             System.out.println("8. Orders"); // what we need to do here
             System.out.println("9. Execute Periodic Orders For Today "); // ADD ITEMS
-            System.out.println("10. Report Manager ");
-            System.out.println("11. Exit to Inventory Menu ");
+            System.out.println("10. Execute Shortage Orders For Today "); // ADD ITEMS
+            System.out.println("11. Report Manager ");
+            System.out.println("12. Exit to Inventory Menu ");
             try {
                 branchChoice = branchScanner.nextInt();
             } catch (Exception e) {
@@ -406,20 +407,24 @@ public class Cli {
                     break;
                 }
                 case 8: { 
-                    System.out.println("8. Orders ");
                     OrdersUI(branch.getBranchID());
                     break;
                 }
-                case 9: {System.out.println("9. Receiving an order from supplier ");
+                case 9: {
                     if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
                     else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
                     break;
                 }
                 case 10: {
+                    if(LocalTime.now().isAfter(LocalTime.of(20, 0))) autoShortage();
+                    else System.out.println("Shortage Orders Will Execute Automatically at 8PM");
+                    break;
+                }
+                case 11: {
                     reportUI(branch);
                     break;
                 }
-                case 11: {System.out.println("Exiting to Inventory menu");break;}
+                case 12: {System.out.println("Exiting to Inventory menu");break;}
                 default: {System.out.println("Invalid choice, please try again");break;}
             }
         }
@@ -1092,20 +1097,6 @@ public class Cli {
 
     private void startDailyTask()
     {
-        Timer timerForShortageOrder = new Timer();
-        TimerTask otherTask = new TimerTask() {
-            @Override
-            public void run() {
-                // Check shortage
-                // Create Shortage Order
-                // Make products as orderd (setStatus)
-            }
-        };
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 20); // 3pm
-        calendar2.set(Calendar.MINUTE, 0);
-        calendar2.set(Calendar.SECOND, 0);
-        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Timer timerPeriodicOrder = new Timer();
         // Schedule the task to execute every day at 10:00am
         Calendar calendar = Calendar.getInstance();
@@ -1116,11 +1107,52 @@ public class Cli {
         if (calendar.getTimeInMillis() < System.currentTimeMillis())
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         timerPeriodicOrder.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Timer timerForShortageOrder = new Timer();
+        TimerTask otherTask = new TimerTask() {
+            @Override
+            public void run()  {
+                autoShortage();
+            }
+        };
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 20); // 3pm
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        if (calendar2.getTimeInMillis() < System.currentTimeMillis())
+            calendar2.add(Calendar.DAY_OF_MONTH, 1);
+        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             timerPeriodicOrder.cancel();
             timerForShortageOrder.cancel();
             DBConnector.disconnect();
         }));
+    }
+    public void autoShortage()
+    {
+        try {
+            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
+            HashMap<Integer, Integer> shortage;
+            for(Branch branch: branches) {
+                shortage = mainController.getItemsDao().fromStorageToStore(branch);
+                Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
+                if (!response.errorOccurred())
+                {
+                    for (Integer productID : shortage.values())
+                    {
+                        Product product = mainController.getProductsDao().getProductByID(productID);
+                        if (product != null)
+                        {
+                            if (!mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited"))
+                            {throw new SQLException();}
+                        }
+                        else {throw new SQLException();}
+                    }
+                }
+                else {throw new SQLException();}
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
+        }
     }
     public void LoadDataInventory(MainController mainController) throws SQLException
     {

@@ -40,7 +40,7 @@ public class OrderService extends TimerTask {
     public Response markOrderAsCollected(int orderID) { return orderService.markOrderAsCollected(orderID); }
     public Response executePeriodicOrder(int periodicOrderID) { return orderService.executePeriodicOrder(periodicOrderID); }
     public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount); }
-    public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { orderService.createOrderByShortage(branchId ,shortage); }
+    public Response createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { return orderService.createOrderByShortage(branchId ,shortage); }
     public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderService.updateProductsInOrder(orderID, productsToAdd); }
     public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromOrder(orderID, productsToRemove); }
     public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderService.updateProductsInPeriodicOrder(orderID, productsToAdd); }

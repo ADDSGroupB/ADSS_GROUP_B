@@ -77,7 +77,7 @@ public class SupplierService implements iOrderService{
         return facadeSupplier.removeDiscounts(supplierId, productId, ammount, discount);
     }
     @Override
-    public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { facadeSupplier.createOrderByShortage(branchId ,shortage); }
+    public Response createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { return facadeSupplier.createOrderByShortage(branchId ,shortage); }
     @Override
     public HashMap<Integer, Order> getNoneCollectedOrdersForToday(int branchID) { return facadeSupplier.getNoneCollectedOrdersForToday(branchID); }
     @Override

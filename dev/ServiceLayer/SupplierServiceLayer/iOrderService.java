@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface iOrderService {
-    void createOrderByShortage(int branchId , HashMap<Integer, Integer> shortage);
+    Response createOrderByShortage(int branchId , HashMap<Integer, Integer> shortage);
     HashMap<Integer, Order> getOrdersFromSupplier(int supplierID);
     HashMap<Integer, Order> getOrdersToBranch(int branchID);
     HashMap<Integer, Order> getAllOrderForToday();
