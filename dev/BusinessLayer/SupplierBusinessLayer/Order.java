@@ -79,10 +79,10 @@ public class Order {
             String productName = p.getName();
             int amount = p.getAmount();
             double productPrice = p.getPrice();
-            s.append("productID: ").append(productId).append(", product name: ").append(productName).append(", amount: ").append(amount).append(", price: ").append(productPrice).append("\n");
+            s.append("productID: ").append(productId).append(", product name: ").append(productName).append(", amount: ").append(amount).append(", price: ").append(String.format("%.2f", productPrice)).append("\n");
         }
-        s.append("Total price before discount: ").append(totalPriceBeforeDiscount).append("\n");
-        s.append("Total price after discount: ").append(totalPriceAfterDiscount).append("\n");
+        s.append("Total price before discount: ").append(String.format("%.2f", totalPriceBeforeDiscount)).append("\n");
+        s.append("Total price after discount: ").append(String.format("%.2f", totalPriceAfterDiscount)).append("\n");
         return s.toString();
 
     }

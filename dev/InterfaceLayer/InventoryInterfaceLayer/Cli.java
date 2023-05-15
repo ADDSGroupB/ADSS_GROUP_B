@@ -1,6 +1,7 @@
 package InterfaceLayer.InventoryInterfaceLayer;
 
 import BusinessLayer.InventoryBusinessLayer.*;
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.SupplierInterfaceLayer.SupplierCLI;
 import ServiceLayer.SupplierServiceLayer.OrderService;
@@ -9,8 +10,10 @@ import Utillity.Response;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Cli {
     private MainController mainController;
@@ -20,6 +23,7 @@ public class Cli {
         mainController = new MainController();
         supplierCLI = new SupplierCLI();
         orderService = new OrderService();
+        startDailyTask();
     }
     public MainController getMainController() {return this.mainController;}
     public void Start() throws SQLException
@@ -170,7 +174,7 @@ public class Cli {
             System.out.println("6. Print all items in storage ");
             System.out.println("7. Print Product sales history ");
             System.out.println("8. Orders"); // what we need to do here
-            System.out.println("9. Create Periodic Order "); // ADD ITEMS
+            System.out.println("9. Execute Periodic Orders For Today "); // ADD ITEMS
             System.out.println("10. Report Manager ");
             System.out.println("11. Exit to Inventory Menu ");
             try {
@@ -406,8 +410,8 @@ public class Cli {
                     break;
                 }
                 case 9: {System.out.println("9. Receiving an order from supplier ");
-                    //TODO : Use the function From Storage To Store after we receive the order and insert all the items to the db
-                    //TODO : Maybe this function wont be on the inventory menu , maybe this will work like the check expired product that we run in the start of the main menu
+                    if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
+                    else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
                     break;
                 }
                 case 10: {
@@ -1083,6 +1087,24 @@ public class Cli {
             }
         } while (!isValid);
         return date;
+    }
+
+    private void startDailyTask()
+    {
+        Timer timer = new Timer();
+        // Schedule the task to execute every day at 10:00am
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.getTimeInMillis() < System.currentTimeMillis())
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        timer.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            timer.cancel();
+            DBConnector.disconnect();
+        }));
     }
     public void LoadDataInventory(MainController mainController) throws SQLException
     {
