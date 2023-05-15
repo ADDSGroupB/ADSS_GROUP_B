@@ -152,7 +152,7 @@ public class Cli {
             System.out.println("6. Print all items in storage ");
             System.out.println("7. Print Product sales history ");
             System.out.println("8. Placing an order from supplier "); // what we need to do here
-            System.out.println("9. Receiving an order from supplier "); // ADD ITEMS
+            System.out.println("9. Create Periodic Order "); // ADD ITEMS
             System.out.println("10. Report Manager ");
             System.out.println("11. Exit to Inventory Menu ");
             try {

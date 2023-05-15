@@ -91,7 +91,6 @@ public class ItemsDaoImpl implements ItemsDao {
                     case "Store" -> item.setStatusType(StatusEnum.Store);
                     case "Storage" -> item.setStatusType(StatusEnum.Storage);
                     case "Sold" -> item.setStatusType(StatusEnum.Sold);
-                    default -> item.setStatusType(null);
                 }
                 itemsMapFromDB.put(itemID, item);
             }
@@ -166,7 +165,7 @@ public class ItemsDaoImpl implements ItemsDao {
                 case "Store" -> item.setStatusType(StatusEnum.Store);
                 case "Storage" -> item.setStatusType(StatusEnum.Storage);
                 case "Sold" -> item.setStatusType(StatusEnum.Sold);
-                default -> item.setStatusType(null);
+                default -> System.out.println("The selected status is incorrect, you can update the item's status when the status is one of the following statuses: Store, Storage, Expired, Damaged, Sold .");
             }
             item = this.getItemByID(itemID);
             itemsMapFromDB.put(itemID, item);
@@ -450,6 +449,7 @@ public class ItemsDaoImpl implements ItemsDao {
         int maxItemsStoreForAllProducts = branch.getMaxItemsInShelf();
         List<Product> missingProducts = new ArrayList<>();
         List<Product> products = productsDao.getAllProducts();
+        //TODO : For each branch when we run the the system(when starting the system) do from storage to store (we make "Order" in the branch when we open him at the morning)
         // TODO : Use this function after receiving an order from supplier -- >
         //  in the default all the items will enter to the db with status "Storage " so after we receiving an order from supplier we need to do "Order" In the branch
         List<Product> allProducts = productsDao.getAllProducts();
