@@ -8,18 +8,11 @@ import Utillity.Response;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-
 public class SupplierCLI {
     private final Scanner reader;
     private final SupplierService supplierService;
-
     private final ServiceContact serviceContact;
-
     private final OrderService orderService;
-
-
-
     public SupplierCLI() {
         reader = new Scanner(System.in);
         supplierService = new SupplierService();

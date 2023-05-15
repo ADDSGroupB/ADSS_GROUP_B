@@ -3,6 +3,7 @@ package DataAccessLayer.InventoryDataAccessLayer;
 import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Item;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import BusinessLayer.SupplierBusinessLayer.Order;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -28,6 +29,6 @@ public interface ItemsDao {
     public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public Item getMinIDItemInStorage(int productID,int branchID)throws SQLException;
     public void checkExpiredItemsInAllBranches()throws SQLException;
-
+    public boolean EnteringNewOrder(Order order) throws SQLException;
 
 }

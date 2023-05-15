@@ -1,5 +1,7 @@
 package DataAccessLayer.InventoryDataAccessLayer;
 import BusinessLayer.InventoryBusinessLayer.*;
+import BusinessLayer.SupplierBusinessLayer.Order;
+import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import DataAccessLayer.DBConnector;
 
 import java.sql.*;
@@ -625,5 +627,43 @@ public class ItemsDaoImpl implements ItemsDao {
 
         }
     }
+    @Override
+    public boolean EnteringNewOrder(Order order) throws SQLException
+    {
+        try {
+            ArrayList<SupplierProduct> itemsInOrder = order.getItemsInOrder();
+            int branchID = order.getBranchID();
+            if (itemsInOrder.size() >0) {
+                for (SupplierProduct supplierProduct : itemsInOrder) {
+                    // From supplierProduct to Product
+                    Product product = productsDao.getProductByID(supplierProduct.getProductID());
+                    if (product == null) {
+                        throw new SQLException();
+                    }
+                    int amountInOrder = supplierProduct.getAmount();
+                    int supplierID = supplierProduct.getSupplierId();
+                    LocalDate arrivalDate = LocalDate.now();
+                    double priceFromSupplier = supplierProduct.getPrice();
+                    double priceInBranch = priceFromSupplier * 2.5;
+                    LocalDate expiredDate = null;
+                    if (supplierProduct.getExpirationDays() != -1) {
+                        expiredDate = LocalDate.now().plusDays(supplierProduct.getExpirationDays());
+                    }
+                    for (int i = 0; i < amountInOrder; i++) {
+                        Item item = addItem(branchID, expiredDate, arrivalDate, priceFromSupplier, priceInBranch, supplierID, product);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error while getting item with min id in storage: " + e.getMessage());
+            return false;
+        }
+    }
+
+
 }
 
