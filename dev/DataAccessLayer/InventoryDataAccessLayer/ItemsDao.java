@@ -26,7 +26,7 @@ public interface ItemsDao {
     public List<Item> getAllStorageItemsByBranchID(int branchID) throws SQLException;
     public Item getItemForSale(int productID,int branchID)throws SQLException;
     public Map<Integer, Item> getItemsMapFromDB();
-    public void fromStorageToStore(Branch branch)throws SQLException;
+    public HashMap<Integer,Integer> fromStorageToStore(Branch branch)throws SQLException;
     public List<Item> getAllStoreItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public List<Item> getAllStorageItemsByBranchIDAndProductID(int branchID,int productID) throws SQLException;
     public Item getMinIDItemInStorage(int productID,int branchID)throws SQLException;

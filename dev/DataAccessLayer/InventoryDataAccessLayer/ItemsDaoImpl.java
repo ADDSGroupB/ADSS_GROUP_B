@@ -450,47 +450,58 @@ public class ItemsDaoImpl implements ItemsDao {
     }
 
     @Override
-    public void fromStorageToStore(Branch branch) throws SQLException {
-        int minItemsStoreForAllProducts = branch.getMinItemsInShelf();
-        int maxItemsStoreForAllProducts = branch.getMaxItemsInShelf();
-        List<Product> missingProducts = new ArrayList<>();
-        List<Product> products = productsDao.getAllProducts();
-        //TODO : For each branch when we run the the system(when starting the system) do from storage to store (we make "Order" in the branch when we open him at the morning) -Done
-        // TODO : Use this function after receiving an order from supplier -- >
-        //  in the default all the items will enter to the db with status "Storage " so after we receiving an order from supplier we need to do "Order" In the branch
-        List<Product> allProducts = productsDao.getAllProducts();
-        if (allProducts.size() >= 0) {
-            for (Product product : allProducts) {
-                List<Item> storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());// 6
-                List<Item> storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()); // 50
-                if (storeItems.size() < minItemsStoreForAllProducts) {
-                    int currNumItemsInStore = storeItems.size();
-                    int currNumItemsInStorage = storageItems.size();
+    public HashMap<Integer,Integer> fromStorageToStore(Branch branch) throws SQLException {
+        try {
+            int minItemsStoreForAllProducts = branch.getMinItemsInShelf();
+            int maxItemsStoreForAllProducts = branch.getMaxItemsInShelf();
+            HashMap<Integer, Integer> shortageOrder = new HashMap<>();
+            List<Product> missingProducts = new ArrayList<>();
+            List<Product> products = productsDao.getAllProducts();
+            List<Product> allProducts = productsDao.getAllProducts();
+            if (allProducts.size() >= 0) {
+                for (Product product : allProducts) {
+                    List<Item> storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());// 6
+                    List<Item> storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID()); // 50
+                    if (storeItems.size() < minItemsStoreForAllProducts) {
+                        int currNumItemsInStore = storeItems.size();
+                        int currNumItemsInStorage = storageItems.size();
 
-                    while (currNumItemsInStorage > 0 && currNumItemsInStore < maxItemsStoreForAllProducts) {
-                        Item item = getMinIDItemInStorage(product.getProductID(), branch.getBranchID());
-                        item = updateItemStatus(item.getItemID(), "Store");
-                        currNumItemsInStore++;
-                        currNumItemsInStorage--;
+                        while (currNumItemsInStorage > 0 && currNumItemsInStore < maxItemsStoreForAllProducts) {
+                            Item item = getMinIDItemInStorage(product.getProductID(), branch.getBranchID());
+                            item = updateItemStatus(item.getItemID(), "Store");
+                            currNumItemsInStore++;
+                            currNumItemsInStorage--;
+                        }
+                    }
+                    storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());
+                    storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());
+                    int totalSumItems = storeItems.size() + storageItems.size();
+                    int minCurrProduct = productMinAmountDao.getMinAmountOfProductByBranch(product.getProductID(), branch.getBranchID());
+                    if (totalSumItems < minCurrProduct) {
+                        String status = productMinAmountDao.getOrderStatusByProductInBranch(product.getProductID(), branch.getBranchID());
+                        if (status.equals("Not Invited")) {
+                            missingProducts.add(product);
+                        }
                     }
                 }
-                storeItems = getAllStoreItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());
-                storageItems = getAllStorageItemsByBranchIDAndProductID(branch.getBranchID(), product.getProductID());
-                int totalSumItems = storeItems.size() + storageItems.size();
-                int minCurrProduct = productMinAmountDao.getMinAmountOfProductByBranch(product.getProductID(), branch.getBranchID());
-                if (totalSumItems < minCurrProduct) {
-                    String status = productMinAmountDao.getOrderStatusByProductInBranch(product.getProductID(), branch.getBranchID());
-                    if (status.equals("Not Invited")) {
-                        missingProducts.add(product);
+                if (missingProducts.size() > 0) {
+                    PopUpAlert alert = new PopUpAlert();
+                    alert.showPopupWindow(missingProducts); // pop up alert
+                }
+                if (missingProducts.size() > 0) {
+                    for (Product missingProduct : missingProducts) {
+                        int minAmount = productMinAmountDao.getMinAmountOfProductByBranch(missingProduct.getProductID(), branch.getBranchID());
+                        shortageOrder.put(missingProduct.getProductID(), minAmount + 50);
                     }
                 }
             }
-            if (missingProducts.size() > 0) {
-                PopUpAlert alert = new PopUpAlert();
-                alert.showPopupWindow(missingProducts); // pop up alert
-            }
+            return shortageOrder;
         }
-        //TODO:  create Order due to shortage ?
+        catch (Exception e)
+        {
+            System.out.println("Error while trying to do from storage to store : " + e.getMessage());
+            return null;
+        }
     }
     @Override
     public List<Item> getAllStoreItemsByBranchIDAndProductID(int branchID, int productID) throws SQLException {
