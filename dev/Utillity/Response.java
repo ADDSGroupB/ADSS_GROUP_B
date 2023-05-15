@@ -1,7 +1,7 @@
 package Utillity;
 
-import BusinessLayer.Supplier;
-import BusinessLayer.SupplierProduct;
+import SupplierBusinessLayer.Supplier;
+import SupplierBusinessLayer.SupplierProduct;
 
 import java.util.ArrayList;
 
