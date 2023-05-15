@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class ItemsDaoImpl implements ItemsDao {
     private Connection connection;
     private Map<Integer, Item> itemsMapFromDB;
