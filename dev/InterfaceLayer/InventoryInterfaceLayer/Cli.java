@@ -3,8 +3,11 @@ package InterfaceLayer.InventoryInterfaceLayer;
 import BusinessLayer.InventoryBusinessLayer.*;
 import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.SupplierInterfaceLayer.SupplierCLI;
+import ServiceLayer.SupplierServiceLayer.OrderService;
+import Utillity.Response;
 
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -12,9 +15,11 @@ import java.util.*;
 public class Cli {
     private MainController mainController;
     private SupplierCLI supplierCLI;
+    private OrderService orderService;
     public Cli() {
         mainController = new MainController();
         supplierCLI = new SupplierCLI();
+        orderService = new OrderService();
     }
     public MainController getMainController() {return this.mainController;}
     public void Start() throws SQLException
@@ -159,7 +164,7 @@ public class Cli {
             System.out.println("5. Print all items in store ");
             System.out.println("6. Print all items in storage ");
             System.out.println("7. Print Product sales history ");
-            System.out.println("8. Placing an order from supplier "); // what we need to do here
+            System.out.println("8. Orders"); // what we need to do here
             System.out.println("9. Create Periodic Order "); // ADD ITEMS
             System.out.println("10. Report Manager ");
             System.out.println("11. Exit to Inventory Menu ");
@@ -390,8 +395,9 @@ public class Cli {
                     System.out.println("The ID of the item you specified does not exist in the system");
                     break;
                 }
-                case 8: { System.out.println("8. Placing an order from supplier ");
-                    // TODO : periodic order // הזמנה תקופתית  --> from here we should create a periodic order ?
+                case 8: { 
+                    System.out.println("8. Orders ");
+                    OrdersUI(branch.getBranchID());
                     break;
                 }
                 case 9: {System.out.println("9. Receiving an order from supplier ");
@@ -408,6 +414,253 @@ public class Cli {
             }
         }
     }
+
+    private void OrdersUI(int branchID) {
+        Scanner startScanner = new Scanner(System.in);
+        int startChoice = 0;
+        while (startChoice != 3) {
+            System.out.println("Orders Menu - Please choose one of the following options : ");
+            System.out.println("1. Periodic Order ");
+            System.out.println("2. Existing Order ");
+            System.out.println("3. Back To Branch Menu");
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
+                System.out.println("Please enter an integer between 1-3 ");
+                startScanner.nextLine();
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
+                    PeriodicOrderUI(branchID);
+                    break;
+                }
+                case 2:{
+                    ExistingOrderUI(branchID);
+                    break;
+                }
+                case 3: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
+            }
+        }
+    }
+
+    private void ExistingOrderUI(int branchID) {
+        Scanner startScanner = new Scanner(System.in);
+        int startChoice = 0;
+        while (startChoice != 3) {
+            System.out.println("Existing Orders Menu - Please choose one of the following options : ");
+            System.out.println("1. Add / Update Products On Order ");
+            System.out.println("2. Remove Products From Order ");
+            System.out.println("3. Back To Orders Menu ");
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
+                System.out.println("Please enter an integer between 1-4 ");
+                startScanner.nextLine();
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
+                    updateProductsInOrder();
+                    break;
+                }
+                case 2:{
+                    removeProductsFromOrder();
+                    break;
+                }
+                case 3: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
+            }
+        }
+    }
+
+    private void PeriodicOrderUI(int branchID) {
+        Scanner startScanner = new Scanner(System.in);
+        int startChoice = 0;
+        while (startChoice != 4) {
+            System.out.println("Periodic Orders Menu - Please choose one of the following options : ");
+            System.out.println("1. Create New Periodic Order ");
+            System.out.println("2. Add / Update Products On Periodic Order ");
+            System.out.println("3. Remove Products From Periodic Order ");
+            System.out.println("4. Back To Orders Menu ");
+            try { startChoice = startScanner.nextInt(); }
+            catch (Exception e) {
+                System.out.println("Please enter an integer between 1-4 ");
+                startScanner.nextLine();
+                continue; }
+            switch (startChoice)
+            {
+                case 1:{
+                    createPeriodicOrder(branchID);
+                    break;
+                }
+                case 2:{
+                    updateProductsInPeriodicOrder();
+                    break;
+                }
+                case 3: {
+                    removeProductsFromPeriodicOrder();
+                    break;
+                }
+                case 4: { System.out.println("Exiting to Inventory menu"); break; }
+                default: { System.out.println("Invalid choice, please try again"); break; }
+            }
+        }
+    }
+
+    private void createPeriodicOrder(int branchID)
+    {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Please Enter Supplier ID: ");
+        int supplierID = reader.nextInt();
+        reader.nextLine();
+        System.out.println("Please Choose The Periodic Order Day");
+        System.out.println("1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday");
+        int day = reader.nextInt();
+        reader.nextLine();
+        while (day < 1 || day > 7)
+        {
+            System.out.println("Please enter a valid number : 1 to 7");
+            day = reader.nextInt();
+            reader.nextLine();
+        }
+        DayOfWeek fixedDay = DayOfWeek.of(day);
+        boolean correct = false;
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+        while(!correct) {
+            System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount, ProductID:Amount, ...");
+            try {
+                String[] arr = reader.nextLine().split("\\s*,\\s*");
+                for (String s1 : arr) {
+                    String[] val = s1.split(":");
+                    int productID = Integer.parseInt(val[0]);
+                    int amount = Integer.parseInt(val[1]);
+                    productsAndAmount.put(productID, amount);
+                }
+                correct = true;
+            } catch (Exception e) {
+                System.out.println("Please Enter Only According To The Format!");
+                productsAndAmount.clear();
+            }
+        }
+        Response response = orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Periodic Order With The ID " + response.getSupplierId() + " Has Successfully Been Created");
+    }
+
+    private void updateProductsInOrder()
+    {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Please Enter Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+        while (!correct)
+        {
+            System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount, ProductID:Amount, ...");
+            try {
+                String[] arr = reader.nextLine().split("\\s*,\\s*");
+                for (String s1 : arr) {
+                    String[] val = s1.split(":");
+                    int productID = Integer.parseInt(val[0]);
+                    int amount = Integer.parseInt(val[1]);
+                    productsAndAmount.put(productID, amount);
+                }
+                correct = true;
+            }
+            catch (Exception e)
+            {
+                System.out.println("Please Enter Only According To The Format!");
+                productsAndAmount.clear();
+            }
+        }
+
+        Response response = orderService.updateProductsInOrder(orderID, productsAndAmount);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
+    }
+
+    private void removeProductsFromOrder()
+    {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Please Enter Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        ArrayList<Integer> products = new ArrayList<>();
+        while (!correct)
+        {
+            System.out.println("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
+            try {
+                String[] arr = reader.nextLine().split("\\s*,\\s*");
+                for (String s1 : arr)
+                    products.add(Integer.parseInt(s1));
+                correct = true;
+            }
+            catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
+        }
+        Response response = orderService.removeProductsFromOrder(orderID, products);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
+    }
+
+    private void updateProductsInPeriodicOrder()
+    {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Please Enter Periodic Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+        while (!correct)
+        {
+            System.out.println("Choose Products And Amounts According To The Format: ProductID:Amount");
+            try {
+                String[] arr = reader.nextLine().split("\\s*,\\s*");
+                for (String s1 : arr) {
+                    String[] val = s1.split(":");
+                    int productID = Integer.parseInt(val[0]);
+                    int amount = Integer.parseInt(val[1]);
+                    productsAndAmount.put(productID, amount);
+                }
+                correct = true;
+            }
+            catch (Exception e)
+            {
+                System.out.println("Please Enter Only According To The Format!");
+                productsAndAmount.clear();
+            }
+        }
+
+        Response response = orderService.updateProductsInPeriodicOrder(orderID, productsAndAmount);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
+    }
+
+    private void removeProductsFromPeriodicOrder()
+    {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Please Enter Periodic Order ID: ");
+        int orderID = reader.nextInt();
+        reader.nextLine();
+        boolean correct = false;
+        ArrayList<Integer> products = new ArrayList<>();
+        while (!correct)
+        {
+            System.out.println("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
+            try {
+                String[] arr = reader.nextLine().split("\\s*,\\s*");
+                for (String s1 : arr)
+                    products.add(Integer.parseInt(s1));
+                correct = true;
+            }
+            catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
+        }
+        Response response = orderService.removeProductsFromPeriodicOrder(orderID, products);
+        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
+    }
+
     public void productUI() throws SQLException {
         Scanner productScanner = new Scanner(System.in);
         int productChoice = 0;

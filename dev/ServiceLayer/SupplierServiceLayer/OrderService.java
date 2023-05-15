@@ -43,4 +43,6 @@ public class OrderService extends TimerTask {
     public void createOrderByShortage(int branchId ,HashMap<Integer, Integer> shortage) { orderService.createOrderByShortage(branchId ,shortage); }
     public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderService.updateProductsInOrder(orderID, productsToAdd); }
     public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromOrder(orderID, productsToRemove); }
+    public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderService.updateProductsInPeriodicOrder(orderID, productsToAdd); }
+    public Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromPeriodicOrder(orderID, productsToRemove); }
 }

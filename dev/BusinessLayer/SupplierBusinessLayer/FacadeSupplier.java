@@ -161,8 +161,8 @@ public class FacadeSupplier {
 
     public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return orderController.updateProductsInOrder(orderID, productsToAdd); }
     public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderController.removeProductsFromOrder(orderID, productsToRemove); }
-
-
+    public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return periodicOrderController.updateProductsInPeriodicOrder(orderID, productsToAdd); }
+    public Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove) { return periodicOrderController.removeProductsFromPeriodicOrder(orderID, productsToRemove); }
     public Response executePeriodicOrder(int periodicOrderID) {
         return orderController.executePeriodicOrder(periodicOrderID);
     }

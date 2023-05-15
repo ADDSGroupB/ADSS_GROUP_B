@@ -18,6 +18,14 @@ public class PeriodicOrder {
         this.itemsInOrder = itemsInOrder;
     }
 
+    public PeriodicOrder(PeriodicOrder periodicOrder, ArrayList<SupplierProduct> itemsInOrder) {
+        this.periodicOrderID = periodicOrder.getPeriodicOrderID();
+        this.supplierID = periodicOrder.getSupplierID();
+        this.branchID = periodicOrder.getBranchID();
+        this.fixedDay = periodicOrder.getFixedDay();
+        this.itemsInOrder = itemsInOrder;
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

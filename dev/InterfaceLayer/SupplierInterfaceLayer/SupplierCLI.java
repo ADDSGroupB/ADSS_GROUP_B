@@ -694,111 +694,16 @@ public class SupplierCLI {
         supplierService.printOrders();
     }
 
-    private void createPeriodicOrder()
-    {
-        print("Please Enter Branch ID: ");
-        int branchID = reader.nextInt();
-        reader.nextLine();
-        print("Please Enter Supplier ID: ");
-        int supplierID = reader.nextInt();
-        reader.nextLine();
-        print("Please Choose The Periodic Order Day");
-        print("1. Monday \n2. Tuesday \n3. Wednesday \n4. Thursday \n5. Friday \n6. Saturday \n7. Sunday");
-        int day = reader.nextInt();
-        reader.nextLine();
-        while (day < 1 || day > 7)
-        {
-            print("Please enter a valid number : 1 to 7");
-            day = reader.nextInt();
-            reader.nextLine();
-        }
-        DayOfWeek fixedDay = DayOfWeek.of(day);
-        boolean correct = false;
-        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
-        while(!correct) {
-            print("Choose Products And Amounts According To The Format: ProductID:Amount");
-            try {
-                String[] arr = reader.nextLine().split("\\s*,\\s*");
-                for (String s1 : arr) {
-                    String[] val = s1.split(":");
-                    int productID = Integer.parseInt(val[0]);
-                    int amount = Integer.parseInt(val[1]);
-                    productsAndAmount.put(productID, amount);
-                }
-                correct = true;
-            } catch (Exception e) {
-                System.out.println("Please Enter Only According To The Format!");
-                productsAndAmount.clear();
-            }
-        }
-        Response response = orderService.createPeriodicOrder(supplierID, branchID, fixedDay, productsAndAmount);
-        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
-        else System.out.println("Periodic Order With The ID " + response.getSupplierId() + " Has Successfully Been Created");
-    }
 
-    private void updateProductsInOrder()
-    {
-        print("Please Enter Order ID: ");
-        int orderID = reader.nextInt();
-        reader.nextLine();
-        boolean correct = false;
-        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
-        while (!correct)
-        {
-            print("Choose Products And Amounts According To The Format: ProductID:Amount");
-            try {
-                String[] arr = reader.nextLine().split("\\s*,\\s*");
-                for (String s1 : arr) {
-                    String[] val = s1.split(":");
-                    int productID = Integer.parseInt(val[0]);
-                    int amount = Integer.parseInt(val[1]);
-                    productsAndAmount.put(productID, amount);
-                }
-                correct = true;
-            }
-            catch (Exception e)
-            {
-                System.out.println("Please Enter Only According To The Format!");
-                productsAndAmount.clear();
-            }
-        }
-
-        Response response = orderService.updateProductsInOrder(orderID, productsAndAmount);
-        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
-        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
-    }
-
-    private void removeProductsFromOrder()
-    {
-        print("Please Enter Order ID: ");
-        int orderID = reader.nextInt();
-        reader.nextLine();
-        boolean correct = false;
-        ArrayList<Integer> products = new ArrayList<>();
-        while (!correct)
-        {
-            print("Choose Products To The Format: ProductID_1, ProductID_2, ProductID_3,...");
-            try {
-                String[] arr = reader.nextLine().split("\\s*,\\s*");
-                for (String s1 : arr)
-                    products.add(Integer.parseInt(s1));
-                correct = true;
-            }
-            catch (Exception e) { System.out.println("Please Enter Only Product IDs!"); products.clear(); }
-        }
-        Response response = orderService.removeProductsFromOrder(orderID, products);
-        if(response.errorOccurred()) System.out.println(response.getErrorMessage());
-        else System.out.println("Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated");
-    }
 
     private void startDailyTask()
     {
         Timer timer = new Timer();
         // Schedule the task to execute every day at 10:00am
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
-        calendar.set(Calendar.MINUTE, 14);
-        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE, 26);
+        calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 0);
         if (calendar.getTimeInMillis() < System.currentTimeMillis())
             calendar.add(Calendar.DAY_OF_MONTH, 1);

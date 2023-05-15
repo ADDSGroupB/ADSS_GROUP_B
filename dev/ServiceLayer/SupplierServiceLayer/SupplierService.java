@@ -102,7 +102,10 @@ public class SupplierService implements iOrderService{
 
     @Override
     public Response removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) { return facadeSupplier.removeProductsFromOrder(orderID, productsToRemove); }
-
+    @Override
+    public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd) { return facadeSupplier.updateProductsInPeriodicOrder(orderID, productsToAdd); }
+    @Override
+    public Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove) { return facadeSupplier.removeProductsFromPeriodicOrder(orderID, productsToRemove); }
     public void printOrders() {
         facadeSupplier.printOrders();
     }
