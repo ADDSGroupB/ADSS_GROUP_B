@@ -110,4 +110,8 @@ public class SupplierService implements iOrderService{
     public void printOrders() {
         facadeSupplier.printOrders();
     }
+    public void printSuppliersGui() {
+        facadeSupplier.printSuppliersGui();
+    }
+
 }

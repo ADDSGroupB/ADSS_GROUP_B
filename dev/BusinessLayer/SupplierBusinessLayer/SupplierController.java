@@ -5,6 +5,8 @@ import ServiceLayer.SupplierServiceLayer.ServiceContact;
 import Utillity.Pair;
 import Utillity.Response;
 
+import javax.swing.*;
+import java.awt.*;
 import java.time.DayOfWeek;
 import java.util.*;
 
@@ -439,5 +441,36 @@ public class SupplierController {
     }
 
 
+    void printSuppliersGui() {
+        JFrame suppliersFrame = new JFrame("Suppliers");
+        suppliersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        suppliersFrame.setSize(400, 300);
+        suppliersFrame.setLocationRelativeTo(null);
 
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        JTextArea suppliersTextArea = new JTextArea();
+        suppliersTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(suppliersTextArea);
+
+        // Retrieve the list of suppliers from the supplierService
+        HashMap<Integer, Supplier> suppliers = supplierDAO.getAllSuppliers();
+
+        // Populate the suppliersTextArea with supplier information
+        StringBuilder sb = new StringBuilder();
+        for(Map.Entry<Integer, Supplier> supplier : suppliers.entrySet()) {
+            sb.append("Supplier ID: ").append(supplier.getValue().getSupplierId()).append("\n");
+            sb.append("Name: ").append(supplier.getValue().getName()).append("\n");
+            sb.append("Address: ").append(supplier.getValue().getAddress()).append("\n");
+            sb.append("Bank Account: ").append(supplier.getValue().getBankAccount()).append("\n");
+            sb.append("\n");
+        }
+        suppliersTextArea.setText(sb.toString());
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        suppliersFrame.getContentPane().add(panel);
+        suppliersFrame.setVisible(true);
+    }
 }

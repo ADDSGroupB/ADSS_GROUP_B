@@ -178,6 +178,10 @@ public class FacadeSupplier {
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return periodicOrderController.getAllPeriodicOrderForToday(); }
 
     public void printOrder(int supplierID) { orderController.printOrder(supplierID); }
+
+    public void printSuppliersGui() {
+        supplierController.printSuppliersGui();
+    }
 }
 
 

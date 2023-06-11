@@ -17,7 +17,8 @@ class ItemTest {
     @BeforeEach
     void setUp() throws SQLException {
         DBConnector.connect();
-//        DBConnector.deleteRecordsOfTables();
+        DBConnector.deleteRecordsOfInventoryTables();
+        DBConnector.deleteRecordsOfTables();
         mainController = new MainController();
         Branch b1 = mainController.getBranchesDao().addBranch("SuperLi Beer Sheva");
         Category c1 = mainController.getCategoryDao().addCategory("Dairy products");
