@@ -7,8 +7,6 @@ import ServiceLayer.SupplierServiceLayer.SupplierService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class SupplierManagerGUI extends JFrame {
@@ -16,7 +14,6 @@ public class SupplierManagerGUI extends JFrame {
     private SupplierService supplierService;
     private OrderService orderService;
     private ServiceContact serviceContact;
-//    private boolean keepAdding = true;
 
     public SupplierManagerGUI() {
         supplierService = new SupplierService();
@@ -68,14 +65,18 @@ public class SupplierManagerGUI extends JFrame {
     private void addNewSupplier() {
         ArrayList<ServiceContact> serviceContacts = new ArrayList<>();
         ArrayList<ServiceAgreement> serviceAgreements = new ArrayList<>();
-        JFrame addSupplierFrame = new JFrame("Add New Supplier");
-        addSupplierFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        addSupplierFrame.setSize(400, 300);
-        addSupplierFrame.setLocationRelativeTo(null);
+        final JFrame[] addSupplierFrame = {new JFrame("Add New Supplier")};
+        addSupplierFrame[0].setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        addSupplierFrame[0].setSize(400, 300);
+        addSupplierFrame[0].setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+
+
+
 
         JLabel nameLabel = new JLabel("Supplier's Name:");
         JTextField nameTextField = new JTextField();
@@ -86,14 +87,22 @@ public class SupplierManagerGUI extends JFrame {
         JLabel bankAccountLabel = new JLabel("Bank Account Number:");
         JTextField bankAccountTextField = new JTextField();
 
-        JButton addSupplierButton = new JButton("Add Supplier's Contacts");
-        addSupplierButton.addActionListener(e -> {
+        JButton nextButton = new JButton("Next");
+
+//        JButton addSupplierButton = new JButton("Add Supplier's Contacts");
+        nextButton.addActionListener(e -> {
             String name = nameTextField.getText();
             String address = addressTextField.getText();
             String bankAccount = bankAccountTextField.getText();
+            if (!checkBankAccountValidation(bankAccount)){
+                JOptionPane.showMessageDialog(null, "Not a valid bankAccount number, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                bankAccountTextField.setText("");
+                return;
+            }
 
             try {
-                addSupplierContacts(serviceContacts);
+                addSupplierFrame[0].setVisible(false);
+                addSupplierContacts(serviceContacts, addSupplierFrame[0]);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -104,7 +113,8 @@ public class SupplierManagerGUI extends JFrame {
             // supplierService.addSupplier()
 
             // Close the dialog/frame after adding the supplier
-            addSupplierFrame.dispose();
+
+            addSupplierFrame[0].dispose();
         });
 
         panel.add(nameLabel);
@@ -114,10 +124,15 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(bankAccountLabel);
         panel.add(bankAccountTextField);
         panel.add(new JLabel()); // Empty label for spacing
-        panel.add(addSupplierButton);
+        panel.add(nextButton);
+//        panel.add(addSupplierButton);
+//        panel.add(new JLabel());
+//        panel.add(new JLabel());
+//        panel.add(new JLabel(), BorderLayout.WEST);  // Bottom-left corner
+//        panel.add(nextButton, BorderLayout.EAST);  // Bottom-right corner
 
-        addSupplierFrame.getContentPane().add(panel);
-        addSupplierFrame.setVisible(true);
+        addSupplierFrame[0].getContentPane().add(panel);
+        addSupplierFrame[0].setVisible(true);
     }
 
     private void addSupplierAgreement() {
@@ -152,7 +167,7 @@ public class SupplierManagerGUI extends JFrame {
         });
     }
 
-    private void addSupplierContacts(ArrayList<ServiceContact> serviceContacts) throws InterruptedException {
+    private void addSupplierContacts(ArrayList<ServiceContact> serviceContacts, JFrame addSupplierFrame) throws InterruptedException {
         JFrame addContactFrame = new JFrame("Add Supplier's Contacts");
         addContactFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         addContactFrame.setSize(400, 300);
@@ -177,7 +192,7 @@ public class SupplierManagerGUI extends JFrame {
             serviceContacts.add(new ServiceContact(nameTextField.getText(), emailTextField.getText(), phoneNumberTextField.getText()));
             System.out.println(serviceContacts.size());
             try {
-                addSupplierContacts(serviceContacts);
+                addSupplierContacts(serviceContacts, addSupplierFrame);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -200,6 +215,9 @@ public class SupplierManagerGUI extends JFrame {
             // Close the dialog/frame after adding the supplier
         });
 
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> { addSupplierFrame.setVisible(true); addContactFrame.setVisible(false); });
+
         panel.add(nameLabel);
         panel.add(nameTextField);
         panel.add(emailLabel);
@@ -208,6 +226,9 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(phoneNumberTextField);
         panel.add(addAnotherContact);
         panel.add(finish);
+        panel.add(new JLabel());
+        panel.add(new JLabel());
+        panel.add(backButton);
 
         addContactFrame.getContentPane().add(panel);
         addContactFrame.setVisible(true);
@@ -229,10 +250,15 @@ public class SupplierManagerGUI extends JFrame {
         // Implementation of the supplierOrderHistory method for the GUI
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SupplierManagerGUI gui = new SupplierManagerGUI();
-            gui.setVisible(true);
-        });
+    public boolean checkBankAccountValidation(String input) {
+        String pattern = "^\\d{6,9}$";
+        return input.matches(pattern);
     }
+
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            SupplierManagerGUI gui = new SupplierManagerGUI();
+//            gui.setVisible(true);
+//        });
+//    }
 }

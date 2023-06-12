@@ -26,7 +26,7 @@ public class Main {
             case "gui" -> workersGUI(args[1]);
             default -> System.out.printf("Argument 1 is invalid, given argument: %s should be: cli / gui", args[1]);
         }
-        System.exit(0);
+//        System.exit(0);
     }
 
     private static void workersGUI(String worker) {
@@ -37,6 +37,7 @@ public class Main {
 //            }
             case "suppliermanager" -> {
                 SupplierManagerGUI supplierManagerGUI = new SupplierManagerGUI();
+                supplierManagerGUI.setVisible(true);
 //                supplierManagerGUI.setVisible(true);
             }
 //            case "storemanager" -> {
