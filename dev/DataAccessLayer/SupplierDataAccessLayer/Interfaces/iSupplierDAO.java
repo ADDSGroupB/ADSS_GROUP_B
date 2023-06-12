@@ -8,6 +8,7 @@ import java.util.HashMap;
 public interface iSupplierDAO {
     HashMap<Integer, Supplier> getAllSuppliers();
     Supplier getSupplierByID(int id);
+    Integer getActiveSupplierById(Integer id);
     Response addSupplier(Supplier supplier);
     Response removeSupplier(int id);
     Response updateSupplierName(int id, String name);

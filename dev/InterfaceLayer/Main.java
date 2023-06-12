@@ -34,19 +34,19 @@ public class Main {
         if (choice == JOptionPane.YES_OPTION)
         {
             MainController mainController = new MainController();
-            OrderService orderService = new OrderService();
-            LoadDataInventory(mainController);
-            loadDataSupplier();
-            mainController.getItemsDao().checkExpiredItemsInAllBranches();
-            List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
-            if (allBranches.size() > 0)
-            {
-                mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
-            }
-            for (Branch branch : allBranches)
-            {
-                mainController.getItemsDao().fromStorageToStore(branch);
-            }
+            //OrderService orderService = new OrderService();
+            //LoadDataInventory(mainController);
+              loadDataSupplier();
+//            mainController.getItemsDao().checkExpiredItemsInAllBranches();
+//            List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
+//            if (allBranches.size() > 0)
+//            {
+//                mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
+//            }
+//            for (Branch branch : allBranches)
+//            {
+//                mainController.getItemsDao().fromStorageToStore(branch);
+//            }
         }
         switch (worker.toLowerCase()) {
 //            case "storekeeper" -> {

@@ -26,8 +26,8 @@ public class InventorySupplierTests {
         DBConnector.connect();
         DBConnector.deleteRecordsOfInventoryTables();
         DBConnector.deleteRecordsOfTables();
-        sc = new SupplierController();
         ssl = new SupplierService();
+        sc = new SupplierController();
         mainController = new MainController();
         orderService = new OrderService();
 
@@ -113,6 +113,11 @@ public class InventorySupplierTests {
         assertEquals(7, num7);
         Response response = ssl.executePeriodicOrder(2);
         if (!response.errorOccurred()) assertEquals(1, response.getSupplierId());
+    }
+
+    public void runTests() {
+        createPeriodicOrder();
+        executePeriodicOrder();
     }
 
 //    @Test

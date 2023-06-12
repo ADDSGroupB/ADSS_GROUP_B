@@ -110,8 +110,9 @@ public class SupplierService implements iOrderService{
     public void printOrders() {
         facadeSupplier.printOrders();
     }
-    public void printSuppliersGui() {
-        facadeSupplier.printSuppliersGui();
-    }
+    public void printSuppliersGui() {facadeSupplier.printSuppliersGui();}
+    public Integer getActiveSupplierById(Integer id){return facadeSupplier.getActiveSupplierById(id);}
 
+    public Integer getLastSupplierID() {return facadeSupplier.getLastSupplierID();}
+    public Response getSupplierNameById(Integer id){return facadeSupplier.getSupplierNameById(id);}
 }

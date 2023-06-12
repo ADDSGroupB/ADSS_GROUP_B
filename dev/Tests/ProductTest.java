@@ -72,4 +72,15 @@ class ProductTest {
                 "Product SubSub Category: 3% fat" + "\n";
         assertEquals(productToString, mainController.getProductsDao().getProductByID(1).toString());
     }
+
+    public void runTests() throws SQLException {
+        getParentCategory();
+        getSubCategory();
+        getSubSubCategory();
+        getProductWeight();
+        getProductID();
+        getManufacturer();
+        getProductName();
+
+    }
 }

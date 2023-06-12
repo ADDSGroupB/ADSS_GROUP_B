@@ -110,4 +110,7 @@ public class ShortageTest {
         assertEquals(1,order.getOrderID());
     }
 
+    public void runTests() throws SQLException {
+        createShortageOrder();
+    }
 }

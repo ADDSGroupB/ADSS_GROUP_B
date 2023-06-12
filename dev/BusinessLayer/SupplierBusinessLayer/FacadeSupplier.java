@@ -15,6 +15,7 @@ public class FacadeSupplier {
     private final OrderController orderController;
     private final PeriodicOrderController periodicOrderController;
     private final AgreementDAO agreementDAO;
+
     public FacadeSupplier(){
         supplierController = new SupplierController();
         productController = new ProductController();
@@ -182,6 +183,12 @@ public class FacadeSupplier {
     public void printSuppliersGui() {
         supplierController.printSuppliersGui();
     }
+
+    public Integer getActiveSupplierById(Integer id) {return supplierController.getActiveSupplierById(id);}
+
+    public Integer getLastSupplierID() {return supplierController.getLastSupplierID();}
+
+    public Response getSupplierNameById(Integer id) {return supplierController.getSupplierNameById(id);}
 }
 
 

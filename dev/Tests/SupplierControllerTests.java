@@ -155,21 +155,20 @@ public class SupplierControllerTests {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public void runTests() {
+        addSupplier();
+        changeAddress();
+        changeBankAccount();
+        removeSupplier();
+        addContactToSupplier();
+        addAgreementToSupplier();
+        changeSupplierName();
+        addDiscountToSupplier();
+        getUnexcitingSupplier();
+        changeCatalogNumber();
+        removeItemFromAgreement();
+        createOrderByShortage();
+        removeDiscount();
+        changeSupplierContactEmail();
+    }
 }

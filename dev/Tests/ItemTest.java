@@ -75,4 +75,17 @@ class ItemTest {
         mainController.getItemsDao().getItemByID(1).setDefectiveDiscription("defect1");
         assertEquals("defect1", mainController.getItemsDao().getItemByID(1).getDefectiveDiscription());
     }
+
+    public void runTests() throws SQLException {
+        getProduct();
+        getBranchID();
+        getProductID();
+        getExpiredDate();
+        getPriceFromSupplier();
+        getPriceInBranch();
+        getItemID();
+        getSupplierID();
+        getDefectiveDiscription();
+
+    }
 }

@@ -246,4 +246,33 @@ public class SupplierDAO implements iSupplierDAO {
             suppliersIM.get(supplierID).getSupplyingProducts().get(productID).setAmount(amount);
         return supplierProductDAO.updateSupplierProductAmount(supplierID, productID, amount);
     }
+
+    public Integer getActiveSupplierById(Integer id) {
+        if(suppliersIM.containsKey(id)) return id;
+        try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM supplier WHERE supplierID = ?")) {
+            supplierStatement.setInt(1, id);
+            ResultSet supplierResult = supplierStatement.executeQuery();
+            if (supplierResult.next())
+            {
+                return id;
+            }
+        } catch (SQLException e) { System.out.println(e.getMessage()); }
+        return null;
+    }
+
+    public Response getSupplierNameById(Integer id) {
+        if(suppliersIM.containsKey(id)) return new Response(true,suppliersIM.get(id).getName());
+        else {
+            try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM supplier WHERE supplierID = ?")) {
+                supplierStatement.setInt(1, id);
+                ResultSet supplierResult = supplierStatement.executeQuery();
+                if (supplierResult.next())
+                {
+                    String name = supplierResult.getString("name");
+                    return new Response(true,name);
+                }
+            } catch (SQLException e) { System.out.println(e.getMessage()); }
+            return null;
+        }
+    }
 }
