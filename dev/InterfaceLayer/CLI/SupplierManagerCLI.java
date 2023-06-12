@@ -736,4 +736,6 @@ public class SupplierManagerCLI {
         String pattern = "^\\d{6,9}$";
         return input.matches(pattern);
     }
+
+
 }

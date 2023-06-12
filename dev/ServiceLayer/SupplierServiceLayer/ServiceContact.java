@@ -52,8 +52,10 @@ public class ServiceContact {
         return Pattern.matches(pattern, number);
     }
 
-
-
+    @Override
+    public String toString() {
+        return String.format("Name: %s | Email: %s | Phone Number: %s", name, email, phoneNumber);
+    }
 }
 
 
