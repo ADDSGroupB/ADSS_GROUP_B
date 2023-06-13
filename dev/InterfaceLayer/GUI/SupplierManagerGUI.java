@@ -964,61 +964,12 @@ public class SupplierManagerGUI extends JFrame {
     }
 
     private void editSupplierPersonalDetails(int supplierID) {
-        String[] options = {"Edit Supplier Contact", "Edit Supplier Name", "Edit Supplier Address", "Edit Supplier Bank Account"};
-        int choice = JOptionPane.showOptionDialog(null, "Select an option:", "Edit Supplier Personal Details",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-
-        switch (choice) {
-            case 0:
-                // Edit Supplier Contact
-                editSupplierContact(supplierID);
-                break;
-            case 1:
-                // Edit Supplier Name
-                editSupplierName(supplierID);
-                break;
-            case 2:
-                // Edit Supplier Address
-                editSupplierAddress(supplierID);
-                break;
-            case 3:
-                // Edit Supplier Bank Account
-                editSupplierBankAccount(supplierID);
-                break;
-            default:
-                // Invalid choice or dialog closed
-                break;
-        }
-    }
-
-    private void editSupplierContact(int supplierID) {
-        // Logic to edit supplier contact
-        // Example:
-        String newContact = JOptionPane.showInputDialog(null, "Enter new contact for the supplier:");
-        // Perform the necessary operations to update the supplier's contact information
-    }
-
-    private void editSupplierName(int supplierID) {
-        // Logic to edit supplier name
+        // Add your logic for editing supplier's personal details based on the supplierID
+        // You can use JOptionPane or other GUI components to gather user input
         // Example:
         String newName = JOptionPane.showInputDialog(null, "Enter new name for the supplier:");
-        // Perform the necessary operations to update the supplier's name
+        // Perform the necessary operations to update the supplier's personal details
     }
-
-    private void editSupplierAddress(int supplierID) {
-        // Logic to edit supplier address
-        // Example:
-        String newAddress = JOptionPane.showInputDialog(null, "Enter new address for the supplier:");
-        // Perform the necessary operations to update the supplier's address
-    }
-
-    private void editSupplierBankAccount(int supplierID) {
-        // Logic to edit supplier bank account
-        // Example:
-        String newBankAccount = JOptionPane.showInputDialog(null, "Enter new bank account for the supplier:");
-        // Perform the necessary operations to update the supplier's bank account information
-    }
-
 
     private void editSupplierAgreement(int supplierID) {
         // Add your logic for editing supplier's agreement details based on the supplierID

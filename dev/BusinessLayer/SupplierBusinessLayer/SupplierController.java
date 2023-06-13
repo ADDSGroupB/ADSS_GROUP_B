@@ -473,9 +473,10 @@ public class SupplierController {
         suppliersFrame.getContentPane().add(panel);
         suppliersFrame.setVisible(true);
     }
-//
+
     public Integer getActiveSupplierById(Integer id) {return supplierDAO.getActiveSupplierById(id);}
-//
+
     public Integer getLastSupplierID() {return supplierDAO.getLastSupplierID();}
+
     public Response getSupplierNameById(Integer id) {return supplierDAO.getSupplierNameById(id);}
 }
