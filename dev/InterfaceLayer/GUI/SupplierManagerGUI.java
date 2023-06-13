@@ -973,12 +973,206 @@ public class SupplierManagerGUI extends JFrame {
     }
 
     private void deleteSupplier() {
-        // Implementation of the deleteSupplier method for the GUI
+        JFrame f = new JFrame("Delete Supplier");
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Container c = f.getContentPane();
+        c.setLayout(new BorderLayout());
+
+        JLabel type = new JLabel("Please select the ID of the supplier you want to remove:");
+        c.add(type, BorderLayout.NORTH);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Name");
+        // Add more columns as needed for additional supplier data
+
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        c.add(scrollPane, BorderLayout.CENTER);
+
+        JButton deleteButton = new JButton("Delete");
+        c.add(deleteButton, BorderLayout.SOUTH);
+
+        int i = supplierService.getLastSupplierID();
+        if (i != -1) {
+            for (int j = 1; j <= i; j++) {
+                Response res = supplierService.getSupplierNameById(j);
+                if (res != null) {
+                    if(res.getAnswer()) {
+                        Object[] rowData = {j, res.getStringValue()};
+                        model.addRow(rowData);
+                    }
+                }
+            }
+        }
+
+        deleteButton.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                int selectedID = (int) table.getValueAt(selectedRow, 0);
+                String selectedName = (String) table.getValueAt(selectedRow, 1);
+                supplierService.removeSupplier(selectedID);
+                model.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(f, "Supplier with ID " + selectedID + " (" + selectedName + ") has been deleted.", "Supplier Deleted", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        f.setSize(400, 300);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
     }
 
+
+
     private void editSupplier() {
-        // Implementation of the editSupplier method for the GUI
+        JFrame f = new JFrame("Edit Supplier");
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Container c = f.getContentPane();
+        c.setLayout(new BorderLayout());
+
+        JLabel type = new JLabel("Please select the supplier you want to edit:");
+        c.add(type, BorderLayout.NORTH);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Name");
+        // Add more columns as needed for additional supplier data
+
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        c.add(scrollPane, BorderLayout.CENTER);
+
+        JButton editPersonalDetailsButton = new JButton("Edit Supplier Personal Details");
+        JButton editAgreementButton = new JButton("Edit Supplier Agreement");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(editPersonalDetailsButton);
+        buttonPanel.add(editAgreementButton);
+        c.add(buttonPanel, BorderLayout.SOUTH);
+
+        int i = supplierService.getLastSupplierID();
+        if (i != -1) {
+            for (int j = 1; j <= i; j++) {
+                Response res = supplierService.getSupplierNameById(j);
+                if (res != null && res.getAnswer()) {
+                    Object[] rowData = {j, res.getStringValue()};
+                    model.addRow(rowData);
+                }
+            }
+        }
+
+        editPersonalDetailsButton.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                int selectedID = (int) table.getValueAt(selectedRow, 0);
+                String selectedName = (String) table.getValueAt(selectedRow, 1);
+
+                // Call the editSupplierPersonalDetails() method with the selected ID
+                editSupplierPersonalDetails(selectedID);
+
+                //JOptionPane.showMessageDialog(f, "Editing supplier's personal details with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        editAgreementButton.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                int selectedID = (int) table.getValueAt(selectedRow, 0);
+                String selectedName = (String) table.getValueAt(selectedRow, 1);
+
+                // Call the editSupplierAgreement() method with the selected ID
+                editSupplierAgreement(selectedID);
+
+                JOptionPane.showMessageDialog(f, "Editing supplier's agreement with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        f.setSize(400, 300);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
     }
+
+    private void editSupplierPersonalDetails(int supplierID) {
+        JFrame f = new JFrame("Edit Supplier Personal Details");
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        f.revalidate();
+        f.repaint();
+        Container c = f.getContentPane();
+        c.setLayout(new GridBagLayout());
+
+        JLabel titleLabel = new JLabel("Edit Supplier Personal Details");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+        JButton editContactButton = new JButton("Edit Supplier Contact");
+        editContactButton.addActionListener(e -> editSupplierContact(supplierID));
+
+        JButton editNameButton = new JButton("Edit Supplier Name");
+        editNameButton.addActionListener(e -> editSupplierName(supplierID));
+
+        JButton editAddressButton = new JButton("Edit Supplier Address");
+        editAddressButton.addActionListener(e -> editSupplierAddress(supplierID));
+
+        JButton editBankAccountButton = new JButton("Edit Supplier Bank Account");
+        editBankAccountButton.addActionListener(e -> editSupplierBankAccount(supplierID));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.insets = new Insets(10, 10, 0, 10); // Top padding for titleLabel
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 2;
+        c.add(titleLabel, constraints);
+
+        constraints.insets = new Insets(10, 10, 10, 10); // Padding for buttons
+        constraints.gridwidth = 1;
+        constraints.gridy = 1;
+        c.add(editContactButton, constraints);
+
+        constraints.gridx = 1;
+        c.add(editNameButton, constraints);
+
+        constraints.gridy = 2;
+        constraints.gridx = 0;
+        c.add(editAddressButton, constraints);
+
+        constraints.gridx = 1;
+        c.add(editBankAccountButton, constraints);
+
+        f.setSize(400, 300);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
+    }
+
+
+
+    private void editSupplierBankAccount(int supplierID) {
+    }
+
+    private void editSupplierAddress(int supplierID) {
+
+    }
+
+    private void editSupplierName(int supplierID) {
+
+    }
+
+    private void editSupplierContact(int supplierID) {
+
+    }
+
+    private void editSupplierAgreement(int supplierID) {
+        // Add your logic for editing supplier's agreement details based on the supplierID
+        // You can use JOptionPane or other GUI components to gather user input
+        // Example:
+        String newAgreement = JOptionPane.showInputDialog(null, "Enter new agreement details for the supplier:");
+        // Perform the necessary operations to update the supplier's agreement details
+    }
+
 
     private void printSuppliersGui() {
         supplierService.printSuppliersGui();
@@ -1075,4 +1269,3 @@ public class SupplierManagerGUI extends JFrame {
         });
     }
 }
-

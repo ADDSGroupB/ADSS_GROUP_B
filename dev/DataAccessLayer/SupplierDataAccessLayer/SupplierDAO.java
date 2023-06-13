@@ -22,7 +22,7 @@ public class SupplierDAO implements iSupplierDAO {
     private final iDiscountPerAmountDAO discountPerAmountDAO;
     private final iSupplierProductDAO supplierProductDAO;
     private final iAgreementDAO agreementDAO;
-//    private int lastSupplierID;
+    //    private int lastSupplierID;
     public SupplierDAO() {
         connection = DBConnector.connect();
         try {
@@ -237,16 +237,16 @@ public class SupplierDAO implements iSupplierDAO {
                 supplierProductDAO.printProductsBySupplierID(supplierID);
             }
             resultSet.close();
-            } catch (SQLException e) { System.out.println(e.getMessage());}
+        } catch (SQLException e) { System.out.println(e.getMessage());}
     }
-
+    @Override
     public Response updateSupplierProductAmount(int supplierID, int productID, int amount)
     {
         if(suppliersIM.containsKey(supplierID))
             suppliersIM.get(supplierID).getSupplyingProducts().get(productID).setAmount(amount);
         return supplierProductDAO.updateSupplierProductAmount(supplierID, productID, amount);
     }
-//
+    @Override
     public Integer getActiveSupplierById(Integer id) {
         if(suppliersIM.containsKey(id)) return id;
         try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM supplier WHERE supplierID = ?")) {
@@ -259,7 +259,7 @@ public class SupplierDAO implements iSupplierDAO {
         } catch (SQLException e) { System.out.println(e.getMessage()); }
         return null;
     }
-
+    @Override
     public Response getSupplierNameById(Integer id) {
         if(suppliersIM.containsKey(id)) return new Response(true,suppliersIM.get(id).getName());
         else {

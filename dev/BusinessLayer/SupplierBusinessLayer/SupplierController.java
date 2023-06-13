@@ -339,7 +339,7 @@ public class SupplierController {
                     supplyList = canSupply;
                     currentMax = amount;
                 }
-                //�� ������ ������ �� ���� ����� ��� ���� ������, ���� �� ���� �������
+                //                                              ,
                 if (amount == currentMax){
                     double currentBest = currentSupplier.calculatePriceAfterDiscount(supplyList);
                     double maybeNewBest = supplier.calculatePriceAfterDiscount(canSupply);
@@ -378,7 +378,7 @@ public class SupplierController {
                 sp.setAmount(sp.getAmount() - p.getSecond());
                 Pair<SupplierProduct,Integer> supplierProductPair= new Pair<>(sp, p.getSecond());//supplierProduct, amount
                 supplierProducts.add(supplierProductPair);
-            }//(supplierProduct) ������ �� �� ������� �� ��� 1
+            }//(supplierProduct)                             1
             supplyListSupplierProduct.add(supplierProducts);
             i++;
 
@@ -488,4 +488,10 @@ public class SupplierController {
         if(contactDAO.getContactBySupplierID(supplierID, phoneNumber) != null) return new Response("This supplier already have contact with the same phone number");
         return new Response(supplierID);
     }
+
+    public Integer getActiveSupplierById(Integer id) {return supplierDAO.getActiveSupplierById(id);}
+
+    public Integer getLastSupplierID() {return supplierDAO.getLastSupplierID();}
+
+    public Response getSupplierNameById(Integer id) {return supplierDAO.getSupplierNameById(id);}
 }

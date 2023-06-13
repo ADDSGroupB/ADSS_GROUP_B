@@ -117,4 +117,10 @@ public class SupplierService implements iOrderService{
 
     public Response checkBankAccount(String bankAccount) { return facadeSupplier.checkBankAccount(bankAccount); }
 
+    public Integer getActiveSupplierById(Integer id){return facadeSupplier.getActiveSupplierById(id);}
+
+    public Integer getLastSupplierID() {return facadeSupplier.getLastSupplierID();}
+    public Response getSupplierNameById(Integer id){return facadeSupplier.getSupplierNameById(id);}
+
+
 }

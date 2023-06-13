@@ -186,7 +186,11 @@ public class FacadeSupplier {
     public Response checkPhoneNumber(int supplierID, String phoneNumber) { return supplierController.checkPhoneNumber(supplierID, phoneNumber); }
     public Response checkBankAccount(String bankAccount) { return supplierController.checkBankAccount(bankAccount); }
 
+    public Integer getActiveSupplierById(Integer id) {return supplierController.getActiveSupplierById(id);}
+
+    public Integer getLastSupplierID() {return supplierController.getLastSupplierID();}
+
+    public Response getSupplierNameById(Integer id) {return supplierController.getSupplierNameById(id);}
+
 
 }
-
-
