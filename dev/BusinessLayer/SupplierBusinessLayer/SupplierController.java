@@ -11,7 +11,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 
 public class SupplierController {
-//    private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
+    //    private HashMap<Integer, Supplier> suppliers; //<supplierId : Supplier>
     private final ContactDAO contactDAO;
     private final DiscountPerAmountDAO discountPerAmountDAO;
     private final SupplierProductDAO supplierProductDAO;
@@ -474,9 +474,18 @@ public class SupplierController {
         suppliersFrame.setVisible(true);
     }
 
-    public Integer getActiveSupplierById(Integer id) {return supplierDAO.getActiveSupplierById(id);}
+    public Response checkBankAccount(String bankAccount)
+    {
+        Response response = supplierDAO.searchBankAccount(bankAccount);
+        if(response.errorOccurred()) return response;
+        if(response.getAnswer())
+            return new Response("cannot add supplier, bankAccount is already exist");
+        return new Response(1);
+    }
 
-    public Integer getLastSupplierID() {return supplierDAO.getLastSupplierID();}
-
-    public Response getSupplierNameById(Integer id) {return supplierDAO.getSupplierNameById(id);}
+    public Response checkPhoneNumber(int supplierID, String phoneNumber)
+    {
+        if(contactDAO.getContactBySupplierID(supplierID, phoneNumber) != null) return new Response("This supplier already have contact with the same phone number");
+        return new Response(supplierID);
+    }
 }

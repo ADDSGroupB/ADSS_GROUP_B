@@ -15,7 +15,6 @@ public class FacadeSupplier {
     private final OrderController orderController;
     private final PeriodicOrderController periodicOrderController;
     private final AgreementDAO agreementDAO;
-
     public FacadeSupplier(){
         supplierController = new SupplierController();
         productController = new ProductController();
@@ -24,7 +23,7 @@ public class FacadeSupplier {
         agreementDAO = new AgreementDAO();
     }
 
-//    public static void main(String[] args) {
+    //    public static void main(String[] args) {
 //        FacadeSupplier facadeSupplier = new FacadeSupplier();
 //        HashMap<Integer, Order> ordersForToday = facadeSupplier.getNoneCollectedOrdersForToday(1);
 //        facadeSupplier.markOrderAsCollected(1);
@@ -184,11 +183,10 @@ public class FacadeSupplier {
         supplierController.printSuppliersGui();
     }
 
-    public Integer getActiveSupplierById(Integer id) {return supplierController.getActiveSupplierById(id);}
+    public Response checkPhoneNumber(int supplierID, String phoneNumber) { return supplierController.checkPhoneNumber(supplierID, phoneNumber); }
+    public Response checkBankAccount(String bankAccount) { return supplierController.checkBankAccount(bankAccount); }
 
-    public Integer getLastSupplierID() {return supplierController.getLastSupplierID();}
 
-    public Response getSupplierNameById(Integer id) {return supplierController.getSupplierNameById(id);}
 }
 
 
