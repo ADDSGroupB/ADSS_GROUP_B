@@ -41,6 +41,7 @@ public class Response {
     public int getSupplierId(){
         return supplierId;
     }
+    //
     public boolean getAnswer() { return answer; }
     public String getStringValue(){return stringValue;}
 }

@@ -246,7 +246,7 @@ public class SupplierDAO implements iSupplierDAO {
             suppliersIM.get(supplierID).getSupplyingProducts().get(productID).setAmount(amount);
         return supplierProductDAO.updateSupplierProductAmount(supplierID, productID, amount);
     }
-
+//
     public Integer getActiveSupplierById(Integer id) {
         if(suppliersIM.containsKey(id)) return id;
         try (PreparedStatement supplierStatement = connection.prepareStatement("SELECT * FROM supplier WHERE supplierID = ?")) {
