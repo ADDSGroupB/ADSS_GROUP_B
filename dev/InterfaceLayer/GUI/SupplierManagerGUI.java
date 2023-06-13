@@ -11,6 +11,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,16 +21,12 @@ import java.util.Objects;
 public class SupplierManagerGUI extends JFrame {
 
     private SupplierService supplierService;
-    private OrderService orderService;
     private ServiceContact serviceContact;
 
-    // --------------------------- Add New Supplier ---------------------------
-    private ArrayList<JFrame> addSupplierFrame;
     private String name;
     private String address;
     private String bankAccount;
     private ArrayList<ServiceContact> serviceContacts;
-    private ServiceAgreement serviceAgreement;
     private String paymentMethod;
     private String supplyMethod;
     private int supplyTime;
@@ -39,13 +37,10 @@ public class SupplierManagerGUI extends JFrame {
     private Pair<Double, Double> pricePair;
     //    private HashMap<Integer, Double> discounts = new HashMap<>();
     private SupplierProductService currProduct;
-
-
     // ------------------------------------------------------------------------
 
     public SupplierManagerGUI() {
         supplierService = new SupplierService();
-        orderService = new OrderService();
         serviceContact = new ServiceContact();
 
         setTitle("Supplier Manager");
@@ -96,7 +91,8 @@ public class SupplierManagerGUI extends JFrame {
     private void addNewSupplier() {
         // TODO: Test add 2 suppliers and after that try to get info from the first one.
         cleanAddNewSupplierValues();
-        addSupplierFrame = new ArrayList<>();
+        // --------------------------- Add New Supplier ---------------------------
+        ArrayList<JFrame> addSupplierFrame = new ArrayList<>();
         addSupplierFrame.add(new JFrame("Add New Supplier")); // 0
         addSupplierFrame.add(new JFrame("Add Contacts")); // 1
         addSupplierFrame.add(new JFrame("Choose Supplying Method")); // 2
@@ -113,6 +109,8 @@ public class SupplierManagerGUI extends JFrame {
             addSupplierFrame.get(i).setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             addSupplierFrame.get(i).setLocationRelativeTo(null);
         }
+
+
 
         setAddContactFrame(addSupplierFrame);
         setPaymentMethodFrame(addSupplierFrame);
@@ -181,8 +179,17 @@ public class SupplierManagerGUI extends JFrame {
         backButton.addActionListener(e -> {
             currentFrame.setVisible(false);
             backFrame.setVisible(true);
-            backFrame.pack();
         });
+
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
 
         panel.add(nameLabel);
         panel.add(nameTextField);
@@ -197,8 +204,8 @@ public class SupplierManagerGUI extends JFrame {
         currentFrame.setVisible(true);
         currentFrame.pack();
 
-//        addSupplierFrame.get(4).setVisible(true);
-//        addSupplierFrame.get(4).pack();
+//        addSupplierFrame.get(5).setVisible(true);
+//        addSupplierFrame.get(5).pack();
     }
 
 
@@ -207,6 +214,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame backFrame = addSupplierFrame.get(0);
         JFrame currentFrame = addSupplierFrame.get(1);
         JFrame nextFrame = addSupplierFrame.get(9);
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -310,6 +326,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(9);
         JFrame nextFrame = addSupplierFrame.get(2);
 
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -348,6 +373,16 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(2);
         JFrame fixedDayFrame = addSupplierFrame.get(3);
         JFrame daysAmountFrame = addSupplierFrame.get(4);
+
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 2, 10, 10));
@@ -410,6 +445,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(3);
         JFrame nextFrame = addSupplierFrame.get(5);
 
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(9, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -456,6 +500,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(4);
         JFrame nextFrame = addSupplierFrame.get(5);
 
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -499,6 +552,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame backFrame = supplyMethod.equals("FixedDay") ? addSupplierFrame.get(3) : addSupplierFrame.get(4);
         JFrame currentFrame = addSupplierFrame.get(5);
         JFrame nextFrame = addSupplierFrame.get(6);
+
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10, 10));
@@ -563,7 +625,10 @@ public class SupplierManagerGUI extends JFrame {
         JButton addProduct = new JButton("Add Product");
 //        JButton addProductDiscount = new JButton("Add Discount");
 
-        inputPanel.add(new JLabel());
+        JLabel rightClickLabel = new JLabel("Right click on product that you want add discount to");
+        rightClickLabel.setFont(rightClickLabel.getFont().deriveFont(Font.ITALIC));
+        rightClickLabel.setForeground(Color.GRAY);
+        inputPanel.add(rightClickLabel);
         inputPanel.add(addProduct);
 
         addProduct.addActionListener(e -> {
@@ -637,7 +702,7 @@ public class SupplierManagerGUI extends JFrame {
 //                    nextFrame.pack();
 //                }
 //            }
-            SupplierProductService newSupplierProduct = new SupplierProductService(productName, productID, catalogNumber, price, amount, new HashMap<Integer, Double>(), manufacturer, expirationDays, weight);
+            SupplierProductService newSupplierProduct = new SupplierProductService(productName, productID, catalogNumber, price, amount, new HashMap<>(), manufacturer, expirationDays, weight);
             items.put(productID, newSupplierProduct);
             productsTableModel.addRow(new Object[]{productName, productID, catalogNumber, price, amount, manufacturer, expirationDays, weight});
             nameTextField.setText("");
@@ -740,6 +805,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(8);
         JFrame nextFrame = addSupplierFrame.get(5);
 
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                nextFrame.setVisible(true);
+            }
+        });
+
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -839,6 +913,15 @@ public class SupplierManagerGUI extends JFrame {
         JFrame currentFrame = addSupplierFrame.get(6);
         JFrame nextFrame = addSupplierFrame.get(7);
 
+        JFrame supplierManagerFrame = this;
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                supplierManagerFrame.setVisible(true);
+            }
+        });
+
 
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(3, 2, 10, 10));
@@ -903,6 +986,14 @@ public class SupplierManagerGUI extends JFrame {
         JFrame backFrame = addSupplierFrame.get(6);
         JFrame currentFrame = addSupplierFrame.get(7);
         JFrame nextFrame = this;
+
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                nextFrame.setVisible(true);
+            }
+        });
 
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(3, 2, 10, 10));
@@ -1194,7 +1285,6 @@ public class SupplierManagerGUI extends JFrame {
         address = "";
         bankAccount = "";
         serviceContacts = new ArrayList<>();
-        serviceAgreement = null;
         paymentMethod = "";
         supplyMethod = "";
         supplyTime = 0;
