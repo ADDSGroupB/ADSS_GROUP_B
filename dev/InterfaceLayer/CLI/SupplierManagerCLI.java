@@ -429,9 +429,9 @@ public class SupplierManagerCLI {
     }
 
     private void editContacts(int id) {
-       print("Choose an action \n1. Add a contact \n2. Delete a contact \n3. Edit contact's email \n4. Edit contact's phone number");
-       int action;
-       try { action = Integer.parseInt(reader.nextLine()); }
+        print("Choose an action \n1. Add a contact \n2. Delete a contact \n3. Edit contact's email \n4. Edit contact's phone number");
+        int action;
+        try { action = Integer.parseInt(reader.nextLine()); }
         catch (NumberFormatException e) { action = 5; }
         while (action < 1 || action > 4) {
             System.out.println("Please Enter a valid number (1 to 4)");
@@ -460,7 +460,7 @@ public class SupplierManagerCLI {
         if (res.errorOccurred())
             print(res.getErrorMessage());
 
-        }
+    }
 
 
     private void editContactEmail(int id) {
@@ -474,7 +474,7 @@ public class SupplierManagerCLI {
         }
         Response res = supplierService.editSupplierContacts(id, email, newEmail, "", phoneNumber);
         if (res.errorOccurred())
-           print(res.getErrorMessage());
+            print(res.getErrorMessage());
 
     }
 
@@ -492,11 +492,11 @@ public class SupplierManagerCLI {
     public String getValidEmail(){
         print("Please enter contact's email: ");
         String email = reader.nextLine();
-       // reader.nextLine();
+        // reader.nextLine();
         while (!serviceContact.isValidEmail(email)) {
             print("not a valid email. please enter a legal email address");
             email = reader.nextLine();
-          //  reader.nextLine();
+            //  reader.nextLine();
         }
         return email;
     }
@@ -627,20 +627,20 @@ public class SupplierManagerCLI {
             keepAdding = reader.nextInt();
             reader.nextLine();
         }
-            print("Would you like to add discounts per order price and per order amount? \n1. Yes\n2. No");
-            int addDiscount = reader.nextInt();
-            reader.nextLine();
-            if (addDiscount ==1){
-                print("please enter the minimum amount you want to give a discount for, and the discount in precentage in the format : amount:discount");
-                String amountDiscount = reader.nextLine();
-                //reader.nextLine();
-                String [] arr1 = amountDiscount.split(":");
-                print("please enter the minimum order price you want to give a discount for, and the discount price in the format : price:discount price");
-                String priceDiscount = reader.nextLine();
-                String [] arr2 = priceDiscount.split(":");
-                Pair <Integer, Double> amountPair = new Pair<>(Integer.parseInt(arr1[0]), Double.parseDouble(arr1[1]));
-                Pair <Double, Double> pricePair = new Pair<>(Double.parseDouble(arr2[0]), Double.parseDouble(arr2[1]));
-                return new ServiceAgreement(paymentMethod, selfSupply, days, items,amountPair,pricePair, supplyMethod, supplyTime);
+        print("Would you like to add discounts per order price and per order amount? \n1. Yes\n2. No");
+        int addDiscount = reader.nextInt();
+        reader.nextLine();
+        if (addDiscount ==1){
+            print("please enter the minimum amount you want to give a discount for, and the discount in precentage in the format : amount:discount");
+            String amountDiscount = reader.nextLine();
+            //reader.nextLine();
+            String [] arr1 = amountDiscount.split(":");
+            print("please enter the minimum order price you want to give a discount for, and the discount price in the format : price:discount price");
+            String priceDiscount = reader.nextLine();
+            String [] arr2 = priceDiscount.split(":");
+            Pair <Integer, Double> amountPair = new Pair<>(Integer.parseInt(arr1[0]), Double.parseDouble(arr1[1]));
+            Pair <Double, Double> pricePair = new Pair<>(Double.parseDouble(arr2[0]), Double.parseDouble(arr2[1]));
+            return new ServiceAgreement(paymentMethod, selfSupply, days, items,amountPair,pricePair, supplyMethod, supplyTime);
 
         }
         return new ServiceAgreement(paymentMethod, selfSupply, days, items, supplyMethod, supplyTime);
@@ -712,7 +712,7 @@ public class SupplierManagerCLI {
             reader.nextLine();
         }
         return contactList;
-        }
+    }
 
 
 
@@ -726,6 +726,8 @@ public class SupplierManagerCLI {
             print("Not a valid phone number, please try again");
             phone = reader.nextLine();
         }
+
+
         //reader.nextLine();
         return new ServiceContact(nameC, email, phone);
 

@@ -63,4 +63,12 @@ public class SupplierProductService {
     public Double getWeight() {
         return weight;
     }
+
+    public void addDiscountPerAmount(int amount, double discount) {
+        discountPerAmount.put(amount, discount);
+    }
+    public void removeDiscountPerAmount(int amount) {
+        discountPerAmount.remove(amount);
+    }
+
 }
