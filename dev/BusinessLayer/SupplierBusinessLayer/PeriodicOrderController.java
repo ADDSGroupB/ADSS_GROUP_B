@@ -20,6 +20,10 @@ public class PeriodicOrderController {
         id = periodicOrderDAO.getLastPeriodicOrderID() + 1;
     }
 
+    public HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID) {
+        return supplierProductDAO.getAllSupplierProductsByID(supplierID);
+    }
+
     public Response createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount)
     {
         HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(supplierID);

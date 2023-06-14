@@ -2,6 +2,7 @@ package ServiceLayer.SupplierServiceLayer;
 
 import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
+import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
@@ -47,4 +48,8 @@ public class OrderService extends TimerTask {
     public Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove) { return orderService.removeProductsFromPeriodicOrder(orderID, productsToRemove); }
     public void printOrder(int supplierID) { orderService.printOrder(supplierID); }
 
+    public HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID) { return orderService.getAllSupplierProductsByID(supplierID); }
+
+    public Integer getLastSupplierID() {return orderService.getLastSupplierID();}
+    public Response getSupplierNameById(Integer id){return orderService.getSupplierNameById(id);}
 }

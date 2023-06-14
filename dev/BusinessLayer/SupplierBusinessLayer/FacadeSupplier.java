@@ -192,6 +192,8 @@ public class FacadeSupplier {
 
     public Response getSupplierNameById(Integer id) {return supplierController.getSupplierNameById(id);}
 
+    public HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID) { return periodicOrderController.getAllSupplierProductsByID(supplierID); }
+
 
     public HashMap<String, String> getContactsFromSupplier(int supplierID) {
         return supplierController.getContactsFromSupplier(supplierID);

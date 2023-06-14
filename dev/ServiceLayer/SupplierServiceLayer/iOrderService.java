@@ -2,6 +2,7 @@ package ServiceLayer.SupplierServiceLayer;
 
 import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
+import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
@@ -32,5 +33,11 @@ public interface iOrderService {
     Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove);
 
     void printOrder(int supplierID);
+
+    Integer getLastSupplierID();
+
+    Response getSupplierNameById(Integer id);
+
+    HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID);
 
 }

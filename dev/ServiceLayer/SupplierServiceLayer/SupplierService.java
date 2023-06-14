@@ -3,6 +3,7 @@ package ServiceLayer.SupplierServiceLayer;
 import BusinessLayer.SupplierBusinessLayer.FacadeSupplier;
 import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
+import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import Utillity.Response;
 
 import java.time.DayOfWeek;
@@ -119,8 +120,14 @@ public class SupplierService implements iOrderService{
 
     public Integer getActiveSupplierById(Integer id){return facadeSupplier.getActiveSupplierById(id);}
 
+    @Override
     public Integer getLastSupplierID() {return facadeSupplier.getLastSupplierID();}
+    @Override
     public Response getSupplierNameById(Integer id){return facadeSupplier.getSupplierNameById(id);}
+    @Override
+    public HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID) { return facadeSupplier.getAllSupplierProductsByID(supplierID); }
+
+
 
 
     public HashMap<String, String> getContactsFromSupplier(int supplierID) {

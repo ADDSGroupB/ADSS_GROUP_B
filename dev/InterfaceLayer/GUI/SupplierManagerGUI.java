@@ -121,9 +121,9 @@ public class SupplierManagerGUI extends JFrame {
         addSupplierFrame.add(new JFrame("Add Payment Type")); // 9
 
         for (int i = 0; i < 10; i++) {
-            SupplierFrame.get(i).setSize(400, 300);
-            SupplierFrame.get(i).setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            SupplierFrame.get(i).setLocationRelativeTo(null);
+            addSupplierFrame.get(i).setSize(400, 300);
+            addSupplierFrame.get(i).setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addSupplierFrame.get(i).setLocationRelativeTo(null);
         }
 
         setAddContactFrame(addSupplierFrame);
@@ -138,8 +138,8 @@ public class SupplierManagerGUI extends JFrame {
 
 
         JFrame backFrame = this;
-        JFrame currentFrame = SupplierFrame.get(0);
-        JFrame nextFrame = SupplierFrame.get(1);
+        JFrame currentFrame = addSupplierFrame.get(0);
+        JFrame nextFrame = addSupplierFrame.get(1);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 10, 10));
