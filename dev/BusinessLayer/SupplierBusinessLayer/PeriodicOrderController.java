@@ -53,6 +53,31 @@ public class PeriodicOrderController {
 
     public HashMap<Integer, PeriodicOrder> getAllPeriodicOrderForToday() { return periodicOrderDAO.getAllPeriodicOrderForToday(); }
 
+    public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount)
+    {
+        PeriodicOrder order = periodicOrderDAO.getPeriodicOrderByID(orderID);
+        int supplierID = order.getSupplierID();
+        int branchID = order.getBranchID();
+        HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(supplierID);
+        ArrayList<SupplierProduct> itemsInOrder = new ArrayList<>();
+        // Check if the supplier supply all the products in the list, if one of the isn't supplied by him send informing response
+        for(int productID : productsAndAmount.keySet()) {
+            SupplierProduct productInSupplier = supplierProducts.get(productID);
+            if(productInSupplier == null)
+                return new Response("The supplier with the ID: " + supplierID + " not supplying the product with the ID: " + productID);
+            SupplierProduct productInOrder = new SupplierProduct(productInSupplier);
+            productInOrder.setAmount(productsAndAmount.get(productID));
+            itemsInOrder.add(productInOrder);
+        }
+        order.setFixedDay(fixedDay);
+        PeriodicOrder updatedOrderForSupplier = new PeriodicOrder(order, itemsInOrder);
+        Response response = periodicOrderDAO.removePeriodicOrder(orderID);
+        if(response.errorOccurred()) return response;
+        response = periodicOrderDAO.addPeriodicOrder(updatedOrderForSupplier);
+        if(response.errorOccurred()) return response;
+        return new Response(updatedOrderForSupplier.getPeriodicOrderID());
+    }
+
     public Response updateProductsInPeriodicOrder(int orderID, HashMap<Integer, Integer> productsToAdd)
     {
         PeriodicOrder order = periodicOrderDAO.getPeriodicOrderByID(orderID);

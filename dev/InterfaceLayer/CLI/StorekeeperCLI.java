@@ -28,7 +28,7 @@ public class StorekeeperCLI {
 
 
 
-//    public void loadData() throws SQLException {
+    //    public void loadData() throws SQLException {
 //        System.out.println("Initializing the information in the system... ");
 //        LoadDataInventory(this.getMainController());
 //        supplierManagerCLI.loadDataSupplier();
@@ -162,21 +162,18 @@ public class StorekeeperCLI {
     public void BranchUI(Branch branch)throws SQLException {
         Scanner branchScanner = new Scanner(System.in);
         int branchChoice = 0;
-        while (branchChoice != 9) {
+        while (branchChoice != 6) {
             System.out.println("Branch Menu - Please choose one of the following options : ");
             System.out.println("1. New sale ");
             System.out.println("2. Update damaged item ");
             System.out.println("3. Print all items in store ");
             System.out.println("4. Print all items in storage ");
-            System.out.println("5. Orders"); // what we need to do here
-            System.out.println("6. Execute Periodic Orders For Today "); // ADD ITEMS
-            System.out.println("7. Execute Shortage Orders For Today "); // ADD ITEMS
-            System.out.println("8. Print branch's report history "); // ADD ITEMS
-            System.out.println("9. Exit to Storekeeper menu ");
+            System.out.println("5. Orders Menu"); // what we need to do here
+            System.out.println("6. Exit to Storekeeper menu ");
             try {
                 branchChoice = branchScanner.nextInt();
             } catch (Exception e) {
-                System.out.println("Please enter an integer between 1-9 ");
+                System.out.println("Please enter an integer between 1-6 ");
                 branchScanner.nextLine();
                 continue;
             }
@@ -316,58 +313,61 @@ public class StorekeeperCLI {
                     System.out.println("\n");
                     break;
                 }
-                case 5: { 
-                    OrdersUI(branch.getBranchID());
+                case 5: {
+                    OrdersUI(branch);
                     break;
                 }
-                case 6: {
-                    if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
-                    else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
-                    break;
-                }
-                case 7:
-                {
-                    if(LocalTime.now().isAfter(LocalTime.of(17, 0))) autoShortage();
-                    else System.out.println("Shortage Orders Will Execute Automatically at 8PM");
-                    break;
-                }
-                case 8:
-                {
-                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
-                    System.out.println(" **Orders History** \n");
-                    printOrderToBranch(branch.getBranchID());
-                    break;
-                }
-                case 9: {System.out.println("Exiting to Storekeeper menu");break;}
+                case 6: {System.out.println("Exiting to Storekeeper menu");break;}
                 default: {System.out.println("Invalid choice, please try again");break;}
             }
         }
     }
 
-    private void OrdersUI(int branchID) {
+    private void OrdersUI(Branch branch) {
         Scanner startScanner = new Scanner(System.in);
         int startChoice = 0;
         while (startChoice != 3) {
             System.out.println("Orders Menu - Please choose one of the following options : ");
             System.out.println("1. Periodic Order ");
             System.out.println("2. Existing Order ");
-            System.out.println("3. Back To Branch Menu");
+            System.out.println("3. Execute Periodic Orders For Today "); // ADD ITEMS
+            System.out.println("4. Execute Shortage Orders For Today "); // ADD ITEMS
+            System.out.println("5. Print branch's orders history "); // ADD ITEMS
+            System.out.println("6. Back To Branch Menu");
             try { startChoice = startScanner.nextInt(); }
             catch (Exception e) {
-                System.out.println("Please enter an integer between 1-3 ");
+                System.out.println("Please enter an integer between 1-6 ");
                 startScanner.nextLine();
                 continue; }
             switch (startChoice)
             {
                 case 1:{
-                    PeriodicOrderUI(branchID);
+                    PeriodicOrderUI(branch.getBranchID());
                     break;
                 }
                 case 2:{
-                    ExistingOrderUI(branchID);
+                    ExistingOrderUI(branch.getBranchID());
                     break;
                 }
-                case 3: { System.out.println("Exiting to Storekeeper menu"); break; }
+                case 3: {
+                    if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
+                    else System.out.println("Periodic Orders Will Execute Automatically at 10AM");
+                    break;
+                }
+                case 4:
+                {
+                    if(LocalTime.now().isAfter(LocalTime.of(17, 0))) autoShortage();
+                    else System.out.println("Shortage Orders Will Execute Automatically at 8PM");
+                    break;
+                }
+                case 5:
+                {
+                    System.out.println("Branch Name : " +branch.getBranchName() + ", Branch ID : " + branch.getBranchID() + "\n");
+                    System.out.println(" **Orders History** \n");
+                    printOrderToBranch(branch.getBranchID());
+                    break;
+                }
+                case 6: { System.out.println("Exiting to Storekeeper menu"); break; }
                 default: { System.out.println("Invalid choice, please try again"); break; }
             }
         }
@@ -867,70 +867,70 @@ public class StorekeeperCLI {
                         System.out.println("Defective Items Report has not been created yet");
                         break;
                     }
-                        Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
-                        allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
-                        if (allDefectiveReports != null) {
-                            List<Item> allItemsInReports = new ArrayList<>();
-                            for (DefectiveProductsReport defectiveProductsReport : allDefectiveReports.values()) {
-                                if (defectiveProductsReport.getBranchID() == branch.getBranchID()) {
-                                    List<Item> currItemsInReport = defectiveProductsReport.getDefectiveOrExpiredProducts(defectiveProductsReport.getReportID());
-                                    allItemsInReports.addAll(currItemsInReport);
-                                }
+                    Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
+                    allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
+                    if (allDefectiveReports != null) {
+                        List<Item> allItemsInReports = new ArrayList<>();
+                        for (DefectiveProductsReport defectiveProductsReport : allDefectiveReports.values()) {
+                            if (defectiveProductsReport.getBranchID() == branch.getBranchID()) {
+                                List<Item> currItemsInReport = defectiveProductsReport.getDefectiveOrExpiredProducts(defectiveProductsReport.getReportID());
+                                allItemsInReports.addAll(currItemsInReport);
                             }
-                            for (Item item : defectiveItems)
-                            {
-                                boolean check = false;
-                                if (allItemsInReports.size() > 0) {
-                                    for (Item item1 : allItemsInReports)
-                                    {
-                                        if (item1.getItemID() == item.getItemID())
-                                        {
-                                            check = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!check)
-                                    {
-                                        report.addDefectiveItem(item);
-                                    }
-                                }
-                                else {report.addDefectiveItem(item);}
-                            }
-                            for (Item item : expiredItems) {
-                                boolean check = false;
-                                if (allItemsInReports.size()>0) {
-                                    for (Item item1 : allItemsInReports) {
-                                        if (item1.getItemID() == item.getItemID()) {
-                                            check = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!check) {
-                                        report.addDefectiveItem(item);
-                                    }
-                                }
-                                else {report.addDefectiveItem(item);}
-                            }
-                            branch.getBranchReportManager().addNewReport(report);
-                            mainController.getReportDao().addReport(report);
-                            System.out.println("Adding items to the report has been successfully completed");
-                            break;
                         }
-                        else
+                        for (Item item : defectiveItems)
                         {
-                            for (Item item : defectiveItems)
-                            {
-                                report.addDefectiveItem(item);
+                            boolean check = false;
+                            if (allItemsInReports.size() > 0) {
+                                for (Item item1 : allItemsInReports)
+                                {
+                                    if (item1.getItemID() == item.getItemID())
+                                    {
+                                        check = true;
+                                        break;
+                                    }
+                                }
+                                if (!check)
+                                {
+                                    report.addDefectiveItem(item);
+                                }
                             }
-                            for (Item item : expiredItems)
-                            {
-                                report.addDefectiveItem(item);
-                            }
-                            branch.getBranchReportManager().addNewReport(report);
-                            mainController.getReportDao().addReport(report);
-                            System.out.println("Adding items to the report has been successfully completed");
-                            break;
+                            else {report.addDefectiveItem(item);}
                         }
+                        for (Item item : expiredItems) {
+                            boolean check = false;
+                            if (allItemsInReports.size()>0) {
+                                for (Item item1 : allItemsInReports) {
+                                    if (item1.getItemID() == item.getItemID()) {
+                                        check = true;
+                                        break;
+                                    }
+                                }
+                                if (!check) {
+                                    report.addDefectiveItem(item);
+                                }
+                            }
+                            else {report.addDefectiveItem(item);}
+                        }
+                        branch.getBranchReportManager().addNewReport(report);
+                        mainController.getReportDao().addReport(report);
+                        System.out.println("Adding items to the report has been successfully completed");
+                        break;
+                    }
+                    else
+                    {
+                        for (Item item : defectiveItems)
+                        {
+                            report.addDefectiveItem(item);
+                        }
+                        for (Item item : expiredItems)
+                        {
+                            report.addDefectiveItem(item);
+                        }
+                        branch.getBranchReportManager().addNewReport(report);
+                        mainController.getReportDao().addReport(report);
+                        System.out.println("Adding items to the report has been successfully completed");
+                        break;
+                    }
                 }
                 case 2:{
                     if (branch.getBranchReportManager().getCurrentDefectiveReport() != null) {
@@ -1120,7 +1120,7 @@ public class StorekeeperCLI {
             System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
         }
     }
-//    public static void LoadDataInventory(MainController mainController) throws SQLException
+    //    public static void LoadDataInventory(MainController mainController) throws SQLException
 //    {
 //        ProductsDao productsDao = mainController.getProductsDao();
 //        ItemsDao itemsDao = mainController.getItemsDao();

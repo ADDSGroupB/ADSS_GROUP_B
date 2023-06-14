@@ -16,12 +16,20 @@ public class BranchController {
     public Branch createNewBranch(String newBranchName) throws SQLException {
         return mainController.getBranchesDao().addBranch(newBranchName);
     }
-    public List<Branch> getAllBranchesController() throws SQLException
+    public List<Branch> getAllBranchesController()
     {
-        return mainController.getBranchesDao().getAllBranches();
+        try {
+            return mainController.getBranchesDao().getAllBranches();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public Branch getBranchID(int branchID) throws SQLException {
-        return mainController.getBranchesDao().getBranchByID(branchID);
+    public Branch getBranchID(int branchID) {
+        try {
+            return mainController.getBranchesDao().getBranchByID(branchID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
