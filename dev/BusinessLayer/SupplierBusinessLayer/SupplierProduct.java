@@ -1,6 +1,7 @@
 package BusinessLayer.SupplierBusinessLayer;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SupplierProduct
 {
@@ -152,6 +153,17 @@ public class SupplierProduct
         return catalogID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SupplierProduct)) return false;
+        SupplierProduct that = (SupplierProduct) o;
+        return productID == that.productID;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(productID);
+    }
 }
 

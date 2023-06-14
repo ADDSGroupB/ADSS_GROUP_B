@@ -200,4 +200,9 @@ public class FacadeSupplier {
     }
 
     public void orderViaGui() {orderController.orderViaGui();}
+
+    public HashMap<Integer, PeriodicOrder> getPeriodicOrdersToBranch(int branchID){ return periodicOrderController.getPeriodicOrdersToBranch(branchID); }
+    public PeriodicOrder getPeriodicOrderByID(int orderID) { return periodicOrderController.getPeriodicOrderByID(orderID); }
+
+    public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return periodicOrderController.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
 }

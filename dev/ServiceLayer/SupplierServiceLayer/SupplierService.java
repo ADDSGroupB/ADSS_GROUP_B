@@ -134,4 +134,10 @@ public class SupplierService implements iOrderService{
         return facadeSupplier.getContactsFromSupplier(supplierID);
     }
     public void orderViaGui(){facadeSupplier.orderViaGui();}
+    @Override
+    public HashMap<Integer, PeriodicOrder> getPeriodicOrdersToBranch(int branchID){ return facadeSupplier.getPeriodicOrdersToBranch(branchID); }
+    @Override
+    public PeriodicOrder getPeriodicOrderByID(int orderID) { return facadeSupplier.getPeriodicOrderByID(orderID); }
+    @Override
+    public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
 }

@@ -1,7 +1,7 @@
 package BusinessLayer.InventoryBusinessLayer;
 
 public class Branch {
-    private final int BranchID;
+    private int BranchID;
     private String BranchName;
     private static int MinItemsInShelf = 20;
     private static int MaxItemsInShelf = 50;
@@ -13,6 +13,8 @@ public class Branch {
         this.BranchName = name;// get
         this.branchReportManager = new BranchReportManager();// get
     }
+
+//    public void setBranchID(int branchID) { this.BranchID = branchID;}
     @Override
     public String toString(){
         return "** BranchID : " + BranchID + " ** " + "Branch Name: " + BranchName + " **\n";

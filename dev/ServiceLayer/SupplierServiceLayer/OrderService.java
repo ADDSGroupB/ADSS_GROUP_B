@@ -52,4 +52,7 @@ public class OrderService extends TimerTask {
 
     public Integer getLastSupplierID() {return orderService.getLastSupplierID();}
     public Response getSupplierNameById(Integer id){return orderService.getSupplierNameById(id);}
+    public HashMap<Integer, PeriodicOrder> getPeriodicOrdersToBranch(int branchID){ return orderService.getPeriodicOrdersToBranch(branchID); }
+    public PeriodicOrder getPeriodicOrderByID(int orderID) { return orderService.getPeriodicOrderByID(orderID); }
+    public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return orderService.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
 }

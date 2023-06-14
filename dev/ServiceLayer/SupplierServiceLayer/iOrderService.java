@@ -40,4 +40,9 @@ public interface iOrderService {
 
     HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID);
 
+    HashMap<Integer, PeriodicOrder> getPeriodicOrdersToBranch(int branchID);
+
+    PeriodicOrder getPeriodicOrderByID(int orderID);
+
+    Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount);
 }
