@@ -494,4 +494,15 @@ public class SupplierController {
     public Integer getLastSupplierID() {return supplierDAO.getLastSupplierID();}
 
     public Response getSupplierNameById(Integer id) {return supplierDAO.getSupplierNameById(id);}
+
+    public HashMap<String, String> getContactsFromSupplier(int supplierID) {
+        HashMap<String, String> con = new HashMap<>();
+        Supplier supplier = getSupllierByID(supplierID);
+        ArrayList<Contact> supplierContacts = supplier.getContacts();
+        for(Contact c: supplierContacts){
+            con.put(c.getName().concat("$").concat(c.getEmail()), c.getPhoneNumber());
+        }
+        return con;
+    }
+
 }

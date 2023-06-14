@@ -33,6 +33,10 @@ public class ServiceContact {
         return phoneNumber;
     }
 
+    public void setPhoneNumber(String newPhone){
+        this.phoneNumber = newPhone;
+    }
+
 
     public  boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+

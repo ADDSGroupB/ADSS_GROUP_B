@@ -32,4 +32,5 @@ public interface iOrderService {
     Response removeProductsFromPeriodicOrder(int orderID, ArrayList<Integer> productsToRemove);
 
     void printOrder(int supplierID);
+
 }

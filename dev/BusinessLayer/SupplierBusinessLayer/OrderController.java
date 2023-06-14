@@ -345,4 +345,5 @@ public class OrderController {
     }
 
 
+    public void orderViaGui() {orderViaGui();}
 }

@@ -1,5 +1,6 @@
 package InterfaceLayer.GUI;
 
+import BusinessLayer.SupplierBusinessLayer.Order;
 import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Pair;
 import Utillity.Response;
@@ -9,12 +10,14 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.Map;
 
 public class SupplierManagerGUI extends JFrame {
 
@@ -23,7 +26,7 @@ public class SupplierManagerGUI extends JFrame {
     private ServiceContact serviceContact;
 
     // --------------------------- Add New Supplier ---------------------------
-    private ArrayList<JFrame> addSupplierFrame;
+    private ArrayList<JFrame> SupplierFrame;
     private String name;
     private String address;
     private String bankAccount;
@@ -40,7 +43,6 @@ public class SupplierManagerGUI extends JFrame {
     //    private HashMap<Integer, Double> discounts = new HashMap<>();
     private SupplierProductService currProduct;
 
-
     // ------------------------------------------------------------------------
 
     public SupplierManagerGUI() {
@@ -48,6 +50,7 @@ public class SupplierManagerGUI extends JFrame {
         orderService = new OrderService();
         serviceContact = new ServiceContact();
 
+        JFrame currentFrame = this;
         setTitle("Supplier Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
@@ -67,18 +70,28 @@ public class SupplierManagerGUI extends JFrame {
         });
 
         JButton deleteSupplierButton = new JButton("Delete Supplier");
-        deleteSupplierButton.addActionListener(e -> deleteSupplier());
+        deleteSupplierButton.addActionListener(e -> {
+            deleteSupplier(currentFrame);
+            this.setVisible(false);
+
+        });
 
         JButton editSupplierButton = new JButton("Edit Supplier's information");
-        editSupplierButton.addActionListener(e -> editSupplier());
+        editSupplierButton.addActionListener(e -> {
+            editSupplier(currentFrame);
+            this.setVisible(false);
+        });
 
         JButton printSuppliersButton = new JButton("Print suppliers");
         printSuppliersButton.addActionListener(e -> printSuppliersGui());
 
         JButton supplierOrderHistoryButton = new JButton("Show Supplier Order History");
-        supplierOrderHistoryButton.addActionListener(e -> supplierOrderHistory());
+        supplierOrderHistoryButton.addActionListener(e ->{
+            supplierOrderHistory(currentFrame);
+            this.setVisible(false);
+        });
 
-        JButton backButton = new JButton("Back To Main Menu");
+        JButton backButton = new JButton("EXIT");
         backButton.addActionListener(e -> dispose());
 
         panel.add(titleLabel);
@@ -96,38 +109,38 @@ public class SupplierManagerGUI extends JFrame {
     private void addNewSupplier() {
         // TODO: Test add 2 suppliers and after that try to get info from the first one.
         cleanAddNewSupplierValues();
-        addSupplierFrame = new ArrayList<>();
-        addSupplierFrame.add(new JFrame("Add New Supplier")); // 0
-        addSupplierFrame.add(new JFrame("Add Contacts")); // 1
-        addSupplierFrame.add(new JFrame("Choose Supplying Method")); // 2
-        addSupplierFrame.add(new JFrame("Choose Days To Supply - Fixed Days")); // 3
-        addSupplierFrame.add(new JFrame("Choose Days To Supply - Days Amount")); // 4
-        addSupplierFrame.add(new JFrame("Add Items To The Agreement")); // 5
-        addSupplierFrame.add(new JFrame("Add Amount Discount To The Agreement")); // 6
-        addSupplierFrame.add(new JFrame("Add Price Discount To The Agreement")); // 7
-        addSupplierFrame.add(new JFrame("Add Product Discount")); // 8
-        addSupplierFrame.add(new JFrame("Add Payment Type")); // 9
+        SupplierFrame = new ArrayList<>();
+        SupplierFrame.add(new JFrame("Add New Supplier")); // 0
+        SupplierFrame.add(new JFrame("Add Contacts")); // 1
+        SupplierFrame.add(new JFrame("Choose Supplying Method")); // 2
+        SupplierFrame.add(new JFrame("Choose Days To Supply - Fixed Days")); // 3
+        SupplierFrame.add(new JFrame("Choose Days To Supply - Days Amount")); // 4
+        SupplierFrame.add(new JFrame("Add Items To The Agreement")); // 5
+        SupplierFrame.add(new JFrame("Add Amount Discount To The Agreement")); // 6
+        SupplierFrame.add(new JFrame("Add Price Discount To The Agreement")); // 7
+        SupplierFrame.add(new JFrame("Add Product Discount")); // 8
+        SupplierFrame.add(new JFrame("Add Payment Type")); // 9
 
         for (int i = 0; i < 10; i++) {
-            addSupplierFrame.get(i).setSize(400, 300);
-            addSupplierFrame.get(i).setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            addSupplierFrame.get(i).setLocationRelativeTo(null);
+            SupplierFrame.get(i).setSize(400, 300);
+            SupplierFrame.get(i).setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            SupplierFrame.get(i).setLocationRelativeTo(null);
         }
 
-        setAddContactFrame(addSupplierFrame);
-        setPaymentMethodFrame(addSupplierFrame);
-        setSupplyingMethodFrame(addSupplierFrame);
-        setFixedDaysFrame(addSupplierFrame);
-        setDaysAmountFrame(addSupplierFrame);
-        setSAddItemsFrame(addSupplierFrame);
-        setDiscountFrame(addSupplierFrame);
-        setAddAmountDiscountFrame(addSupplierFrame);
-        setAddPriceDiscountFrame(addSupplierFrame);
+        setAddContactFrame(SupplierFrame);
+        setPaymentMethodFrame(SupplierFrame);
+        setSupplyingMethodFrame(SupplierFrame);
+        setFixedDaysFrame(SupplierFrame);
+        setDaysAmountFrame(SupplierFrame);
+        setSAddItemsFrame(SupplierFrame);
+        setDiscountFrame(SupplierFrame);
+        setAddAmountDiscountFrame(SupplierFrame);
+        setAddPriceDiscountFrame(SupplierFrame);
 
 
         JFrame backFrame = this;
-        JFrame currentFrame = addSupplierFrame.get(0);
-        JFrame nextFrame = addSupplierFrame.get(1);
+        JFrame currentFrame = SupplierFrame.get(0);
+        JFrame nextFrame = SupplierFrame.get(1);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 10, 10));
@@ -181,7 +194,7 @@ public class SupplierManagerGUI extends JFrame {
         backButton.addActionListener(e -> {
             currentFrame.setVisible(false);
             backFrame.setVisible(true);
-            backFrame.pack();
+         //   backFrame.pack();
         });
 
         panel.add(nameLabel);
@@ -972,7 +985,7 @@ public class SupplierManagerGUI extends JFrame {
         currentFrame.getContentPane().add(inputPanel);
     }
 
-    private void deleteSupplier() {
+    private void deleteSupplier(JFrame frame) {
         JFrame f = new JFrame("Delete Supplier");
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Container c = f.getContentPane();
@@ -991,15 +1004,22 @@ public class SupplierManagerGUI extends JFrame {
         c.add(scrollPane, BorderLayout.CENTER);
 
         JButton deleteButton = new JButton("Delete");
-        c.add(deleteButton, BorderLayout.SOUTH);
+        JButton backButton = new JButton("Back"); // Add the back button
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout()); // Set the layout to FlowLayout
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(backButton); // Add both buttons to the panel
+
+        c.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel to the south side of the layout
 
         int i = supplierService.getLastSupplierID();
         if (i != -1) {
             for (int j = 1; j <= i; j++) {
                 Response res = supplierService.getSupplierNameById(j);
                 if (res != null) {
-                    if(res.getAnswer()) {
-                        Object[] rowData = {j, res.getStringValue()};
+                    if (res.getAnswer()) {
+                        Object[] rowData = { j, res.getStringValue() };
                         model.addRow(rowData);
                     }
                 }
@@ -1019,6 +1039,11 @@ public class SupplierManagerGUI extends JFrame {
             }
         });
 
+        backButton.addActionListener(e -> {
+            f.dispose();
+            frame.setVisible(true); // Close the current frame
+        });
+
         f.setSize(400, 300);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
@@ -1026,7 +1051,8 @@ public class SupplierManagerGUI extends JFrame {
 
 
 
-    private void editSupplier() {
+
+    private void editSupplier(JFrame prev) {
         JFrame f = new JFrame("Edit Supplier");
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Container c = f.getContentPane();
@@ -1044,11 +1070,28 @@ public class SupplierManagerGUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         c.add(scrollPane, BorderLayout.CENTER);
 
+        JButton back = new JButton("Back");
         JButton editPersonalDetailsButton = new JButton("Edit Supplier Personal Details");
         JButton editAgreementButton = new JButton("Edit Supplier Agreement");
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(editPersonalDetailsButton);
-        buttonPanel.add(editAgreementButton);
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        buttonPanel.add(editPersonalDetailsButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        buttonPanel.add(editAgreementButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        buttonPanel.add(back, gbc);
+
         c.add(buttonPanel, BorderLayout.SOUTH);
 
         int i = supplierService.getLastSupplierID();
@@ -1063,6 +1106,7 @@ public class SupplierManagerGUI extends JFrame {
         }
 
         editPersonalDetailsButton.addActionListener(e -> {
+//            this.setVisible(false);
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
@@ -1071,13 +1115,15 @@ public class SupplierManagerGUI extends JFrame {
                 String selectedName = (String) table.getValueAt(selectedRow, 1);
 
                 // Call the editSupplierPersonalDetails() method with the selected ID
-                editSupplierPersonalDetails(selectedID);
+                f.dispose();
+                editSupplierPersonalDetails(selectedID, prev, f);
 
                 //JOptionPane.showMessageDialog(f, "Editing supplier's personal details with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
         editAgreementButton.addActionListener(e -> {
+            this.setVisible(false);
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
@@ -1086,10 +1132,16 @@ public class SupplierManagerGUI extends JFrame {
                 String selectedName = (String) table.getValueAt(selectedRow, 1);
 
                 // Call the editSupplierAgreement() method with the selected ID
-                editSupplierAgreement(selectedID);
+                f.dispose();
+                editSupplierAgreement(selectedID, prev, f);
 
                 JOptionPane.showMessageDialog(f, "Editing supplier's agreement with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
             }
+        });
+
+        back.addActionListener(e -> {
+            prev.setVisible(true);
+            f.dispose();
         });
 
         f.setSize(400, 300);
@@ -1097,7 +1149,10 @@ public class SupplierManagerGUI extends JFrame {
         f.setVisible(true);
     }
 
-    private void editSupplierPersonalDetails(int supplierID) {
+
+
+
+    private void editSupplierPersonalDetails(int supplierID, JFrame prevprev, JFrame prev) {
         JFrame f = new JFrame("Edit Supplier Personal Details");
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         f.revalidate();
@@ -1109,16 +1164,23 @@ public class SupplierManagerGUI extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
         JButton editContactButton = new JButton("Edit Supplier Contact");
-        editContactButton.addActionListener(e -> editSupplierContact(supplierID));
+        editContactButton.addActionListener(e -> editSupplierContact(supplierID, f));
 
         JButton editNameButton = new JButton("Edit Supplier Name");
-        editNameButton.addActionListener(e -> editSupplierName(supplierID));
+        editNameButton.addActionListener(e -> editSupplierName(supplierID, f));
 
         JButton editAddressButton = new JButton("Edit Supplier Address");
-        editAddressButton.addActionListener(e -> editSupplierAddress(supplierID));
+        editAddressButton.addActionListener(e -> editSupplierAddress(supplierID, f));
 
         JButton editBankAccountButton = new JButton("Edit Supplier Bank Account");
-        editBankAccountButton.addActionListener(e -> editSupplierBankAccount(supplierID));
+        editBankAccountButton.addActionListener(e -> editSupplierBankAccount(supplierID, f));
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            f.dispose();
+            prev.setVisible(true);
+//            editSupplier(this); // Go back to the editSupplier function
+        });
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -1143,29 +1205,358 @@ public class SupplierManagerGUI extends JFrame {
         constraints.gridx = 1;
         c.add(editBankAccountButton, constraints);
 
-        f.setSize(400, 300);
+        constraints.gridy = 3;
+        constraints.gridx = 0;
+        constraints.gridwidth = 2;
+        c.add(backButton, constraints);
+
+        f.setSize(400, 350); // Increased height to accommodate the "Back" button
         f.setLocationRelativeTo(null);
         f.setVisible(true);
     }
 
 
+    private void editSupplierBankAccount(int supplierID, JFrame prev) {
+        JFrame frame = new JFrame("Change Supplier Bank Account");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-    private void editSupplierBankAccount(int supplierID) {
+        JLabel label = new JLabel("Enter new bank account for the supplier:");
+        JTextField bankAccountFiled = new JTextField();
+        setFormatExample(bankAccountFiled, "6-9 digits");
+
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(e -> {
+            String newBankAccount = bankAccountFiled.getText();
+
+            // Validate the new name using regular expression
+            if (!checkBankAccountValidation(newBankAccount)) {
+                JOptionPane.showMessageDialog(frame, "Invalid bank account. Please enter a bank account containing only digits.", "Invalid bank account", JOptionPane.ERROR_MESSAGE);
+                return; // Stop further execution
+            }
+
+            Response res = supplierService.changeSupplierBankAccount(supplierID, newBankAccount);
+            if (res.errorOccurred()) {
+                JOptionPane.showMessageDialog(frame, "Something went wrong. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String successMessage = "The bank account of the supplier with ID " + supplierID + " has been changed to '" + newBankAccount + "' successfully.";
+                JOptionPane.showMessageDialog(frame, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
+                frame.dispose(); // Close the frame
+                editSupplier(this); // Return to the editSupplier function
+            }
+        });
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            prev.setVisible(true);
+
+
+//            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
+        });
+
+        bankAccountFiled.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    saveButton.doClick(); // Trigger the save button action
+                }
+            }
+        });
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+        panel.add(bankAccountFiled);
+        panel.add(saveButton);
+        panel.add(backButton);
+
+        frame.getContentPane().add(panel);
+        frame.setSize(400, 200);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    private void editSupplierAddress(int supplierID) {
+    private void editSupplierAddress(int supplierID, JFrame prev) {
+        JFrame frame = new JFrame("Change Supplier address");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        JLabel label = new JLabel("Enter new address for the supplier:");
+        JTextField addressFiled = new JTextField();
+        setFormatExample(addressFiled, "Beer sheva");
+
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(e -> {
+            String newAddress = addressFiled.getText();
+
+            // Validate the new name using regular expression
+            if (!newAddress.matches("^[a-zA-Z]+( [a-zA-Z]+)?$")) {
+                JOptionPane.showMessageDialog(frame, "Invalid address. Please enter a adsress containing only letters.", "Invalid address", JOptionPane.ERROR_MESSAGE);
+                return; // Stop further execution
+            }
+
+            Response res = supplierService.changeAddress(supplierID, newAddress);
+            if (res.errorOccurred()) {
+                JOptionPane.showMessageDialog(frame, "Something went wrong. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String successMessage = "The address of the supplier with ID " + supplierID + " has been changed to '" + newAddress + "' successfully.";
+                JOptionPane.showMessageDialog(frame, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
+                frame.dispose(); // Close the frame
+            }
+        });
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            prev.setVisible(true);
+
+//            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
+        });
+
+        addressFiled.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    saveButton.doClick(); // Trigger the save button action
+                }
+            }
+        });
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+        panel.add(addressFiled);
+        panel.add(saveButton);
+        panel.add(backButton);
+
+        frame.getContentPane().add(panel);
+        frame.setSize(400, 200);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    private void editSupplierName(int supplierID) {
+    private void editSupplierName(int supplierID, JFrame prev) {
+        JFrame frame = new JFrame("Change Supplier Name");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        JLabel label = new JLabel("Enter new name for the supplier:");
+        JTextField nameFiled = new JTextField();
+        setFormatExample(nameFiled, "Israel Israeli");
+
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(e -> {
+            String newName = nameFiled.getText();
+
+            // Validate the new name using regular expression
+            if (!newName.matches("^[a-zA-Z]+( [a-zA-Z]+)?$")) {
+                JOptionPane.showMessageDialog(frame, "Invalid name. Please enter a name containing only letters.", "Invalid Name", JOptionPane.ERROR_MESSAGE);
+                return; // Stop further execution
+            }
+
+            Response res = supplierService.changeSupplierName(supplierID, newName);
+            if (res.errorOccurred()) {
+                JOptionPane.showMessageDialog(frame, "Something went wrong. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String successMessage = "The name of the supplier with ID " + supplierID + " has been changed to '" + newName + "' successfully.";
+                JOptionPane.showMessageDialog(frame, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
+                frame.dispose(); // Close the frame
+            }
+        });
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            prev.setVisible(true);
+
+//            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
+        });
+
+        nameFiled.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    saveButton.doClick(); // Trigger the save button action
+                }
+            }
+        });
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+        panel.add(nameFiled);
+        panel.add(saveButton);
+        panel.add(backButton);
+
+        frame.getContentPane().add(panel);
+        frame.setSize(400, 200);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    private void editSupplierContact(int supplierID) {
 
+
+    private void editSupplierContact(int supplierID, JFrame prev) {
+        serviceContacts = new ArrayList<>();
+        JFrame frame = new JFrame("Change Supplier Contacts");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        DefaultTableModel contactTableModel = new DefaultTableModel();
+        contactTableModel.addColumn("Name");
+        contactTableModel.addColumn("Email");
+        contactTableModel.addColumn("Phone Number");
+        JTable contactTable = new JTable(contactTableModel);
+        HashMap<String, String> contactInfo = supplierService.getContactsFromSupplier(supplierID);
+        for (Map.Entry<String, String> entry : contactInfo.entrySet()) {
+            String key = entry.getKey();
+            String name = key.split("\\$")[0];
+            String email = key.split("\\$")[1];
+            String phoneNumber = entry.getValue();
+
+            contactTableModel.addRow(new Object[]{name, email, phoneNumber});
+            ServiceContact contact = new ServiceContact(name, email, phoneNumber);
+            serviceContacts.add(contact);
+        }
+        JScrollPane scrollPane = new JScrollPane(contactTable);
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+
+        // Right-click menu for contacts
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem removeMenuItem = new JMenuItem("Remove Contact");
+        JMenuItem editPhoneMenuItem = new JMenuItem("Edit Phone Number");
+        popupMenu.add(removeMenuItem);
+        popupMenu.add(editPhoneMenuItem);
+
+        removeMenuItem.addActionListener(e -> {
+            int selectedRow = contactTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String currentPhone = (String) contactTableModel.getValueAt(selectedRow, 2);
+                int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to remove this contact?", "Remove Contact", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    contactTableModel.removeRow(selectedRow);
+                    serviceContacts.remove(selectedRow);
+                    supplierService.removeSupplierContact(supplierID, currentPhone);
+                }
+            }
+        });
+
+        editPhoneMenuItem.addActionListener(e -> {
+            int selectedRow = contactTable.getSelectedRow();
+            if (selectedRow != -1) {
+//              String cNmae = (String) contactTableModel.getValueAt(selectedRow, 0);
+                String currentPhone = (String) contactTableModel.getValueAt(selectedRow, 2);
+                String currentEmail = (String) contactTableModel.getValueAt(selectedRow, 1);
+                String newPhone = JOptionPane.showInputDialog(frame, "Enter new phone number:", currentPhone);
+                if (newPhone != null) {
+                    contactTableModel.setValueAt(newPhone, selectedRow, 2);
+                    supplierService.editSupplierContacts(supplierID, currentEmail, "", newPhone, currentPhone);
+                    System.out.println(currentPhone);
+                    System.out.println(newPhone);
+                }
+            }
+        });
+
+        contactTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int row = contactTable.rowAtPoint(e.getPoint());
+                    contactTable.getSelectionModel().setSelectionInterval(row, row);
+                    popupMenu.show(contactTable, e.getX(), e.getY());
+                }
+            }
+        });
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(4, 2, 10, 10));
+
+        JLabel nameLabel = new JLabel("Contact Name:");
+        JTextField nameTextField = new JTextField();
+
+        JLabel emailLabel = new JLabel("Contact Email:");
+        JTextField emailTextField = new JTextField();
+        setFormatExample(emailTextField, "____@___.___");
+
+        JLabel phoneNumberLabel = new JLabel("Contact Phone Number:");
+        JTextField phoneNumberTextField = new JTextField();
+        setFormatExample(phoneNumberTextField, "05_-_______");
+
+        JButton addAnotherContact = new JButton("Add Contact");
+
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameTextField);
+        inputPanel.add(emailLabel);
+        inputPanel.add(emailTextField);
+        inputPanel.add(phoneNumberLabel);
+        inputPanel.add(phoneNumberTextField);
+        inputPanel.add(new JLabel());
+        inputPanel.add(addAnotherContact);
+
+
+        addAnotherContact.addActionListener(e -> {
+            if (nameTextField.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "You must enter name, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!serviceContact.isValidEmail(emailTextField.getText())) {
+                JOptionPane.showMessageDialog(null, "Not a valid email, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!serviceContact.validatePhoneNumber(phoneNumberTextField.getText())) {
+                JOptionPane.showMessageDialog(null, "Not a valid phone number, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            for (int row = 0; row < contactTableModel.getRowCount(); row++) {
+                Object value = contactTableModel.getValueAt(row, 2);
+                if (value != null && value.toString().equals(phoneNumberTextField.getText())) {
+                    JOptionPane.showMessageDialog(null, "You already added this phone number, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+            ServiceContact newContact = new ServiceContact(nameTextField.getText(), emailTextField.getText(), phoneNumberTextField.getText());
+            System.out.println(nameTextField.getText());
+            serviceContacts.add(newContact);
+            System.out.println(newContact.getName());
+            contactTableModel.addRow(new Object[]{newContact.getName(), newContact.getEmail(), newContact.getPhoneNumber()});
+            supplierService.addContactsTOSupplier(supplierID, newContact.getName(), newContact.getEmail(), newContact.getPhoneNumber());
+        });
+
+
+        JButton nextButton = new JButton("Next");
+        nextButton.addActionListener(e -> {
+            if (serviceContacts.size() < 1) {
+                JOptionPane.showMessageDialog(null, "You must add at least one contact", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            // Add your code for handling the next steps here
+            frame.dispose(); // Close the current frame
+            prev.setVisible(true);
+        });
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            frame.dispose(); // Close the current frame
+            prev.setVisible(true);
+
+        });
+
+        JPanel backNextPanel = new JPanel();
+        backNextPanel.setLayout(new GridLayout(1, 2, 10, 10));
+        backNextPanel.add(backButton);
+        backNextPanel.add(nextButton);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(backNextPanel, BorderLayout.SOUTH);
+
+        // Create a new JFrame and set the panel as its content
+        frame.getContentPane().add(panel);
+        frame.setSize(500, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    private void editSupplierAgreement(int supplierID) {
+
+
+
+    private void editSupplierAgreement(int supplierID, JFrame prevprev, JFrame prev) {
         // Add your logic for editing supplier's agreement details based on the supplierID
         // You can use JOptionPane or other GUI components to gather user input
         // Example:
@@ -1178,9 +1569,74 @@ public class SupplierManagerGUI extends JFrame {
         supplierService.printSuppliersGui();
     }
 
-    private void supplierOrderHistory() {
-        // Implementation of the supplierOrderHistory method for the GUI
+    private void supplierOrderHistory(JFrame frame) {
+        JFrame f = new JFrame("Order History");
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Container c = f.getContentPane();
+        c.setLayout(new BorderLayout());
+
+        JLabel type = new JLabel("Please select the ID of the supplier you want to show his order history:");
+        c.add(type, BorderLayout.NORTH);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Name");
+        // Add more columns as needed for additional supplier data
+
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        c.add(scrollPane, BorderLayout.CENTER);
+
+        JButton showOrders = new JButton("Show Orders");
+        JButton backButton = new JButton("Back"); // Add the back button
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout()); // Set the layout to FlowLayout
+        buttonPanel.add(showOrders);
+        buttonPanel.add(backButton); // Add both buttons to the panel
+
+        c.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel to the south side of the layout
+
+        int i = supplierService.getLastSupplierID();
+        if (i != -1) {
+            for (int j = 1; j <= i; j++) {
+                Response res = supplierService.getSupplierNameById(j);
+                if (res != null) {
+                    if (res.getAnswer()) {
+                        Object[] rowData = { j, res.getStringValue() };
+                        model.addRow(rowData);
+                    }
+                }
+            }
+        }
+
+        showOrders.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                int selectedID = (int) table.getValueAt(selectedRow, 0);
+                String selectedName = (String) table.getValueAt(selectedRow, 1);
+                HashMap<Integer, Order> orders = supplierService.getOrdersFromSupplier(selectedID);
+                for (Map.Entry<Integer, Order> entry : orders.entrySet()) {
+                    Integer orderId = entry.getKey();
+                    Order order = entry.getValue();
+                    order.orderViaGui();
+                }
+            }
+        });
+
+        backButton.addActionListener(e -> {
+            f.dispose();
+            frame.setVisible(true); // Close the current frame
+        });
+
+        f.setSize(400, 300);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
     }
+
+
 
     public boolean checkBankAccountValidation(String input) {
         String pattern = "^\\d{6,9}$";
@@ -1205,6 +1661,7 @@ public class SupplierManagerGUI extends JFrame {
         pricePair = null;
 //        discounts = new HashMap<>();
     }
+
 
 //    public static void main(String[] args) {
 //        SwingUtilities.invokeLater(() -> {

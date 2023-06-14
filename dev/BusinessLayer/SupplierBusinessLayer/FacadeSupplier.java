@@ -193,4 +193,9 @@ public class FacadeSupplier {
     public Response getSupplierNameById(Integer id) {return supplierController.getSupplierNameById(id);}
 
 
+    public HashMap<String, String> getContactsFromSupplier(int supplierID) {
+        return supplierController.getContactsFromSupplier(supplierID);
+    }
+
+    public void orderViaGui() {orderController.orderViaGui();}
 }

@@ -84,7 +84,23 @@ public class Order {
         s.append("Total price before discount: ").append(String.format("%.2f", totalPriceBeforeDiscount)).append("\n");
         s.append("Total price after discount: ").append(String.format("%.2f", totalPriceAfterDiscount)).append("\n");
         return s.toString();
+    }
 
+    public void orderViaGui() {
+        StringBuilder s = new StringBuilder();
+        s.append("OrderID: ").append(orderID).append(", branchID: ").append(branchID).append(", creation date: ").append(creationDate).append(", delivery date: ").append(deliveryDate).append("\n");
+        s.append("Supplier's details: \n");
+        s.append("Supplier name: ").append(supplierName).append(", supplier address: ").append(supplierAddress).append(", supplierID: ").append(supplierId).append(", supplier's contact phone number: ").append(contactPhoneNumber).append("\n");
+        s.append("Products details: \n");
+        for (SupplierProduct p : itemsInOrder) {
+            int productId = p.getProductID();
+            String productName = p.getName();
+            int amount = p.getAmount();
+            double productPrice = p.getPrice();
+            s.append("productID: ").append(productId).append(", product name: ").append(productName).append(", amount: ").append(amount).append(", price: ").append(String.format("%.2f", productPrice)).append("\n");
+        }
+        s.append("Total price before discount: ").append(String.format("%.2f", totalPriceBeforeDiscount)).append("\n");
+        s.append("Total price after discount: ").append(String.format("%.2f", totalPriceAfterDiscount)).append("\n");
     }
 
     public String getSupplierName() {

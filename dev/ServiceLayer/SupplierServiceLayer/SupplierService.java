@@ -123,4 +123,8 @@ public class SupplierService implements iOrderService{
     public Response getSupplierNameById(Integer id){return facadeSupplier.getSupplierNameById(id);}
 
 
+    public HashMap<String, String> getContactsFromSupplier(int supplierID) {
+        return facadeSupplier.getContactsFromSupplier(supplierID);
+    }
+    public void orderViaGui(){facadeSupplier.orderViaGui();}
 }
