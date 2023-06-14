@@ -62,7 +62,7 @@ public class SupplierService implements iOrderService{
         return facadeSupplier.editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierId, selfSupply, paymentMethod, days, supplyMethod, supplyTime);
     }
 
-    public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {
+    public Response editItemCatalogdNumber(int supplierId, int productId, int newCatalogNumber) {
         return facadeSupplier.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
     }
 

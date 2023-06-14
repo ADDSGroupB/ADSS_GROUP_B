@@ -28,6 +28,8 @@ public class SupplierProductService {
         this.weight = weight;
     }
 
+    public SupplierProductService() {}
+
     public double getPrice() {
         return price;
     }

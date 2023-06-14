@@ -303,8 +303,6 @@ public class SupplierManagerCLI {
         else {
             print(res.getErrorMessage());
         }
-
-
     }
 
     private void editItems(int supplierID) {
@@ -369,13 +367,12 @@ public class SupplierManagerCLI {
         else{
             print("discount deleted successfully");
         }
-
     }
 
     private void editItemCatalodNumber(int supplierId, int productId) {
         print("please enter the new catalog number");
         int newCatalogNumber = reader.nextInt();
-        Response res = supplierService.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
+        Response res = supplierService.editItemCatalogdNumber(supplierId, productId, newCatalogNumber);
         if (res.errorOccurred())
             print(res.getErrorMessage());
     }

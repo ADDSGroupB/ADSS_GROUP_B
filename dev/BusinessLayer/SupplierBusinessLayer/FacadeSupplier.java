@@ -108,9 +108,9 @@ public class FacadeSupplier {
 
     public Response removeItemFromAgreement(int supplierID, int itemIdToDelete) {
         Response res1 = supplierController.removeItemFromAgreement(supplierID, itemIdToDelete);
-        if (!res1.errorOccurred()){//want to delte product from product controller
-            return productController.removeProductToSupplier(supplierID, itemIdToDelete);
-        }
+//        if (!res1.errorOccurred()){//want to delete product from product controller
+//            return productController.removeProductToSupplier(supplierID, itemIdToDelete);
+      //  }
         return res1;
     }
 
@@ -120,9 +120,9 @@ public class FacadeSupplier {
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {
         Response res = supplierController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
-        if(!res.errorOccurred()){
-            productController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
-        }
+//        if(!res.errorOccurred()){
+//            productController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
+//        }
         return res;
     }
 

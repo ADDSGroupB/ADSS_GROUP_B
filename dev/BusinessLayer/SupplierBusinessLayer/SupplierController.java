@@ -225,7 +225,9 @@ public class SupplierController {
             if (product.getProductID() == itemIdToDelete) {
                 supplierDAO.getSupplierByID(supplierID).removeProduct(itemIdToDelete);
                 Response response = supplierProductDAO.removeSupplierProduct(supplierID, itemIdToDelete);
-                if (response.errorOccurred()) return response;
+                if (response.errorOccurred()) {
+                    return response;
+                }
                 return new Response(supplierID);
             }
         }
