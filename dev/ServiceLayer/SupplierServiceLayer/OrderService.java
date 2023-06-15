@@ -5,6 +5,8 @@ import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import Utillity.Response;
 
+import javax.swing.*;
+import java.awt.*;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,17 +21,26 @@ public class OrderService extends TimerTask {
     @Override
     public void run()
     {
-        System.out.println("Periodic Orders That Executed Today: ");
+        StringBuilder ordersForToday = new StringBuilder();
+        StringBuilder ordersErrors = new StringBuilder();
         for(PeriodicOrder periodicOrder : getAllPeriodicOrderForToday().values())
         {
             Response response = executePeriodicOrder(periodicOrder.getPeriodicOrderID());
-            if(response.errorOccurred()) System.out.println(response.getErrorMessage());
+            if(response.errorOccurred())
+                ordersErrors.append(response.getErrorMessage()).append("\n");
             else
-            {
-                System.out.println("Periodic Order ID: " + periodicOrder.getPeriodicOrderID());
-                System.out.println(getOrderByID(response.getSupplierId()));
-            }
+                ordersForToday.append("Periodic Order ID: ").append(periodicOrder.getPeriodicOrderID()).append("\n").append(getOrderByID(response.getSupplierId())).append("\n");
         }
+
+        JTextArea textArea = new JTextArea(10, 30);
+        textArea.setText(String.valueOf(ordersForToday));
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(700, 400)); // Set preferred size
+
+        if(!ordersErrors.isEmpty()) JOptionPane.showMessageDialog(null, ordersErrors, "Order Errors", JOptionPane.ERROR_MESSAGE);
+        if(!ordersForToday.isEmpty()) JOptionPane.showMessageDialog(null, scrollPane, "Orders For Today", JOptionPane.INFORMATION_MESSAGE);
+        else JOptionPane.showMessageDialog(null, "There is no orders for today", "Orders For Today", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public Order getOrderByID(int orderID) { return orderService.getOrderByID(orderID); }
@@ -55,4 +66,5 @@ public class OrderService extends TimerTask {
     public HashMap<Integer, PeriodicOrder> getPeriodicOrdersToBranch(int branchID){ return orderService.getPeriodicOrdersToBranch(branchID); }
     public PeriodicOrder getPeriodicOrderByID(int orderID) { return orderService.getPeriodicOrderByID(orderID); }
     public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return orderService.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
+    public Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount) { return orderService.updateOrder(orderID, productsAndAmount); }
 }

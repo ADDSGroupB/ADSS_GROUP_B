@@ -140,4 +140,6 @@ public class SupplierService implements iOrderService{
     public PeriodicOrder getPeriodicOrderByID(int orderID) { return facadeSupplier.getPeriodicOrderByID(orderID); }
     @Override
     public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
+    @Override
+    public Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.updateOrder(orderID, productsAndAmount); }
 }

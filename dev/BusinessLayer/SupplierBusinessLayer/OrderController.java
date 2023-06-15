@@ -7,6 +7,7 @@ import DataAccessLayer.SupplierDataAccessLayer.SupplierProductDAO;
 import Utillity.Pair;
 import Utillity.Response;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -136,6 +137,39 @@ public class OrderController {
         }
         return new Response(0);
 
+    }
+
+    public Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount)
+    {
+        Order order = supplierOrderDAO.getOrderByID(orderID);
+        if(Math.abs(ChronoUnit.DAYS.between(order.getDeliveryDate(), LocalDate.now())) <= 1)
+            return new Response("Order Updating Fails, Reason: There is one day or less until the delivery");
+        Supplier supplierToOrder = supplierDAO.getSupplierByID(order.getSupplierId());
+        HashMap<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(order.getSupplierId());
+        ArrayList<SupplierProduct> itemsInOrder = new ArrayList<>();
+        // Check if the supplier supply all the products in the list, if one of the isn't supplied by him send informing response
+        for(int productID : productsAndAmount.keySet()) {
+            SupplierProduct productInSupplier = supplierProducts.get(productID);
+            SupplierProduct productInOrder = new SupplierProduct(productInSupplier);
+            productInOrder.setAmount(productsAndAmount.get(productID));
+            itemsInOrder.add(productInOrder);
+        }
+        double priceAfterDiscount = supplierToOrder.calculatePriceAfterDiscountNew(itemsInOrder);
+        int totalAmountToOrder = supplierToOrder.getTotalAmountNew(itemsInOrder);
+        if (supplierToOrder.getTotalOrderDiscountPerOrderPrice() != null && supplierToOrder.getTotalDiscountInPrecentageForOrder() != null)
+        {
+            if (priceAfterDiscount > supplierToOrder.getTotalOrderDiscountPerOrderPrice().getFirst())
+                priceAfterDiscount = priceAfterDiscount - supplierToOrder.getTotalOrderDiscountPerOrderPrice().getSecond();
+            if (totalAmountToOrder > supplierToOrder.getTotalDiscountInPrecentageForOrder().getFirst())
+                priceAfterDiscount = ((100 - supplierToOrder.getTotalDiscountInPrecentageForOrder().getSecond()) / 100) * priceAfterDiscount;
+        }
+        double priceBeforeDiscount = supplierToOrder.calculatePriceBeforeDiscountNew(itemsInOrder);
+        Order updatedOrderForSupplier = new Order(order, itemsInOrder, priceBeforeDiscount, priceAfterDiscount);
+        Response response = supplierOrderDAO.removeOrder(orderID);
+        if(response.errorOccurred()) return response;
+        response = supplierOrderDAO.addOrder(updatedOrderForSupplier);
+        if(response.errorOccurred()) return response;
+        return new Response(updatedOrderForSupplier.getOrderID());
     }
 
     public Response updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd)

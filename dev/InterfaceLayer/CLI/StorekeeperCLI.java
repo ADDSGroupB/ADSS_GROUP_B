@@ -1088,7 +1088,7 @@ public class StorekeeperCLI {
             }
         };
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 10);
+        calendar2.set(Calendar.HOUR_OF_DAY, 20);
         calendar2.set(Calendar.MINUTE, 0);
         calendar2.set(Calendar.SECOND, 0);
         if (calendar2.getTimeInMillis() < System.currentTimeMillis())

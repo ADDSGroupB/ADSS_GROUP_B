@@ -2,9 +2,9 @@ package InterfaceLayer.GUI;
 
 import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.MainController;
+import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
-import DataAccessLayer.InventoryDataAccessLayer.BranchesDao;
 import ServiceLayer.SupplierServiceLayer.OrderService;
 import Utillity.Response;
 
@@ -14,8 +14,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrdersGUI extends JFrame {
@@ -26,7 +28,6 @@ public class OrdersGUI extends JFrame {
     private JButton printOrdersHistoryButton;
     private JButton backButton;
     private OrderService orderService;
-
     private MainController mainController;
     private Branch branch;
     private JFrame branchMenu;
@@ -57,14 +58,6 @@ public class OrdersGUI extends JFrame {
         JLabel titleLabel = new JLabel("Orders Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-        JFrame periodicOrderUI = new JFrame("Periodic Orders Menu");
-        openPeriodicOrderUI(periodicOrderUI, branch.getBranchID());
-        openExistingOrderUI();
-        executePeriodicOrders();
-        executeShortageOrders();
-        printOrdersHistory();
-
-
         panel.add(titleLabel);
         panel.add(periodicOrderButton);
         panel.add(existingOrderButton);
@@ -73,7 +66,6 @@ public class OrdersGUI extends JFrame {
         panel.add(printOrdersHistoryButton);
         panel.add(backButton);
         getContentPane().add(panel);
-
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -84,27 +76,39 @@ public class OrdersGUI extends JFrame {
         });
 
         periodicOrderButton.addActionListener(e -> {
+            JFrame periodicOrderUI = new JFrame("Periodic Orders Menu");
+            openPeriodicOrderUI(periodicOrderUI, branch.getBranchID());
             setVisible(false);
             periodicOrderUI.setVisible(true);
             periodicOrderUI.pack();
         });
 
         existingOrderButton.addActionListener(e -> {
+            JFrame existingOrderUI = new JFrame("Update Existing Orders");
+            openExistingOrderUI(existingOrderUI, branch.getBranchID());
             setVisible(false);
+            existingOrderUI.setVisible(true);
+            existingOrderUI.pack();
 
         });
 
         executePeriodicOrdersButton.addActionListener(e -> {
-            setVisible(false);
-
+            if(LocalTime.now().isAfter(LocalTime.of(10, 0))) orderService.run();
+            else JOptionPane.showMessageDialog(null, "Periodic Orders Will Execute Automatically at 10AM", "Error", JOptionPane.ERROR_MESSAGE);
         });
 
         executeShortageOrdersButton.addActionListener(e -> {
-            setVisible(false);
+            if(LocalTime.now().isAfter(LocalTime.of(10, 0))) autoShortage();
+            else JOptionPane.showMessageDialog(null, "Shortage Orders Will Execute Automatically at 8PM", "Error", JOptionPane.ERROR_MESSAGE);
         });
 
         printOrdersHistoryButton.addActionListener(e -> {
+
+            JFrame orderHistoryUI = new JFrame("Branch Order History");
             setVisible(false);
+            printOrdersHistory(orderHistoryUI, branch.getBranchID());
+            orderHistoryUI.setVisible(true);
+            orderHistoryUI.pack();
 
         });
 
@@ -120,9 +124,7 @@ public class OrdersGUI extends JFrame {
         periodicOrderUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         periodicOrderUI.setLocationRelativeTo(null);
 
-        JFrame createPeriodicOrderFrame = new JFrame("Create New Periodic Order");
 
-        JFrame updatePeriodicOrderFrame = new JFrame("Update Periodic Order");
 
 //        JFrame removeProductsPeriodicOrderFrame = new JFrame("Remove Products From Periodic Order");
 //        setRemoveProductsPeriodicOrderFrame(removeProductsPeriodicOrderFrame, periodicOrderUI, branchID);
@@ -153,7 +155,9 @@ public class OrdersGUI extends JFrame {
             }
         });
 
+
         createOrderButton.addActionListener(e -> {
+            JFrame createPeriodicOrderFrame = new JFrame("Create New Periodic Order");
             setCreatePeriodicOrderFrame(createPeriodicOrderFrame, periodicOrderUI, branchID);
             periodicOrderUI.setVisible(false);
             createPeriodicOrderFrame.setVisible(true);
@@ -161,9 +165,10 @@ public class OrdersGUI extends JFrame {
         });
 
         updateProductsButton.addActionListener(e -> {
+            JFrame updatePeriodicOrderFrame = new JFrame("Update Periodic Order");
+            setUpdatePeriodicOrderFrame(updatePeriodicOrderFrame, periodicOrderUI, branchID);
             periodicOrderUI.setVisible(false);
             updatePeriodicOrderFrame.setVisible(true);
-            setUpdatePeriodicOrderFrame(updatePeriodicOrderFrame, periodicOrderUI, branchID);
 //            updatePeriodicOrderFrame.pack();
         });
 
@@ -435,7 +440,7 @@ public class OrdersGUI extends JFrame {
         JTable orderChooseTable = new JTable(orderChooseTableModel);
         JScrollPane orderChooseScrollPane = new JScrollPane(orderChooseTable);
         selectOrderPanel.add(orderChooseScrollPane);
-        selectOrderPanel.setPreferredSize(new Dimension(800, 200));
+        selectOrderPanel.setPreferredSize(new Dimension(800, 100));
         panel.add(selectOrderPanel, BorderLayout.NORTH);
 
 
@@ -662,33 +667,420 @@ public class OrdersGUI extends JFrame {
 
     }
 
-    private void createPeriodicOrder(int branchID, JFrame periodicOrderUI){
-
-    }
-    private void updateProducts(int branchID, JFrame periodicOrderUI){
-
-    }
-    private void removeProducts(int branchID, JFrame periodicOrderUI){
-
-    }
-
     // Option 2 Existing order menu
-    private void openExistingOrderUI() {
+    private void openExistingOrderUI(JFrame existingOrderUI, int branchID) {
+
+
+        existingOrderUI.setPreferredSize(new Dimension(800, 600));
+        existingOrderUI.pack(); // Pack the components inside the JFrame
+        existingOrderUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        existingOrderUI.setLocationRelativeTo(null);
+
+        AtomicInteger supplierID = new AtomicInteger();
+        AtomicInteger orderID = new AtomicInteger();
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(0, 0)); // Add spacing between sections
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+
+        JPanel selectOrderPanel = new JPanel();
+        selectOrderPanel.setLayout(new GridLayout(2, 1, 0, 0));
+        JLabel selectSupplierLabel = new JLabel("Please select order: ");
+        selectOrderPanel.add(selectSupplierLabel);
+
+        DefaultTableModel orderChooseTableModel = new DefaultTableModel();
+        orderChooseTableModel.addColumn("Order ID");
+        orderChooseTableModel.addColumn("Supplier ID");
+        JTable orderChooseTable = new JTable(orderChooseTableModel);
+        JScrollPane orderChooseScrollPane = new JScrollPane(orderChooseTable);
+        selectOrderPanel.add(orderChooseScrollPane);
+        selectOrderPanel.setPreferredSize(new Dimension(800, 200));
+        panel.add(selectOrderPanel, BorderLayout.NORTH);
+
+
+        JPanel selectProductPanel = new JPanel();
+        selectProductPanel.setLayout(new GridLayout(5, 1, 0, 0));
+        JLabel selectProductLabel = new JLabel("Please select the Products that you want to add to order:");
+        selectProductPanel.add(selectProductLabel);
+        DefaultTableModel ProductChooseTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Set all cells to be not editable
+            }
+        };
+        ProductChooseTableModel.addColumn("Name");
+        ProductChooseTableModel.addColumn("Product ID");
+        ProductChooseTableModel.addColumn("Catalog Number");
+        ProductChooseTableModel.addColumn("Price");
+        ProductChooseTableModel.addColumn("Amount");
+        ProductChooseTableModel.addColumn("Manufacturer");
+        ProductChooseTableModel.addColumn("Expiration Days");
+        ProductChooseTableModel.addColumn("Weight");
+        JTable ProductChooseTable = new JTable(ProductChooseTableModel);
+        JScrollPane ProductChooseScrollPane = new JScrollPane(ProductChooseTable);
+        ProductChooseScrollPane.setPreferredSize(new Dimension(ProductChooseScrollPane.getPreferredSize().width, 200));
+        selectProductPanel.add(ProductChooseScrollPane);
+
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridLayout(1, 2, 10, 10));
+
+        JButton chooseButton = new JButton("↓");
+        chooseButton.setFont(new Font("Arial", Font.BOLD, 25));
+        chooseButton.setForeground(Color.WHITE);
+        chooseButton.setBackground(Color.BLACK);
+        chooseButton.setPreferredSize(new Dimension(25, 25));
+        buttonsPanel.add(chooseButton);
+
+        JButton chooseButton2 = new JButton("↑");
+        chooseButton2.setFont(new Font("Arial", Font.BOLD, 25));
+        chooseButton2.setForeground(Color.WHITE);
+        chooseButton2.setBackground(Color.BLACK);
+        chooseButton2.setPreferredSize(new Dimension(25, 25));
+        buttonsPanel.add(chooseButton2);
+
+        selectProductPanel.add(buttonsPanel);
+
+        JLabel chosenProductLabel = new JLabel("Chosen products for the order:");
+        selectProductPanel.add(chosenProductLabel);
+        DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 8; // Set all cells to be not editable except column 8
+            }
+        };
+        chosenProductsTableModel.addColumn("Name");
+        chosenProductsTableModel.addColumn("Product ID");
+        chosenProductsTableModel.addColumn("Catalog Number");
+        chosenProductsTableModel.addColumn("Price");
+        chosenProductsTableModel.addColumn("Amount");
+        chosenProductsTableModel.addColumn("Manufacturer");
+        chosenProductsTableModel.addColumn("Expiration Days");
+        chosenProductsTableModel.addColumn("Weight");
+        chosenProductsTableModel.addColumn("Amount To Order");
+        JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+        JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+        chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+        selectProductPanel.add(chosenProductsScrollPane);
+
+        selectProductPanel.setPreferredSize(new Dimension(800, 600));
+        panel.add(selectProductPanel, BorderLayout.CENTER);
+
+        HashMap<Integer, Integer> productsAndAmount = new HashMap<>();
+
+
+        chooseButton.addActionListener(e -> {
+            int selectedRow = ProductChooseTable.getSelectedRow();
+            if (selectedRow != -1) {
+                // Get the data from the selected row in the ProductChooseTableModel
+                Object[] rowData = new Object[ProductChooseTableModel.getColumnCount() + 1];
+                for (int i = 0; i < rowData.length - 1; i++)
+                    rowData[i] = ProductChooseTableModel.getValueAt(selectedRow, i);
+                rowData[rowData.length - 1] = 0;
+                // Add the data to the chosenProductsTableModel
+                chosenProductsTableModel.addRow(rowData);
+                // Remove the row from the ProductChooseTableModel
+                ProductChooseTableModel.removeRow(selectedRow);
+            }
+        });
+
+        chooseButton2.addActionListener(e -> {
+            int selectedRow = chosenProductsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                // Get the selected row data from the chosenProductsTableModel
+                Object[] rowData = new Object[chosenProductsTableModel.getColumnCount() - 1];
+                for (int i = 0; i < rowData.length; i++) {
+                    rowData[i] = chosenProductsTableModel.getValueAt(selectedRow, i);
+                }
+                // Add the row data to the ProductChooseTableModel
+                ProductChooseTableModel.addRow(rowData);
+                // Remove the selected row from the chosenProductsTableModel
+                chosenProductsTableModel.removeRow(selectedRow);
+            }
+        });
+
+        JPanel selectSupplyingDay = new JPanel();
+        selectSupplyingDay.setLayout(new GridLayout(1, 2, 10, 10));
+        JButton backButton = new JButton("Back");
+        selectSupplyingDay.add(backButton);
+        JButton updateOrderButton = new JButton("Update Order");
+        selectSupplyingDay.add(updateOrderButton);
+        panel.add(selectSupplyingDay, BorderLayout.SOUTH);
+        existingOrderUI.getContentPane().add(panel);
+
+        updateOrderButton.addActionListener(e -> {
+            if(orderChooseTable.getSelectedRow() == -1)
+            {
+                JOptionPane.showMessageDialog(null, "You must choose order", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            for (int row = 0; row < chosenProductsTableModel.getRowCount(); row++) {
+                String amountToOrderStr = String.valueOf(chosenProductsTableModel.getValueAt(row, chosenProductsTableModel.getColumnCount() - 1));
+                int amountToOrder;
+                try
+                {
+                    amountToOrder = Integer.parseInt(amountToOrderStr);
+                }
+                catch (NumberFormatException exception)
+                {
+                    JOptionPane.showMessageDialog(null, "The amount to order should be integer, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int productID = Integer.parseInt(String.valueOf(chosenProductsTableModel.getValueAt(row, 1)));
+                if (amountToOrder == 0) {
+                    JOptionPane.showMessageDialog(null, "The amount to order should be more than zero, the amount of product ID " + productID + " is zero", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                productsAndAmount.put(productID, amountToOrder);
+            }
+            Response response = orderService.updateOrder(orderID.get(), productsAndAmount);
+            if(response.errorOccurred())
+            {
+                JOptionPane.showMessageDialog(null, response.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else
+                JOptionPane.showMessageDialog(null, "Order With The ID " + response.getSupplierId() + " Has Successfully Been Updated", "Error", JOptionPane.ERROR_MESSAGE);
+            resetCreateOrderFrame(orderChooseTableModel, ProductChooseTableModel, chosenProductsTableModel, null);
+            existingOrderUI.setVisible(false);
+            setVisible(true);
+        });
+
+        backButton.addActionListener(e -> {
+            existingOrderUI.setVisible(false);
+            setVisible(true);
+        });
+
+        // Load all the orders to the table
+        HashMap<Integer, Order> periodicOrders = orderService.getOrdersToBranch(branchID);
+        for(Order order : periodicOrders.values())
+        {
+            Object[] rowData = {order.getOrderID(), order.getSupplierId()};
+            orderChooseTableModel.addRow(rowData);
+        }
+
+        // Event that will execute when row has been chosen on supplier choose table
+        orderChooseTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                chosenProductsTableModel.setRowCount(0);
+                ProductChooseTableModel.setRowCount(0);
+                productsAndAmount.clear();
+
+                int selectedRow = orderChooseTable.getSelectedRow();
+                supplierID.set(Integer.parseInt(orderChooseTable.getValueAt(selectedRow, 1).toString()));
+                HashMap<Integer, SupplierProduct> supplierProducts = orderService.getAllSupplierProductsByID(supplierID.get());
+                orderID.set(Integer.parseInt(orderChooseTable.getValueAt(selectedRow, 0).toString()));
+                Order order = orderService.getOrderByID(orderID.get());
+                int index = -1;
+                ArrayList<SupplierProduct> orderProducts = order.getItemsInOrder();
+                for (SupplierProduct supplierProduct : supplierProducts.values())
+                {
+                    if(!orderProducts.contains(supplierProduct))
+                        ProductChooseTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight()});
+                    else
+                        chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight(), orderProducts.get(orderProducts.indexOf(supplierProduct)).getAmount()});
+
+                }
+            }
+        });
+
+        existingOrderUI.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                resetCreateOrderFrame(orderChooseTableModel, ProductChooseTableModel, chosenProductsTableModel, null);
+                existingOrderUI.setVisible(false);
+                setVisible(true);
+            }
+        });
 
     }
     // Option 3 Execute Periodic Orders For Today menu
 
-    private void executePeriodicOrders() {
 
-    }
-    // Option 4 Execute Shortage Orders For Today menu
-
-    private void executeShortageOrders() {
-
-    }
     // Option 5 Print branch's orders history
+    private void printOrdersHistory(JFrame orderHistoryUI, int branchID)
+    {
 
-    private void printOrdersHistory() { }
+        orderHistoryUI.setSize(800, 600);
+        orderHistoryUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        orderHistoryUI.setLocationRelativeTo(null);
+
+        JPanel orderHistoryPanel = new JPanel(new BorderLayout(10, 10));
+        orderHistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel labelsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        JLabel branchNameLabel = new JLabel("Branch Name: " + branch.getBranchName());
+        labelsPanel.add(branchNameLabel);
+        JLabel branchIDLabel = new JLabel("Branch ID: " + branch.getBranchID());
+        labelsPanel.add(branchIDLabel);
+
+        orderHistoryPanel.add(labelsPanel, BorderLayout.NORTH);
+
+        DefaultTableModel ordersTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Set all cells to be not editable
+            }
+        };
+        ordersTableModel.setRowCount(0);
+        ordersTableModel.addColumn("Order ID");
+        ordersTableModel.addColumn("Supplier ID");
+        ordersTableModel.addColumn("Supplier Name");
+        ordersTableModel.addColumn("Contact Phone Number");
+        ordersTableModel.addColumn("Creation Date");
+        ordersTableModel.addColumn("Delivery Date");
+        ordersTableModel.addColumn("Collected");
+        ordersTableModel.addColumn("Price Before Discount");
+        ordersTableModel.addColumn("Price After Discount");
+        JTable ordersTable = new JTable(ordersTableModel);
+        JScrollPane ordersScrollPane = new JScrollPane(ordersTable);
+        orderHistoryPanel.add(ordersScrollPane, BorderLayout.CENTER);
+
+        orderHistoryUI.getContentPane().add(orderHistoryPanel);
+
+
+
+        HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branch.getBranchID());
+        if(orders == null || orders.size() == 0)
+        {
+            JOptionPane.showMessageDialog(null, "There is not orders in this branch", "Error", JOptionPane.ERROR_MESSAGE);
+            orderHistoryUI.setVisible(false);
+            setVisible(true);
+        }
+        else
+        {
+            for(Order order : orders.values())
+                ordersTableModel.addRow(new Object[] { order.getOrderID(), order.getSupplierId(), order.getSupplierName(), order.getContactPhoneNumber(), order.getCreationDate(), order.getDeliveryDate(), order.isCollected(), order.getTotalPriceBeforeDiscount(), order.getTotalPriceAfterDiscount() });
+            ordersTableModel.fireTableDataChanged();
+        }
+
+
+        ordersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+                            orderHistoryUI.setVisible(false);
+                            JFrame showProductsFrame = new JFrame("Products On Order "+ ordersTable.getValueAt(selectedRow, 0));
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            chosenProductsTableModel.addColumn("Amount To Order");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
+
+                            int supplierID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 1).toString());
+                            int orderID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 0).toString());
+                            HashMap<Integer, SupplierProduct> supplierProducts = orderService.getAllSupplierProductsByID(supplierID);
+                            Order order = orderService.getOrderByID(orderID);
+                            ArrayList<SupplierProduct> orderProducts = order.getItemsInOrder();
+                            for (SupplierProduct supplierProduct : supplierProducts.values())
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight(), orderProducts.get(orderProducts.indexOf(supplierProduct)).getAmount()});
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    orderHistoryUI.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(ordersTable, e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+
+                            orderHistoryUI.setVisible(false);
+                            JFrame showProductsFrame = new JFrame("Products On Order "+ ordersTable.getValueAt(selectedRow, 0));
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount On Order");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
+
+                            int orderID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 0).toString());
+                            Order order = orderService.getOrderByID(orderID);
+                            ArrayList<SupplierProduct> orderProducts = order.getItemsInOrder();
+                            for (SupplierProduct supplierProduct : orderProducts)
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight() });
+                            showProductsFrame.pack();
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    orderHistoryUI.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(ordersTable, e.getX(), e.getY());
+                }
+            }
+        });
+
+
+
+        orderHistoryUI.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                orderHistoryUI.dispose();
+                setVisible(true);
+            }
+        });
+
+    }
 
     private void resetCreateOrderFrame(DefaultTableModel supplierChooseTableModel, DefaultTableModel ProductChooseTableModel, DefaultTableModel chosenProductsTableModel, JComboBox<String> combo) {
         // Clear table models
@@ -697,19 +1089,28 @@ public class OrdersGUI extends JFrame {
         chosenProductsTableModel.setRowCount(0);
 
         // Reset combo box
-        combo.setSelectedIndex(-1);
+        if(combo != null) combo.setSelectedIndex(-1);
     }
 
-    public static void main(String[] args) throws SQLException {
-        MainController mainController = new MainController();
-        BranchesDao branchesDao = mainController.getBranchesDao();
-        Branch b1 = branchesDao.addBranch("SuperLi Beer Sheva");
-        Branch b2 = branchesDao.addBranch("SuperLi Tel Aviv");
-        Branch b3 = branchesDao.addBranch("SuperLi Jerusalem");
-        Branch b4 = branchesDao.addBranch("SuperLi Herzliya");
-        Branch b5 = branchesDao.addBranch("SuperLi Eilat");
-        OrdersGUI ordersGUI = new OrdersGUI(b1, mainController, new JFrame());
-        ordersGUI.setVisible(true);
+    public void autoShortage()
+    {
+        try {
+            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
+            HashMap<Integer, Integer> shortage;
+            for(Branch branch: branches) {
+                shortage = mainController.getItemsDao().fromStorageToStore(branch);
+                Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
+                if (!response.errorOccurred())
+                {
+                    for (Integer productID : shortage.keySet())
+                    {
+                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error while run function autoShortage in GUI: " + e.getMessage(), "Orders For Today", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }
 

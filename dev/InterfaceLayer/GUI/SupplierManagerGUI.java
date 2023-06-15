@@ -1134,6 +1134,14 @@ public class SupplierManagerGUI extends JFrame {
             frame.setVisible(true); // Close the current frame
         });
 
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                f.dispose();
+                frame.setVisible(true); // Close the current frame
+            }
+        });
+
         f.setSize(400, 300);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
@@ -1234,6 +1242,14 @@ public class SupplierManagerGUI extends JFrame {
             f.dispose();
         });
 
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                prev.setVisible(true);
+                f.dispose();
+            }
+        });
+
         f.setSize(400, 300);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
@@ -1270,6 +1286,14 @@ public class SupplierManagerGUI extends JFrame {
             f.dispose();
             prev.setVisible(true);
 //            editSupplier(this); // Go back to the editSupplier function
+        });
+
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                prev.setVisible(true);
+                f.dispose();
+            }
         });
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -1344,6 +1368,14 @@ public class SupplierManagerGUI extends JFrame {
 //            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
         });
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
+        });
+
         bankAccountFiled.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -1399,6 +1431,14 @@ public class SupplierManagerGUI extends JFrame {
             prev.setVisible(true);
 
 //            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
         });
 
         addressFiled.addKeyListener(new KeyAdapter() {
@@ -1457,6 +1497,14 @@ public class SupplierManagerGUI extends JFrame {
             prev.setVisible(true);
 
 //            editSupplierPersonalDetails(supplierID, this); // Go back to the editSupplierPersonalDetails function
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
         });
 
         nameFiled.addKeyListener(new KeyAdapter() {
@@ -1628,6 +1676,14 @@ public class SupplierManagerGUI extends JFrame {
 
         });
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
+        });
+
         JPanel backNextPanel = new JPanel();
         backNextPanel.setLayout(new GridLayout(1, 2, 10, 10));
         backNextPanel.add(backButton);
@@ -1650,6 +1706,7 @@ public class SupplierManagerGUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLocationRelativeTo(null);
+
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -1688,8 +1745,17 @@ public class SupplierManagerGUI extends JFrame {
             prev.setVisible(true);
         });
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
+        });
+
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+        frame.pack();
     }
 
     private void editItems(int supplierID, JFrame prevprev, JFrame prev) {
@@ -1755,10 +1821,19 @@ public class SupplierManagerGUI extends JFrame {
 
             }
         });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
+        });
         panel.add(backButton);
 
         frame.add(panel);
         frame.setVisible(true);
+
     }
 
 
@@ -2161,11 +2236,20 @@ public class SupplierManagerGUI extends JFrame {
             }
         });
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.dispose();
+                prev.setVisible(true);
+            }
+        });
+
         panel.add(submitButton);
         panel.add(backButton);
 
         frame.add(panel);
         frame.setVisible(true);
+        frame.pack();
     }
 
 
@@ -2236,6 +2320,14 @@ public class SupplierManagerGUI extends JFrame {
         backButton.addActionListener(e -> {
             f.dispose();
             frame.setVisible(true); // Close the current frame
+        });
+
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                f.dispose();
+                frame.setVisible(true);
+            }
         });
 
         f.setSize(400, 300);

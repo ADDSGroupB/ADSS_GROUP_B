@@ -4,6 +4,9 @@ import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Item;
 import BusinessLayer.InventoryBusinessLayer.MainController;
 import BusinessLayer.InventoryBusinessLayer.Product;
+import DataAccessLayer.DBConnector;
+import ServiceLayer.SupplierServiceLayer.OrderService;
+import Utillity.Response;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +15,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.util.*;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class StoreKeeperGUI extends JFrame {
     private MainController mainController;
+    private OrderService orderService;
     public StoreKeeperGUI(){
         this.mainController = new MainController();
-
+        orderService = new OrderService();
+        startDailyTask();
         setTitle("Store Keeper Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 500);
@@ -222,5 +230,59 @@ public class StoreKeeperGUI extends JFrame {
         this.setVisible(false);
         CategoryGUI categoryGUI = new CategoryGUI(mainController, this);
         categoryGUI.setVisible(true);
+    }
+
+    private void startDailyTask()
+    {
+        java.util.Timer timerPeriodicOrder = new java.util.Timer();
+        // Schedule the task to execute every day at 10:00am
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.getTimeInMillis() < System.currentTimeMillis())
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        timerPeriodicOrder.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        java.util.Timer timerForShortageOrder = new Timer();
+        TimerTask otherTask = new TimerTask() {
+            @Override
+            public void run()  {
+                autoShortage();
+            }
+        };
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 20);
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        if (calendar2.getTimeInMillis() < System.currentTimeMillis())
+            calendar2.add(Calendar.DAY_OF_MONTH, 1);
+        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            timerPeriodicOrder.cancel();
+            timerForShortageOrder.cancel();
+            DBConnector.disconnect();
+        }));
+    }
+
+    public void autoShortage()
+    {
+        try {
+            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
+            HashMap<Integer, Integer> shortage;
+            for(Branch branch: branches) {
+                shortage = mainController.getItemsDao().fromStorageToStore(branch);
+                Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
+                if (!response.errorOccurred())
+                {
+                    for (Integer productID : shortage.keySet())
+                    {
+                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error while run function autoShortage in GUI: " + e.getMessage(), "Order Errors", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
