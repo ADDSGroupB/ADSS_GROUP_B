@@ -142,4 +142,12 @@ public class SupplierService implements iOrderService{
     public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
     @Override
     public Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount) { return facadeSupplier.updateOrder(orderID, productsAndAmount); }
+    public Response updateSupplierProducts(int supplierID, HashMap<Integer, SupplierProductService> supplierServiceProducts) {
+        ArrayList<SupplierProduct> supplierProducts = new ArrayList<>();
+        for (SupplierProductService supplierProductService : supplierServiceProducts.values())
+            supplierProducts.add(new SupplierProduct(supplierProductService.getName(), supplierID, supplierProductService.getProductId(), supplierProductService.getCatalogNumber(), supplierProductService.getProductId(), supplierProductService.getAmount(), supplierProductService.getDiscountPerAmount(), supplierProductService.getManufacturer(), supplierProductService.getExpirationDays(), supplierProductService.getWeight()));
+        return facadeSupplier.updateSupplierProducts(supplierID, supplierProducts);
+    }
+
+    public HashMap<Integer, Double> getProductDiscountByID(int supplierID, int productID) { return facadeSupplier.getProductDiscountByID(supplierID, productID); }
 }

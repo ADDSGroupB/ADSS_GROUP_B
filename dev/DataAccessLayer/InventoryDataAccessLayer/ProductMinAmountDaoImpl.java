@@ -89,15 +89,15 @@ public class ProductMinAmountDaoImpl implements ProductMinAmountDao{
     @Override
     public String getOrderStatusByProductInBranch(int productID, int branchID) throws SQLException {
         //Test Done
-        if (branchProductMinStatusFromDB.containsKey(branchID))
-        {
-            Map<Integer, Pair<Integer, String>> currProduct = branchProductMinStatusFromDB.get(branchID);
-            if (currProduct.containsKey(productID))
-            {
-                Pair<Integer, String> currAmountStatus = currProduct.get(productID);
-                return currAmountStatus.getSecond();
-            }
-        }
+//        if (branchProductMinStatusFromDB.containsKey(branchID))
+//        {
+//            Map<Integer, Pair<Integer, String>> currProduct = branchProductMinStatusFromDB.get(branchID);
+//            if (currProduct.containsKey(productID))
+//            {
+//                Pair<Integer, String> currAmountStatus = currProduct.get(productID);
+//                return currAmountStatus.getSecond();
+//            }
+//        }
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {

@@ -2,6 +2,7 @@ package BusinessLayer.SupplierBusinessLayer;
 
 import DataAccessLayer.SupplierDataAccessLayer.*;
 import ServiceLayer.SupplierServiceLayer.ServiceContact;
+import ServiceLayer.SupplierServiceLayer.SupplierProductService;
 import Utillity.Pair;
 import Utillity.Response;
 
@@ -192,6 +193,8 @@ public class SupplierController {
         }
         return new Response("Can't edit phone number beacuse contact with the  phone number: " + oldPhone + " does not exist ");
     }
+
+    public Response updateSupplierProducts(int supplierID, ArrayList<SupplierProduct> supplierProducts) { return supplierProductDAO.updateSupplierProducts(supplierID, supplierProducts); }
 
     public Response addItemToAgreement(int supplierID,String name, int productId, int catalogNumber, double price, int amount,  HashMap<Integer, Double> discountPerAmount, double weight, String manufacturer, int expirationDays) {
         if (supplierDAO.getSupplierByID(supplierID) == null) {
@@ -506,5 +509,7 @@ public class SupplierController {
         }
         return con;
     }
+
+    public HashMap<Integer, Double> getProductDiscountByID(int supplierID, int productID) { return discountPerAmountDAO.getProductDiscountByID(supplierID, productID); }
 
 }

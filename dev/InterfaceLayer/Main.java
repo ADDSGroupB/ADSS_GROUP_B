@@ -41,18 +41,19 @@ public class Main {
                 OrderService orderService = new OrderService();
                 LoadDataInventory(mainController);
                 loadDataSupplier();
-                mainController.getItemsDao().checkExpiredItemsInAllBranches();
-                List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
-                if (allBranches.size() > 0) {
-                    mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
-                }
-                for (Branch branch : allBranches) {
-                    mainController.getItemsDao().fromStorageToStore(branch);
-                }
             }
             else
                 JOptionPane.showMessageDialog(null,"You already have loaded data in your system", "No branches error", JOptionPane.ERROR_MESSAGE);
-
+        }
+        MainController mainController = new MainController();
+        OrderService orderService = new OrderService();
+        mainController.getItemsDao().checkExpiredItemsInAllBranches();
+        List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
+        if (allBranches.size() > 0) {
+            mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
+        }
+        for (Branch branch : allBranches) {
+            mainController.getItemsDao().fromStorageToStore(branch);
         }
         switch (worker.toLowerCase()) {
             case "storekeeper" -> {
@@ -73,29 +74,32 @@ public class Main {
     }
 
     private static void workersCLI(String worker) throws SQLException {
+
         int choice = JOptionPane.showConfirmDialog(null, "Do you want to load data?", "Confirmation", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION)
         {
             File file = new File("res/superlee.db");
             if(!file.exists()) {
-                System.out.println("Initializing the information in the system... ");
                 MainController mainController = new MainController();
                 OrderService orderService = new OrderService();
+                System.out.println("Initializing the information in the system... ");
                 LoadDataInventory(mainController);
                 loadDataSupplier();
-                mainController.getItemsDao().checkExpiredItemsInAllBranches();
-                List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
-                if (allBranches.size() > 0) {
-                    mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
-                }
-                for (Branch branch : allBranches) {
-                    mainController.getItemsDao().fromStorageToStore(branch);
-                }
             }
             else System.out.println("You already have loaded data in your system");
         }
         else
             System.out.println("Initializes the system without information... ");
+        MainController mainController = new MainController();
+        OrderService orderService = new OrderService();
+        mainController.getItemsDao().checkExpiredItemsInAllBranches();
+        List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
+        if (allBranches.size() > 0) {
+            mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
+        }
+        for (Branch branch : allBranches) {
+            mainController.getItemsDao().fromStorageToStore(branch);
+        }
         switch (worker.toLowerCase())
         {
             case "storekeeper" ->

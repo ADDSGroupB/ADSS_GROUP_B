@@ -1,6 +1,8 @@
 package InterfaceLayer.GUI;
 
 import BusinessLayer.SupplierBusinessLayer.Order;
+import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
+import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Pair;
 import Utillity.Response;
@@ -21,8 +23,6 @@ public class SupplierManagerGUI extends JFrame {
     private SupplierService supplierService;
     private ServiceContact serviceContact;
 
-    // --------------------------- Add New Supplier ---------------------------
-    private ArrayList<JFrame> addSupplierFrame;
     private String name;
     private String address;
     private String bankAccount;
@@ -105,7 +105,8 @@ public class SupplierManagerGUI extends JFrame {
     private void addNewSupplier() {
         // TODO: Test add 2 suppliers and after that try to get info from the first one.
         cleanAddNewSupplierValues();
-        addSupplierFrame = new ArrayList<>();
+        // --------------------------- Add New Supplier ---------------------------
+        ArrayList<JFrame> addSupplierFrame = new ArrayList<>();
         addSupplierFrame.add(new JFrame("Add New Supplier")); // 0
         addSupplierFrame.add(new JFrame("Add Contacts")); // 1
         addSupplierFrame.add(new JFrame("Choose Supplying Method")); // 2
@@ -703,6 +704,10 @@ public class SupplierManagerGUI extends JFrame {
                 JOptionPane.showMessageDialog(null, "You must enter product name, please try again", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if (items.containsKey(productID)) {
+                JOptionPane.showMessageDialog(null, "This product ID already exists on this supplier, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             // Add the product after adding the discount
 //            if (discounts.size() < 1) {
 //                int choice = JOptionPane.showConfirmDialog(null, "Do you want to add discount?", "Confirmation", JOptionPane.YES_NO_OPTION);
@@ -918,6 +923,7 @@ public class SupplierManagerGUI extends JFrame {
 
 
         currentFrame.getContentPane().add(panel);
+        currentFrame.pack();
     }
 
     private void setAddAmountDiscountFrame(ArrayList<JFrame> addSupplierFrame) {
@@ -1214,7 +1220,13 @@ public class SupplierManagerGUI extends JFrame {
 
                 // Call the editSupplierPersonalDetails() method with the selected ID
                 f.dispose();
-                editSupplierPersonalDetails(selectedID, prev, f, table, selectedRow);
+
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to edit personal details of the supplier's with ID " + selectedID + " (" + selectedName + ")", "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION)
+                    editSupplierPersonalDetails(selectedID, prev, f, table, selectedRow);
+                else
+                    f.setVisible(true);
+
 
                 //JOptionPane.showMessageDialog(f, "Editing supplier's personal details with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -1231,9 +1243,14 @@ public class SupplierManagerGUI extends JFrame {
 
                 // Call the editSupplierAgreement() method with the selected ID
                 f.dispose();
-                editSupplierAgreement(selectedID, prev, f);
 
-                JOptionPane.showMessageDialog(f, "Editing supplier's agreement with ID " + selectedID + " (" + selectedName + ")", "Supplier Edit", JOptionPane.INFORMATION_MESSAGE);
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to edit supplier's agreement with ID " + selectedID + " (" + selectedName + ")", "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION)
+                {
+                    editSupplierAgreement(selectedID, prev, f);
+                }
+                else
+                    f.setVisible(true);
             }
         });
 
@@ -1484,7 +1501,7 @@ public class SupplierManagerGUI extends JFrame {
             if (res.errorOccurred()) {
                 JOptionPane.showMessageDialog(frame, "Something went wrong. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                table.setValueAt((Object) newName ,selectedRow, 1);
+                table.setValueAt(newName,selectedRow, 1);
                 String successMessage = "The name of the supplier with ID " + supplierID + " has been changed to '" + newName + "' successfully.";
                 JOptionPane.showMessageDialog(frame, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
                 frame.dispose(); // Close the frame
@@ -1711,31 +1728,30 @@ public class SupplierManagerGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        String[] options = {"Supplier's payment method + delivery method + delivery days", "Supplier's items"};
+        String[] options = {"Supplier's payment method + delivery method + delivery days", "Supplier's items", "Supplier Order Discounts"};
         JComboBox<String> comboBox = new JComboBox<>(options);
         panel.add(comboBox, BorderLayout.LINE_END);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        buttonPanel.setLayout(new GridLayout(1,2,10,10));
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
+        JButton backButton = new JButton("Back");
+//        backButton.setFont(backButton.getFont().deriveFont(15f)); // Increase button font size
+        buttonPanel.add(backButton);
+
         JButton editButton = new JButton("Edit");
-        editButton.setFont(editButton.getFont().deriveFont(15f)); // Increase button font size
+//        editButton.setFont(editButton.getFont().deriveFont(15f)); // Increase button font size
         buttonPanel.add(editButton);
 
-        JButton backButton = new JButton("Back");
-        backButton.setFont(backButton.getFont().deriveFont(15f)); // Increase button font size
-        buttonPanel.add(backButton);
+
 
         editButton.addActionListener(e -> {
             int action = comboBox.getSelectedIndex();
             switch (action) {
-                case 0:
-                    editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierID, prev, frame);
-                    break;
-                case 1:
-                    editItems(supplierID, prev, frame);
-                    break;
+                case 0 -> editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierID, prev, frame);
+                case 1 -> editItems(supplierID, prev, frame);
+                case 2 -> editOrderDiscount(supplierID, frame); // TODO: make it done
             }
             frame.dispose();
         });
@@ -1758,232 +1774,417 @@ public class SupplierManagerGUI extends JFrame {
         frame.pack();
     }
 
+    private void editOrderDiscount(int supplierID, JFrame frame) {
+
+    }
+
     private void editItems(int supplierID, JFrame prevprev, JFrame prev) {
         JFrame frame = new JFrame("Edit Items");
+        frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 200);
         frame.setLocationRelativeTo(null);
 
+        HashMap<Integer, SupplierProductService> items = new HashMap<>();
+
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 1, 10, 10));
+        panel.setLayout(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel actionLabel = new JLabel("Please choose an action:");
-        panel.add(actionLabel);
+        DefaultTableModel productsTableModel = new DefaultTableModel();
+        productsTableModel.addColumn("Name");
+        productsTableModel.addColumn("ID");
+        productsTableModel.addColumn("Catalog Number");
+        productsTableModel.addColumn("Price");
+        productsTableModel.addColumn("Amount");
+        productsTableModel.addColumn("Manufacturer");
+        productsTableModel.addColumn("Expiration Days");
+        productsTableModel.addColumn("Weight");
+        JTable productsTable = new JTable(productsTableModel);
+        JScrollPane scrollPane = new JScrollPane(productsTable);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
 
-        JButton addNewItemButton = new JButton("Add a new item");
-        addNewItemButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createProduct();
-                Response res = supplierService.addItemToAgreement(supplierID, product.getName(), product.getProductId(), product.getCatalogNumber(), product.getPrice(), product.getAmount(), product.getDiscountPerAmount(), product.getWeight(), product.getManufacturer(), product.getExpirationDays());
-                if (res.errorOccurred())
-                    JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                else
-                    JOptionPane.showMessageDialog(frame, "Item added successfully");
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(9, 2, 10, 10));
+
+        JLabel nameLabel = new JLabel("Product Name:");
+        JTextField nameTextField = new JTextField();
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameTextField);
+
+        JLabel idLabel = new JLabel("Product ID:");
+        JTextField idTextField = new JTextField();
+        inputPanel.add(idLabel);
+        inputPanel.add(idTextField);
+
+        JLabel catalogNumberLabel = new JLabel("Product Catalog Number:");
+        JTextField catalogNumberTextField = new JTextField();
+        inputPanel.add(catalogNumberLabel);
+        inputPanel.add(catalogNumberTextField);
+
+        JLabel PriceLabel = new JLabel("Product Price:");
+        JTextField PriceTextField = new JTextField();
+        inputPanel.add(PriceLabel);
+        inputPanel.add(PriceTextField);
+
+        JLabel amountLabel = new JLabel("Product Amount:");
+        JTextField amountTextField = new JTextField();
+        inputPanel.add(amountLabel);
+        inputPanel.add(amountTextField);
+
+        JLabel manufacturerLabel = new JLabel("Product Manufacturer:");
+        JTextField manufacturerTextField = new JTextField();
+        inputPanel.add(manufacturerLabel);
+        inputPanel.add(manufacturerTextField);
+
+        JLabel expirationDaysLabel = new JLabel("Product Expiration Days:");
+        JTextField expirationDaysTextField = new JTextField();
+        inputPanel.add(expirationDaysLabel);
+        inputPanel.add(expirationDaysTextField);
+
+        JLabel weightLabel = new JLabel("Product Weight:");
+        JTextField weightTextField = new JTextField();
+        inputPanel.add(weightLabel);
+        inputPanel.add(weightTextField);
+
+        JButton addProduct = new JButton("Add Product");
+        JButton removeProduct = new JButton("Remove Product");
+
+        inputPanel.add(removeProduct);
+        inputPanel.add(addProduct);
+
+        productsTableModel.setRowCount(0);
+        HashMap<Integer, SupplierProduct> supplierProducts = supplierService.getAllSupplierProductsByID(supplierID);
+        for (SupplierProduct supplierProduct : supplierProducts.values())
+        {
+            items.put(supplierProduct.getProductID(), new SupplierProductService(supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getDiscountPerAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight()));
+            productsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight()});
+        }
+
+        removeProduct.addActionListener(e -> {
+            int selectedRow = productsTable.getSelectedRow();
+            if (selectedRow != -1)
+            {
+                items.remove(Integer.parseInt(String.valueOf(productsTableModel.getValueAt(selectedRow, 1))));
+                productsTableModel.removeRow(selectedRow);
             }
-        });
-        panel.add(addNewItemButton);
 
-        JButton deleteItemButton = new JButton("Delete an item");
-        deleteItemButton.addActionListener(new ActionListener() {
+        });
+
+        addProduct.addActionListener(e -> {
+            int productID;
+            try {
+                productID = Integer.parseInt(idTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product ID, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int catalogNumber;
+            try {
+                catalogNumber = Integer.parseInt(catalogNumberTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid catalog number, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double price;
+            try {
+                price = Double.parseDouble(PriceTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product price, please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int amount;
+            try {
+                amount = Integer.parseInt(amountTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product amount, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int expirationDays;
+            try {
+                expirationDays = Integer.parseInt(expirationDaysTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid expiration days, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double weight;
+            try {
+                weight = Double.parseDouble(weightTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product weight, please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String productName = nameTextField.getText();
+            String manufacturer = manufacturerTextField.getText();
+
+            if (productName.length() == 0) {
+                JOptionPane.showMessageDialog(null, "You must enter product name, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (manufacturer.length() == 0) {
+                JOptionPane.showMessageDialog(null, "You must enter product name, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (items.containsKey(productID)) {
+                JOptionPane.showMessageDialog(null, "This product ID already exists on this supplier, please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            SupplierProductService newSupplierProduct = new SupplierProductService(productName, productID, catalogNumber, price, amount, new HashMap<>(), manufacturer, expirationDays, weight);
+            items.put(productID, newSupplierProduct);
+            productsTableModel.addRow(new Object[]{productName, productID, catalogNumber, price, amount, manufacturer, expirationDays, weight});
+            nameTextField.setText("");
+            idTextField.setText("");
+            catalogNumberTextField.setText("");
+            PriceTextField.setText("");
+            amountTextField.setText("");
+            manufacturerTextField.setText("");
+            expirationDaysTextField.setText("");
+            weightTextField.setText("");
+//            discounts.clear();
+        });
+
+        productsTable.addMouseListener(new MouseAdapter() {
+            JFrame nextFrame = frame;
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String itemIdToDelete = JOptionPane.showInputDialog(frame, "Please enter the product ID you wish to delete from the supplier's agreement");
-                if (itemIdToDelete != null && !itemIdToDelete.isEmpty()) {
-                    int productId = Integer.parseInt(itemIdToDelete);
-                    Response res = supplierService.removeItemFromAgreement(supplierID, productId);
-                    if (res.getSupplierId() == supplierID) {
-                        JOptionPane.showMessageDialog(frame, "The product with ProductId: " + productId + " has been deleted successfully", "NOTICE", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "The product with ProductId: " + productId + " is not supplied by this supplier", "ERROR", JOptionPane.ERROR_MESSAGE);
-                    }
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem addDiscountMenuItem = new JMenuItem("Add Discount");
+                    addDiscountMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = productsTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+                            SupplierProductService supplierProductService = items.get(Integer.parseInt(productsTable.getValueAt(selectedRow, 1).toString()));
+                            setDiscountFrame(nextFrame, supplierProductService, supplierID);
+                            nextFrame.setVisible(false);
+                            // Adjust Size
+//                            editItemsFrame.get(8).pack();
+                        }
+                    });
+                    popupMenu.add(addDiscountMenuItem);
+                    popupMenu.show(productsTable, e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem addDiscountMenuItem = new JMenuItem("Add Discount");
+                    addDiscountMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        int selectedRow = productsTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+                            SupplierProductService supplierProductService = items.get(Integer.parseInt(productsTable.getValueAt(selectedRow, 1).toString()));
+                            setDiscountFrame(nextFrame, supplierProductService, supplierID);
+                            nextFrame.setVisible(false);
+                            // Adjust Size
+//                            editItemsFrame.get(5).pack();
+                        }
+
+                        // discount frame
+
+                    });
+                    popupMenu.add(addDiscountMenuItem);
+
+                    popupMenu.show(productsTable, e.getX(), e.getY());
                 }
             }
         });
-        panel.add(deleteItemButton);
 
-        JButton editItemButton = new JButton("Edit an item");
-        editItemButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editItem(supplierID);
+        JButton nextButton = new JButton("Update");
+        nextButton.addActionListener(e -> {
+            Response res = supplierService.updateSupplierProducts(supplierID, items);
+            if (!res.errorOccurred())
+                JOptionPane.showMessageDialog(null, "Supplier updated successfully, supplier's id is: " + res.getSupplierId(), "Supplier Added Successfully", JOptionPane.INFORMATION_MESSAGE);
+            else {
+                JOptionPane.showMessageDialog(null, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+            frame.setVisible(false);
+            prev.setVisible(true);
+//            nextFrame.setLocationRelativeTo(null);
+            //Adjust Size
+            prev.pack();
         });
-        panel.add(editItemButton);
 
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                prev.setVisible(true);
-
-
-            }
+        backButton.addActionListener(e -> {
+            frame.setVisible(false);
+            prev.setVisible(true);
+            prev.pack();
         });
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                frame.dispose();
+                frame.setVisible(false);
                 prev.setVisible(true);
+                prev.pack();
             }
         });
-        panel.add(backButton);
 
-        frame.add(panel);
+        JPanel backNextPanel = new JPanel();
+        backNextPanel.setLayout(new GridLayout(1, 2, 10, 10));
+        backNextPanel.add(backButton);
+        backNextPanel.add(nextButton);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(backNextPanel, BorderLayout.SOUTH);
+
+
+        frame.getContentPane().add(panel);
         frame.setVisible(true);
-
-    }
-
-
-    public void createProduct() {
-        JFrame frame = new JFrame("Create Product");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 400);
+        frame.pack();
         frame.setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(10, 2, 10, 10));
-
-        JLabel nameLabel = new JLabel("Product's Name:");
-        panel.add(nameLabel);
-
-        JTextField nameTextField = new JTextField();
-        panel.add(nameTextField);
-
-        JLabel productIdLabel = new JLabel("Product's ID:");
-        panel.add(productIdLabel);
-
-        JTextField productIdTextField = new JTextField();
-        panel.add(productIdTextField);
-
-        JLabel priceLabel = new JLabel("Product's Price:");
-        panel.add(priceLabel);
-
-        JTextField priceTextField = new JTextField();
-        panel.add(priceTextField);
-
-        JLabel catalogNumberLabel = new JLabel("Product's Catalog Number:");
-        panel.add(catalogNumberLabel);
-
-        JTextField catalogNumberTextField = new JTextField();
-        panel.add(catalogNumberTextField);
-
-        JLabel amountLabel = new JLabel("Product's Amount:");
-        panel.add(amountLabel);
-
-        JTextField amountTextField = new JTextField();
-        panel.add(amountTextField);
-
-        JLabel manufacturerLabel = new JLabel("Product's Manufacturer:");
-        panel.add(manufacturerLabel);
-
-        JTextField manufacturerTextField = new JTextField();
-        panel.add(manufacturerTextField);
-
-        JLabel expirationDaysLabel = new JLabel("Product's Expiration Days:");
-        panel.add(expirationDaysLabel);
-
-        JTextField expirationDaysTextField = new JTextField();
-        panel.add(expirationDaysTextField);
-
-        JLabel weightLabel = new JLabel("Product's Weight:");
-        panel.add(weightLabel);
-
-        JTextField weightTextField = new JTextField();
-        panel.add(weightTextField);
-
-        JLabel discountsLabel = new JLabel("Discounts (amount:discount %,amount:discount %,...):");
-        panel.add(discountsLabel);
-
-        JTextField discountsTextField = new JTextField();
-        panel.add(discountsTextField);
-
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = nameTextField.getText();
-                int productId = Integer.parseInt(productIdTextField.getText());
-                double price = Double.parseDouble(priceTextField.getText());
-                int catalogNumber = Integer.parseInt(catalogNumberTextField.getText());
-                int amount = Integer.parseInt(amountTextField.getText());
-                String manufacturer = manufacturerTextField.getText();
-                int expirationDays = Integer.parseInt(expirationDaysTextField.getText());
-                double weight = Double.parseDouble(weightTextField.getText());
-                String discountsText = discountsTextField.getText();
-                HashMap<Integer, Double> discounts = new HashMap<>();
-
-                String[] arr = discountsText.split("\\s*,\\s*");
-                for (String s1 : arr) {
-                    String[] val = s1.split(":");
-                    int key = Integer.parseInt(val[0]);
-                    double value = Double.parseDouble(val[1]);
-                    discounts.put(key, value);
-                }
-
-                 product = new SupplierProductService(name, productId, catalogNumber, price, amount, discounts, manufacturer, expirationDays, weight);
-
-
-                // Call the supplierService.createProduct method with the collected data
-                // Response res = supplierService.createProduct(product);
-                // Handle the response accordingly
-                frame.dispose();
-
-            }
-        });
-
-        panel.add(submitButton);
-
-        frame.add(panel);
-        frame.setVisible(true);
+        frame.setLocation(frame.getX(), frame.getY() - 35);
     }
 
-
-    public void editItem(int supplierID) {
-        JFrame frame = new JFrame("Edit Item");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 200);
-        frame.setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1, 10, 10));
-
-        JLabel productIdLabel = new JLabel("Please enter the product ID you want to edit:");
-        panel.add(productIdLabel);
-
-        JTextField productIdTextField = new JTextField();
-        panel.add(productIdTextField);
-
-        JButton editButton = new JButton("Edit");
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String productIdInput = productIdTextField.getText();
-                if (productIdInput != null && !productIdInput.isEmpty()) {
-                    int productId = Integer.parseInt(productIdInput);
-                    String[] options = {"Edit item's catalog number", "Delete a discount for this item", "Add a discount for this item"};
-                    int action = JOptionPane.showOptionDialog(frame, "Please choose an action:", "Edit Item", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-                    switch (action) {
-                        case 0:
-                            editItemCatalogNumber(supplierID, productId);
-                            break;
-                        case 1:
-                            editRemoveDiscount(supplierID, productId);
-                            break;
-                        case 2:
-                            editAddDiscount(supplierID, productId);
-                            break;
-                    }
-                }
-            }
-        });
-        panel.add(editButton);
-
-        frame.add(panel);
-        frame.setVisible(true);
-    }
+//    public void createProduct() {
+//        JFrame frame = new JFrame("Create Product");
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.setSize(400, 400);
+//        frame.setLocationRelativeTo(null);
+//
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new GridLayout(10, 2, 10, 10));
+//
+//        JLabel nameLabel = new JLabel("Product's Name:");
+//        panel.add(nameLabel);
+//
+//        JTextField nameTextField = new JTextField();
+//        panel.add(nameTextField);
+//
+//        JLabel productIdLabel = new JLabel("Product's ID:");
+//        panel.add(productIdLabel);
+//
+//        JTextField productIdTextField = new JTextField();
+//        panel.add(productIdTextField);
+//
+//        JLabel priceLabel = new JLabel("Product's Price:");
+//        panel.add(priceLabel);
+//
+//        JTextField priceTextField = new JTextField();
+//        panel.add(priceTextField);
+//
+//        JLabel catalogNumberLabel = new JLabel("Product's Catalog Number:");
+//        panel.add(catalogNumberLabel);
+//
+//        JTextField catalogNumberTextField = new JTextField();
+//        panel.add(catalogNumberTextField);
+//
+//        JLabel amountLabel = new JLabel("Product's Amount:");
+//        panel.add(amountLabel);
+//
+//        JTextField amountTextField = new JTextField();
+//        panel.add(amountTextField);
+//
+//        JLabel manufacturerLabel = new JLabel("Product's Manufacturer:");
+//        panel.add(manufacturerLabel);
+//
+//        JTextField manufacturerTextField = new JTextField();
+//        panel.add(manufacturerTextField);
+//
+//        JLabel expirationDaysLabel = new JLabel("Product's Expiration Days:");
+//        panel.add(expirationDaysLabel);
+//
+//        JTextField expirationDaysTextField = new JTextField();
+//        panel.add(expirationDaysTextField);
+//
+//        JLabel weightLabel = new JLabel("Product's Weight:");
+//        panel.add(weightLabel);
+//
+//        JTextField weightTextField = new JTextField();
+//        panel.add(weightTextField);
+//
+//        JLabel discountsLabel = new JLabel("Discounts (amount:discount %,amount:discount %,...):");
+//        panel.add(discountsLabel);
+//
+//        JTextField discountsTextField = new JTextField();
+//        panel.add(discountsTextField);
+//
+//        JButton submitButton = new JButton("Submit");
+//        submitButton.addActionListener(e -> {
+//            String name = nameTextField.getText();
+//            int productId = Integer.parseInt(productIdTextField.getText());
+//            double price = Double.parseDouble(priceTextField.getText());
+//            int catalogNumber = Integer.parseInt(catalogNumberTextField.getText());
+//            int amount = Integer.parseInt(amountTextField.getText());
+//            String manufacturer = manufacturerTextField.getText();
+//            int expirationDays = Integer.parseInt(expirationDaysTextField.getText());
+//            double weight = Double.parseDouble(weightTextField.getText());
+//            String discountsText = discountsTextField.getText();
+//            HashMap<Integer, Double> discounts = new HashMap<>();
+//
+//            String[] arr = discountsText.split("\\s*,\\s*");
+//            for (String s1 : arr) {
+//                String[] val = s1.split(":");
+//                int key = Integer.parseInt(val[0]);
+//                double value = Double.parseDouble(val[1]);
+//                discounts.put(key, value);
+//            }
+//
+//             product = new SupplierProductService(name, productId, catalogNumber, price, amount, discounts, manufacturer, expirationDays, weight);
+//
+//
+//            // Call the supplierService.createProduct method with the collected data
+//            // Response res = supplierService.createProduct(product);
+//            // Handle the response accordingly
+//            frame.dispose();
+//
+//        });
+//
+//        panel.add(submitButton);
+//
+//        frame.add(panel);
+//        frame.setVisible(true);
+//    }
+//
+//
+//    public void editItem(int supplierID) {
+//        JFrame frame = new JFrame("Edit Item");
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.setSize(400, 200);
+//        frame.setLocationRelativeTo(null);
+//
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new GridLayout(3, 1, 10, 10));
+//
+//        JLabel productIdLabel = new JLabel("Please enter the product ID you want to edit:");
+//        panel.add(productIdLabel);
+//
+//        JTextField productIdTextField = new JTextField();
+//        panel.add(productIdTextField);
+//
+//        JButton editButton = new JButton("Edit");
+//        editButton.addActionListener(e -> {
+//            String productIdInput = productIdTextField.getText();
+//            if (productIdInput != null && !productIdInput.isEmpty()) {
+//                int productId = Integer.parseInt(productIdInput);
+//                String[] options = {"Edit item's catalog number", "Delete a discount for this item", "Add a discount for this item"};
+//                int action = JOptionPane.showOptionDialog(frame, "Please choose an action:", "Edit Item", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+//                switch (action) {
+//                    case 0 -> editItemCatalogNumber(supplierID, productId);
+//                    case 1 -> editRemoveDiscount(supplierID, productId);
+//                    case 2 -> editAddDiscount(supplierID, productId);
+//                }
+//            }
+//        });
+//        panel.add(editButton);
+//
+//        frame.add(panel);
+//        frame.setVisible(true);
+//    }
 
     private void editAddDiscount(int supplierID, int productId) {
         JFrame frame = new JFrame("Edit Add Discount");
@@ -2001,21 +2202,18 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(discountTextField);
 
         JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String s = discountTextField.getText();
-                String[] val = s.split(":");
-                int amount = Integer.parseInt(val[0]);
-                double discount = Double.parseDouble(val[1]);
-                Response res = supplierService.addDiscounts(supplierID, productId, amount, discount);
-                if (res.errorOccurred())
-                    JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                else
-                    JOptionPane.showMessageDialog(frame, "Discount added successfully");
+        submitButton.addActionListener(e -> {
+            String s = discountTextField.getText();
+            String[] val = s.split(":");
+            int amount = Integer.parseInt(val[0]);
+            double discount = Double.parseDouble(val[1]);
+            Response res = supplierService.addDiscounts(supplierID, productId, amount, discount);
+            if (res.errorOccurred())
+                JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(frame, "Discount added successfully");
 
-                frame.dispose();
-            }
+            frame.dispose();
         });
 
         panel.add(submitButton);
@@ -2041,21 +2239,18 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(discountTextField);
 
         JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String s = discountTextField.getText();
-                String[] val = s.split(":");
-                int amount = Integer.parseInt(val[0]);
-                double discount = Double.parseDouble(val[1]);
-                Response res = supplierService.removeDiscounts(supplierID, productId, amount, discount);
-                if (res.errorOccurred())
-                    JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                else
-                    JOptionPane.showMessageDialog(frame, "Discount deleted successfully");
+        submitButton.addActionListener(e -> {
+            String s = discountTextField.getText();
+            String[] val = s.split(":");
+            int amount = Integer.parseInt(val[0]);
+            double discount = Double.parseDouble(val[1]);
+            Response res = supplierService.removeDiscounts(supplierID, productId, amount, discount);
+            if (res.errorOccurred())
+                JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(frame, "Discount deleted successfully");
 
-                frame.dispose();
-            }
+            frame.dispose();
         });
 
         panel.add(submitButton);
@@ -2081,18 +2276,15 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(catalogNumberTextField);
 
         JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int newCatalogNumber = Integer.parseInt(catalogNumberTextField.getText());
-                Response res = supplierService.editItemCatalogdNumber(supplierId, productId, newCatalogNumber);
-                if (res.errorOccurred())
-                    JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                else
-                    JOptionPane.showMessageDialog(frame, "Catalog number updated successfully");
+        submitButton.addActionListener(e -> {
+            int newCatalogNumber = Integer.parseInt(catalogNumberTextField.getText());
+            Response res = supplierService.editItemCatalogdNumber(supplierId, productId, newCatalogNumber);
+            if (res.errorOccurred())
+                JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(frame, "Catalog number updated successfully");
 
-                frame.dispose();
-            }
+            frame.dispose();
         });
 
         panel.add(submitButton);
@@ -2168,72 +2360,66 @@ public class SupplierManagerGUI extends JFrame {
         panel.add(supplyTimeTextField);
 
         JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
-                boolean selfSupply;
-                String supplyMethod;
-                int supplyTime;
-                ArrayList<DayOfWeek> days = new ArrayList<>();
+        submitButton.addActionListener(e -> {
+            String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
+            boolean selfSupply;
+            String supplyMethod;
+            int supplyTime;
+            ArrayList<DayOfWeek> days = new ArrayList<>();
 
-                if (byDaysRadioButton.isSelected()) {
-                    selfSupply = true;
-                    supplyMethod = "FixedDay";
-                    supplyTime = -1;
+            if (byDaysRadioButton.isSelected()) {
+                selfSupply = true;
+                supplyMethod = "FixedDay";
+                supplyTime = -1;
 
-                    if (mondayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.MONDAY);
-                    }
-                    if (tuesdayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.TUESDAY);
-                    }
-                    if (wednesdayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.WEDNESDAY);
-                    }
-                    if (thursdayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.THURSDAY);
-                    }
-                    if (fridayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.FRIDAY);
-                    }
-                    if (saturdayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.SATURDAY);
-                    }
-                    if (sundayCheckBox.isSelected()) {
-                        days.add(DayOfWeek.SUNDAY);
-                    }
-                } else if (byOrderRadioButton.isSelected()) {
-                    selfSupply = true;
-                    supplyMethod = "DaysAmount";
-                    supplyTime = Integer.parseInt(supplyTimeTextField.getText());
-                } else {
-                    selfSupply = false;
-                    supplyMethod = "SuperLee";
-                    supplyTime = Integer.parseInt(supplyTimeTextField.getText());
+                if (mondayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.MONDAY);
                 }
-
-                // Call the supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays method with the collected data
-                Response res = supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays(id, selfSupply, paymentMethod, days, supplyMethod, supplyTime);
-                if (!res.errorOccurred()) {
-                    JOptionPane.showMessageDialog(frame, "The supplier's delivery term changed successfully for Supplier with id: " + id);
-                } else {
-                    JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                if (tuesdayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.TUESDAY);
                 }
-
-                frame.dispose();
-                prevprev.setVisible(true);
-                prev.dispose();
+                if (wednesdayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.WEDNESDAY);
+                }
+                if (thursdayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.THURSDAY);
+                }
+                if (fridayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.FRIDAY);
+                }
+                if (saturdayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.SATURDAY);
+                }
+                if (sundayCheckBox.isSelected()) {
+                    days.add(DayOfWeek.SUNDAY);
+                }
+            } else if (byOrderRadioButton.isSelected()) {
+                selfSupply = true;
+                supplyMethod = "DaysAmount";
+                supplyTime = Integer.parseInt(supplyTimeTextField.getText());
+            } else {
+                selfSupply = false;
+                supplyMethod = "SuperLee";
+                supplyTime = Integer.parseInt(supplyTimeTextField.getText());
             }
+
+            // Call the supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays method with the collected data
+            Response res = supplierService.editPaymentMethodAndDeliveryMethodAndDeliveryDays(id, selfSupply, paymentMethod, days, supplyMethod, supplyTime);
+            if (!res.errorOccurred()) {
+                JOptionPane.showMessageDialog(frame, "The supplier's delivery term changed successfully for Supplier with id: " + id);
+            } else {
+                JOptionPane.showMessageDialog(frame, res.getErrorMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            frame.dispose();
+            prevprev.setVisible(true);
+            prev.dispose();
         });
 
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                prev.setVisible(true);
-            }
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            prev.setVisible(true);
         });
 
         frame.addWindowListener(new WindowAdapter() {
@@ -2244,8 +2430,9 @@ public class SupplierManagerGUI extends JFrame {
             }
         });
 
-        panel.add(submitButton);
         panel.add(backButton);
+        panel.add(submitButton);
+
 
         frame.add(panel);
         frame.setVisible(true);
@@ -2306,14 +2493,14 @@ public class SupplierManagerGUI extends JFrame {
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(f, "Please select a supplier from the table.", "No Supplier Selected", JOptionPane.WARNING_MESSAGE);
             } else {
-                int selectedID = (int) table.getValueAt(selectedRow, 0);
-                String selectedName = (String) table.getValueAt(selectedRow, 1);
-                HashMap<Integer, Order> orders = supplierService.getOrdersFromSupplier(selectedID);
-                for (Map.Entry<Integer, Order> entry : orders.entrySet()) {
-                    Integer orderId = entry.getKey();
-                    Order order = entry.getValue();
-                    order.orderViaGui();
-                }
+
+                int selectedID = Integer.parseInt(String.valueOf(table.getValueAt(selectedRow, 0)));
+                String supplierName = String.valueOf(table.getValueAt(selectedRow, 1));
+                JFrame orderHistoryUI = new JFrame("Supplier " + selectedID + " Order History");
+                f.setVisible(false);
+                printOrdersHistory(orderHistoryUI, selectedID, supplierName, f);
+                orderHistoryUI.pack();
+
             }
         });
 
@@ -2334,6 +2521,296 @@ public class SupplierManagerGUI extends JFrame {
         f.setLocationRelativeTo(null);
         f.setVisible(true);
     }
+
+    private void printOrdersHistory(JFrame orderHistoryUI, int supplierID, String supplierName, JFrame beforeFrame)
+    {
+
+        JPanel orderHistoryPanel = new JPanel(new GridLayout(1, 1, 10,10));
+        orderHistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        DefaultTableModel ordersTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Set all cells to be not editable
+            }
+        };
+        ordersTableModel.setRowCount(0);
+        ordersTableModel.addColumn("Order ID");
+        ordersTableModel.addColumn("Supplier ID");
+        ordersTableModel.addColumn("Supplier Name");
+        ordersTableModel.addColumn("Contact Phone Number");
+        ordersTableModel.addColumn("Creation Date");
+        ordersTableModel.addColumn("Delivery Date");
+        ordersTableModel.addColumn("Collected");
+        ordersTableModel.addColumn("Price Before Discount");
+        ordersTableModel.addColumn("Price After Discount");
+        JTable ordersTable = new JTable(ordersTableModel);
+        JScrollPane ordersScrollPane = new JScrollPane(ordersTable);
+        orderHistoryPanel.add(ordersScrollPane, BorderLayout.CENTER);
+
+        orderHistoryUI.getContentPane().add(orderHistoryPanel);
+
+
+
+        HashMap<Integer, Order> orders = supplierService.getOrdersFromSupplier(supplierID);
+        if(orders == null || orders.size() == 0)
+        {
+            JOptionPane.showMessageDialog(null, "There is not orders for this supplier", "Error", JOptionPane.ERROR_MESSAGE);
+            orderHistoryUI.dispose();
+            beforeFrame.setVisible(true);
+        }
+        else
+        {
+            orderHistoryUI.setVisible(true);
+            beforeFrame.setVisible(false);
+            for(Order order : orders.values())
+                ordersTableModel.addRow(new Object[] { order.getOrderID(), order.getSupplierId(), order.getSupplierName(), order.getContactPhoneNumber(), order.getCreationDate(), order.getDeliveryDate(), order.isCollected(), order.getTotalPriceBeforeDiscount(), order.getTotalPriceAfterDiscount() });
+            ordersTableModel.fireTableDataChanged();
+        }
+
+
+        ordersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+                            orderHistoryUI.setVisible(false);
+                            JFrame showProductsFrame = new JFrame("Products On Order "+ ordersTable.getValueAt(selectedRow, 0));
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            chosenProductsTableModel.addColumn("Amount To Order");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
+
+                            int supplierID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 1).toString());
+                            int orderID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 0).toString());
+                            HashMap<Integer, SupplierProduct> supplierProducts = supplierService.getAllSupplierProductsByID(supplierID);
+                            Order order = supplierService.getOrderByID(orderID);
+                            ArrayList<SupplierProduct> orderProducts = order.getItemsInOrder();
+                            for (SupplierProduct supplierProduct : supplierProducts.values())
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight(), orderProducts.get(orderProducts.indexOf(supplierProduct)).getAmount()});
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    orderHistoryUI.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(ordersTable, e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+
+                            orderHistoryUI.setVisible(false);
+                            JFrame showProductsFrame = new JFrame("Products On Order "+ ordersTable.getValueAt(selectedRow, 0));
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount On Order");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
+
+                            int orderID = Integer.parseInt(ordersTable.getValueAt(selectedRow, 0).toString());
+                            Order order = supplierService.getOrderByID(orderID);
+                            ArrayList<SupplierProduct> orderProducts = order.getItemsInOrder();
+                            for (SupplierProduct supplierProduct : orderProducts)
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight() });
+                            showProductsFrame.pack();
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    orderHistoryUI.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(ordersTable, e.getX(), e.getY());
+                }
+            }
+        });
+
+        orderHistoryUI.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                orderHistoryUI.dispose();
+                beforeFrame.setVisible(true);
+            }
+        });
+
+        orderHistoryUI.setSize(800, 600);
+        orderHistoryUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        orderHistoryUI.setLocationRelativeTo(null);
+//        orderHistoryUI.setVisible(true);
+        orderHistoryUI.pack();
+
+    }
+    private void setDiscountFrame(JFrame nextFrame, SupplierProductService supplierProduct, int supplierID) {
+
+        JFrame currentFrame = new JFrame("Add Product Discount");
+        currentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                currentFrame.setVisible(false);
+                nextFrame.setVisible(true);
+            }
+        });
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        DefaultTableModel discountTableModel = new DefaultTableModel();
+        discountTableModel.setRowCount(0);
+        discountTableModel.addColumn("Product Amount");
+        discountTableModel.addColumn("Discount (%)");
+        JTable discountTable = new JTable(discountTableModel);
+        JScrollPane scrollPane = new JScrollPane(discountTable);
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(4, 2, 10, 10));
+
+        JLabel amountLabel = new JLabel("Product Amount:");
+        JTextField amountTextField = new JTextField();
+        inputPanel.add(amountLabel);
+        inputPanel.add(amountTextField);
+
+        JLabel discountLabel = new JLabel("Discount (%):");
+        JTextField discountTextField = new JTextField();
+        inputPanel.add(discountLabel);
+        inputPanel.add(discountTextField);
+
+
+        JButton removeDiscount = new JButton("Remove Discount");
+        inputPanel.add(removeDiscount);
+
+        JButton addDiscount = new JButton("Add Discount");
+        inputPanel.add(addDiscount);
+
+        JButton nextButton = new JButton("Stop Adding Discounts");
+        inputPanel.add(new JLabel());
+        inputPanel.add(nextButton);
+
+
+        HashMap<Integer, Double> discounts = supplierService.getProductDiscountByID(supplierID, supplierProduct.getProductId());
+        for(Map.Entry<Integer, Double> entry : discounts.entrySet())
+            discountTableModel.addRow(new Object[] { entry.getKey(), entry.getValue() });
+        removeDiscount.addActionListener(e -> {
+            int selectedRow = discountTable.getSelectedRow();
+            int productAmount = Integer.parseInt(discountTable.getValueAt(selectedRow, 0).toString());
+
+            supplierProduct.removeDiscountPerAmount(productAmount);
+//            discounts.remove(productAmount);
+            discountTableModel.removeRow(selectedRow);
+        });
+
+        addDiscount.addActionListener(e -> {
+            int productAmount;
+            try {
+                productAmount = Integer.parseInt(amountTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product amount, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double productDiscount;
+            try {
+                productDiscount = Double.parseDouble(discountTextField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid product discount, please enter a valid integer", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            supplierProduct.addDiscountPerAmount(productAmount, productDiscount);
+//            discounts.put(productAmount, productDiscount);
+            discountTableModel.addRow(new Object[]{productAmount, productDiscount});
+            amountTextField.setText("");
+            discountTextField.setText("");
+        });
+
+
+        nextButton.addActionListener(e -> {
+            discountTableModel.setRowCount(0);
+            currentFrame.setVisible(false);
+            nextFrame.setVisible(true);
+//            nextFrame.setLocationRelativeTo(null);
+            //Adjust Size
+            nextFrame.pack();
+        });
+
+
+//        JPanel backNextPanel = new JPanel();
+//        backNextPanel.setLayout(new GridLayout(1, 2, 10, 10));
+//        backNextPanel.add(new JLabel());
+//        backNextPanel.add(nextButton);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+//        panel.add(backNextPanel, BorderLayout.SOUTH);
+
+
+        currentFrame.getContentPane().add(panel);
+        currentFrame.setSize(400, 300);
+        currentFrame.setLocationRelativeTo(null);
+        currentFrame.setVisible(true);
+        currentFrame.pack();
+    }
+
 
 
 
@@ -2360,13 +2837,6 @@ public class SupplierManagerGUI extends JFrame {
 //        discounts = new HashMap<>();
     }
 
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            SupplierManagerGUI gui = new SupplierManagerGUI();
-//            gui.setVisible(true);
-//        });
-//    }
 
     private static void setFormatExample(JTextField textField, String formatExample) {
         Font defaultFont = textField.getFont();

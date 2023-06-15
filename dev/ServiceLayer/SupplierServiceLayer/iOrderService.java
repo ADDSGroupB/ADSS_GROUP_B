@@ -47,4 +47,5 @@ public interface iOrderService {
     Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount);
 
     Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount);
+
 }

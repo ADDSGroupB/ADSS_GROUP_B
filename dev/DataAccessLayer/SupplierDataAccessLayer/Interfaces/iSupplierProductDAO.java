@@ -3,12 +3,16 @@ package DataAccessLayer.SupplierDataAccessLayer.Interfaces;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
 import Utillity.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface iSupplierProductDAO {
 
     HashMap<Integer, SupplierProduct> getAllSupplierProductsByID(int supplierID);
     SupplierProduct getSupplierProduct(int supplierID, int productID);
+
+    Response updateSupplierProducts(int supplierID, ArrayList<SupplierProduct> supplierProducts);
+
     Response addSupplierProduct(int supplierID, SupplierProduct supplierProduct);
     Response removeSupplierProduct(int supplierID, int productID);
     Response updateSupplierProductCatalogNumber(int supplierID, int productID, int catalogNumber);

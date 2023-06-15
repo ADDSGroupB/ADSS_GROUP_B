@@ -45,7 +45,7 @@ public class FacadeSupplier {
         if (!res.errorOccurred()) {
             int supplierId = res.getSupplierId();
             HashMap<Integer, SupplierProduct> supllyingProducts = productController.createSupllyingProducts(serviceAgreement.getSupllyingProducts(), supplierId);
-            if(serviceAgreement.getTotalDiscountInPrecentageForOrderAmount()!=null && serviceAgreement.getTotalOrderDiscountPerOrderPrice()!=null){
+            if(serviceAgreement.getTotalDiscountInPrecentageForOrderAmount()!=null || serviceAgreement.getTotalOrderDiscountPerOrderPrice()!=null){
                 Agreement agreement1 = supplierController.createAgreementWithDiscounts(serviceAgreement.getPaymentType(), serviceAgreement.getSelfSupply(), serviceAgreement.getSupplyDays(), supllyingProducts, serviceAgreement.getSupplyMethod(), serviceAgreement.getSupplyTime() ,serviceAgreement.getTotalDiscountInPrecentageForOrderAmount(), serviceAgreement.getTotalOrderDiscountPerOrderPrice());
                 supplierController.setAgreement(agreement1, supplierId);
                 agreementDAO.addAgreementWithDiscount(supplierId, agreement1);
@@ -107,11 +107,7 @@ public class FacadeSupplier {
     }
 
     public Response removeItemFromAgreement(int supplierID, int itemIdToDelete) {
-        Response res1 = supplierController.removeItemFromAgreement(supplierID, itemIdToDelete);
-//        if (!res1.errorOccurred()){//want to delete product from product controller
-//            return productController.removeProductToSupplier(supplierID, itemIdToDelete);
-      //  }
-        return res1;
+        return supplierController.removeItemFromAgreement(supplierID, itemIdToDelete);
     }
 
     public Response editPaymentMethodAndDeliveryMethodAndDeliveryDays(int supplierId, boolean selfSupply, String paymentMethod, ArrayList<DayOfWeek> days, String supplyMethod, int supplyTime) {
@@ -119,11 +115,7 @@ public class FacadeSupplier {
     }
 
     public Response editItemCatalodNumber(int supplierId, int productId, int newCatalogNumber) {
-        Response res = supplierController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
-//        if(!res.errorOccurred()){
-//            productController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
-//        }
-        return res;
+        return supplierController.editItemCatalodNumber(supplierId, productId, newCatalogNumber);
     }
 
     public void printSuppliers() {
@@ -207,4 +199,8 @@ public class FacadeSupplier {
     public Response updatePeriodicOrder(int orderID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) { return periodicOrderController.updatePeriodicOrder(orderID, fixedDay, productsAndAmount); }
 
     public Response updateOrder(int orderID, HashMap<Integer, Integer> productsAndAmount) { return orderController.updateOrder(orderID, productsAndAmount); }
+
+    public Response updateSupplierProducts(int supplierID, ArrayList<SupplierProduct> supplierProducts) { return supplierController.updateSupplierProducts(supplierID, supplierProducts); }
+
+    public HashMap<Integer, Double> getProductDiscountByID(int supplierID, int productID) { return supplierController.getProductDiscountByID(supplierID, productID); }
 }

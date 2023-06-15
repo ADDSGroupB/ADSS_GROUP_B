@@ -21,24 +21,18 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrdersGUI extends JFrame {
-    private JButton periodicOrderButton;
-    private JButton existingOrderButton;
-    private JButton executePeriodicOrdersButton;
-    private JButton executeShortageOrdersButton;
-    private JButton printOrdersHistoryButton;
-    private JButton backButton;
     private OrderService orderService;
     private MainController mainController;
     private Branch branch;
     private JFrame branchMenu;
     public OrdersGUI(Branch _branch, MainController _mainController, JFrame _branchMenu) {
         // Main orders GUI
-        periodicOrderButton = new JButton("Periodic Order");
-        existingOrderButton = new JButton("Existing Order");
-        executePeriodicOrdersButton = new JButton("Execute Periodic Orders For Today");
-        executeShortageOrdersButton = new JButton("Execute Shortage Orders For Today");
-        printOrdersHistoryButton = new JButton("Print branch's orders history");
-        backButton = new JButton("Back To Branch Menu");
+        JButton periodicOrderButton = new JButton("Periodic Order");
+        JButton existingOrderButton = new JButton("Existing Order");
+        JButton executePeriodicOrdersButton = new JButton("Execute Periodic Orders For Today");
+        JButton executeShortageOrdersButton = new JButton("Execute Shortage Orders For Today");
+        JButton printOrdersHistoryButton = new JButton("Print branch's orders history");
+        JButton backButton = new JButton("Back To Branch Menu");
         orderService = new OrderService();
         branch = _branch;
         mainController = _mainController;
@@ -136,8 +130,8 @@ public class OrdersGUI extends JFrame {
         JLabel titleLabel = new JLabel("Periodic Orders Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-        JButton createOrderButton = new JButton("Create New Periodic Order");;
-        JButton updateProductsButton = new JButton("Update Periodic Order");;
+        JButton createOrderButton = new JButton("Create New Periodic Order");
+        JButton updateProductsButton = new JButton("Update Periodic Order");
         JButton backButton = new JButton("Back To Orders Menu");
 
 
@@ -363,7 +357,7 @@ public class OrdersGUI extends JFrame {
                     return;
                 }
                 int productID = Integer.parseInt(String.valueOf(chosenProductsTableModel.getValueAt(row, 1)));
-                if (amountToOrder == 0) {
+                if (amountToOrder <= 0) {
                     JOptionPane.showMessageDialog(null, "The amount to order should be more than zero, the amount of product ID " + productID + " is zero", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -584,7 +578,7 @@ public class OrdersGUI extends JFrame {
                     return;
                 }
                 int productID = Integer.parseInt(String.valueOf(chosenProductsTableModel.getValueAt(row, 1)));
-                if (amountToOrder == 0) {
+                if (amountToOrder <= 0) {
                     JOptionPane.showMessageDialog(null, "The amount to order should be more than zero, the amount of product ID " + productID + " is zero", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -826,7 +820,7 @@ public class OrdersGUI extends JFrame {
                     return;
                 }
                 int productID = Integer.parseInt(String.valueOf(chosenProductsTableModel.getValueAt(row, 1)));
-                if (amountToOrder == 0) {
+                if (amountToOrder <= 0) {
                     JOptionPane.showMessageDialog(null, "The amount to order should be more than zero, the amount of product ID " + productID + " is zero", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }

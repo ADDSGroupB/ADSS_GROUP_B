@@ -7,7 +7,10 @@ import Utillity.Pair;
 import Utillity.Response;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SupplierProductDAO implements iSupplierProductDAO {
     private final Connection connection;
@@ -85,6 +88,42 @@ public class SupplierProductDAO implements iSupplierProductDAO {
     }
 
     @Override
+    public Response updateSupplierProducts(int supplierID, ArrayList<SupplierProduct> supplierProducts) {
+        for(SupplierProduct supplierProduct : getAllSupplierProductsByID(supplierID).values())
+        {
+            Response response = removeSupplierProduct(supplierID, supplierProduct.getProductID());
+            if(response.errorOccurred()) return response;
+
+        }
+
+        for(SupplierProduct supplierProduct : supplierProducts)
+        {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO supplierProduct (supplierID, productID, catalogNumber, name, price, amount, weight, manufacturer, expirationDays) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                statement.setInt(1, supplierID);
+                statement.setInt(2, supplierProduct.getProductID());
+                statement.setInt(3, supplierProduct.getCatalogId());
+                statement.setString(4, supplierProduct.getName());
+                statement.setDouble(5, supplierProduct.getPrice());
+                statement.setInt(6, supplierProduct.getAmount());
+                statement.setDouble(7, supplierProduct.getWeight());
+                statement.setString(8, supplierProduct.getManufacturer());
+                statement.setInt(9, supplierProduct.getExpirationDays());
+                statement.executeUpdate();
+                for (Map.Entry<Integer, Double> entry : supplierProduct.getDiscountPerAmount().entrySet())
+                {
+                    Response response = discountPerAmountDAO.addDiscount(supplierID, supplierProduct.getProductID(), entry.getKey(), entry.getValue());
+                    if(response.errorOccurred()) return response;
+                }
+                supplierProductIM.put(new Pair<>(supplierID, supplierProduct.getProductID()), supplierProduct);
+            } catch (SQLException e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
+                return new Response(e.getMessage());
+            }
+        }
+        return new Response(supplierID);
+    }
+
+    @Override
     public Response addSupplierProduct(int supplierID, SupplierProduct supplierProduct) {
         try (PreparedStatement statement = connection.prepareStatement("INSERT INTO supplierProduct (supplierID, productID, catalogNumber, name, price, amount, weight, manufacturer, expirationDays) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"))
         {
@@ -107,6 +146,12 @@ public class SupplierProductDAO implements iSupplierProductDAO {
     public Response removeSupplierProduct(int supplierID, int productID) {
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM supplierProduct WHERE supplierID = ? AND productID = ?"))
         {
+//            HashMap<Integer, Double> discounts = discountPerAmountDAO.getProductDiscountByID(supplierID, productID);
+//            for (Map.Entry<Integer, Double> entry : discounts.entrySet())
+//            {
+//                Response response = discountPerAmountDAO.removeDiscount(supplierID, productID, entry.getKey());
+//                if(response.errorOccurred()) return response;
+//            }
             statement.setInt(1, supplierID);
             statement.setInt(2, productID);
             statement.executeUpdate();
