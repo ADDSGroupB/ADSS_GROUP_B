@@ -7,7 +7,12 @@ import Utillity.Pair;
 import Utillity.Response;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.DayOfWeek;
 import java.util.*;
 
@@ -20,6 +25,7 @@ public class SupplierController {
     private final AgreementDAO agreementDAO;
     private final DeliveryDaysDAO deliveryDaysDAO;
     private static int id;
+    private static boolean printOpen = false;
 
 
     public SupplierController() {
@@ -448,35 +454,176 @@ public class SupplierController {
 
     void printSuppliersGui() {
         JFrame suppliersFrame = new JFrame("Suppliers");
-        suppliersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        suppliersFrame.setSize(400, 300);
-        suppliersFrame.setLocationRelativeTo(null);
-
+        if(printOpen)
+        {
+            JOptionPane.showMessageDialog(suppliersFrame, "Suppliers windows is already open", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        printOpen = true;
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        panel.setLayout(new GridLayout(1, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JTextArea suppliersTextArea = new JTextArea();
-        suppliersTextArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(suppliersTextArea);
+        DefaultTableModel supplierTableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+            return false; // Set all cells to be not editable
+        }};
+        supplierTableModel.addColumn("ID");
+        supplierTableModel.addColumn("Name");
+        supplierTableModel.addColumn("Bank Account");
+        supplierTableModel.addColumn("Contact Phone Number");
+        supplierTableModel.addColumn("Supply Method");
+        supplierTableModel.addColumn("Time To Supply");
+        supplierTableModel.addColumn("Delivery Days");
+        JTable supplierTable = new JTable(supplierTableModel);
+        supplierTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+        supplierTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+        supplierTable.getColumnModel().getColumn(2).setPreferredWidth(250);
+        supplierTable.getColumnModel().getColumn(3).setPreferredWidth(250);
+        supplierTable.getColumnModel().getColumn(4).setPreferredWidth(250);
+        supplierTable.getColumnModel().getColumn(5).setPreferredWidth(250);
+        supplierTable.getColumnModel().getColumn(6).setPreferredWidth(800);
+        JScrollPane supplierScrollPane = new JScrollPane(supplierTable);
 
         // Retrieve the list of suppliers from the supplierService
         HashMap<Integer, Supplier> suppliers = supplierDAO.getAllSuppliers();
-
-        // Populate the suppliersTextArea with supplier information
-        StringBuilder sb = new StringBuilder();
-        for(Map.Entry<Integer, Supplier> supplier : suppliers.entrySet()) {
-            sb.append("Supplier ID: ").append(supplier.getValue().getSupplierId()).append("\n");
-            sb.append("Name: ").append(supplier.getValue().getName()).append("\n");
-            sb.append("Address: ").append(supplier.getValue().getAddress()).append("\n");
-            sb.append("Bank Account: ").append(supplier.getValue().getBankAccount()).append("\n");
-            sb.append("\n");
+        for(Supplier supplier : suppliers.values()) {
+            String supplyTime = supplier.getAgreement().getSupplyTime() == -1 ? "By Days" : String.valueOf(supplier.getAgreement().getSupplyTime());
+            StringBuilder deliveryDays = new StringBuilder();
+            if (supplier.getAgreement().getSupplyTime() == -1)
+                for (DayOfWeek day : supplier.getAgreement().getSupplyDays())
+                    deliveryDays.append(day.toString()).append(", ");
+            else
+                deliveryDays.append("By Amount of days");
+            deliveryDays.setLength(deliveryDays.length() - 2);
+            supplierTableModel.addRow(new Object[]{supplier.getSupplierId(), supplier.getName(), supplier.getBankAccount(), supplier.getContactPhoneNumber(), supplier.getAgreement().getSupplyMethod(), supplyTime, deliveryDays });
         }
-        suppliersTextArea.setText(sb.toString());
 
-        panel.add(scrollPane, BorderLayout.CENTER);
+        supplierTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = supplierTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0)
+                        {
+                            suppliersFrame.setVisible(false);
+                            int supplierID = Integer.parseInt(String.valueOf(supplierTable.getValueAt(selectedRow, 0)));
+                            JFrame showProductsFrame = new JFrame("Products On The Supplier ID " + supplierID);
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+//                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
 
+                            Map<Integer, SupplierProduct> supplierProducts = suppliers.get(supplierID).getSupplyingProducts();
+                            for (SupplierProduct supplierProduct : supplierProducts.values())
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight() });
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.pack();
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    suppliersFrame.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(supplierTable, e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem showProductsMenuItem = new JMenuItem("Show Products");
+                    showProductsMenuItem.addActionListener(ee -> {
+                        // Handle the action when "Add Discount" is clicked
+                        // discount frame
+                        int selectedRow = supplierTable.rowAtPoint(e.getPoint());
+                        if (selectedRow >= 0) {
+                            suppliersFrame.setVisible(false);
+                            int supplierID = Integer.parseInt(String.valueOf(supplierTable.getValueAt(selectedRow, 0)));
+                            JFrame showProductsFrame = new JFrame("Products On The Supplier ID " + supplierID);
+                            DefaultTableModel chosenProductsTableModel = new DefaultTableModel() {
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            chosenProductsTableModel.addColumn("Name");
+                            chosenProductsTableModel.addColumn("Product ID");
+                            chosenProductsTableModel.addColumn("Catalog Number");
+                            chosenProductsTableModel.addColumn("Price");
+                            chosenProductsTableModel.addColumn("Amount");
+                            chosenProductsTableModel.addColumn("Manufacturer");
+                            chosenProductsTableModel.addColumn("Expiration Days");
+                            chosenProductsTableModel.addColumn("Weight");
+                            JTable chosenProductsTable = new JTable(chosenProductsTableModel);
+                            JScrollPane chosenProductsScrollPane = new JScrollPane(chosenProductsTable);
+//                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
+                            showProductsFrame.add(chosenProductsScrollPane);
+
+                            Map<Integer, SupplierProduct> supplierProducts = suppliers.get(supplierID).getSupplyingProducts();
+                            for (SupplierProduct supplierProduct : supplierProducts.values())
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight()});
+                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+                            showProductsFrame.setVisible(true);
+                            showProductsFrame.pack();
+                            showProductsFrame.setLocationRelativeTo(null);
+                            showProductsFrame.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    showProductsFrame.dispose();
+                                    suppliersFrame.setVisible(true);
+                                }
+                            });
+                        }
+                    });
+                    popupMenu.add(showProductsMenuItem);
+                    popupMenu.show(supplierTable, e.getX(), e.getY());
+                }
+            }
+        });
+
+        suppliersFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                suppliersFrame.dispose();
+                printOpen = false;
+            }
+        });
+
+        panel.add(supplierScrollPane);
         suppliersFrame.getContentPane().add(panel);
+        suppliersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        suppliersFrame.setSize(600, 300);
+        suppliersFrame.setLocationRelativeTo(null);
         suppliersFrame.setVisible(true);
+        suppliersFrame.pack();
     }
 
     public Response checkBankAccount(String bankAccount)

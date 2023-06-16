@@ -18,5 +18,4 @@ public interface iSupplierOrderDAO {
     Response markOrderAsCollected(int orderID);
 
     int getLastOrderID();
-//    void printOrder(int orderID); // TODO: Maybe
 }

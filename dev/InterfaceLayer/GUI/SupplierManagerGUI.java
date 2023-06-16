@@ -103,7 +103,6 @@ public class SupplierManagerGUI extends JFrame {
     }
 
     private void addNewSupplier() {
-        // TODO: Test add 2 suppliers and after that try to get info from the first one.
         cleanAddNewSupplierValues();
         // --------------------------- Add New Supplier ---------------------------
         ArrayList<JFrame> addSupplierFrame = new ArrayList<>();
@@ -1728,7 +1727,7 @@ public class SupplierManagerGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        String[] options = {"Supplier's payment method + delivery method + delivery days", "Supplier's items", "Supplier Order Discounts"};
+        String[] options = {"Supplier's payment method + delivery method + delivery days", "Supplier's items"};
         JComboBox<String> comboBox = new JComboBox<>(options);
         panel.add(comboBox, BorderLayout.LINE_END);
 
@@ -1751,7 +1750,6 @@ public class SupplierManagerGUI extends JFrame {
             switch (action) {
                 case 0 -> editPaymentMethodAndDeliveryMethodAndDeliveryDays(supplierID, prev, frame);
                 case 1 -> editItems(supplierID, prev, frame);
-                case 2 -> editOrderDiscount(supplierID, frame); // TODO: make it done
             }
             frame.dispose();
         });
@@ -1774,9 +1772,9 @@ public class SupplierManagerGUI extends JFrame {
         frame.pack();
     }
 
-    private void editOrderDiscount(int supplierID, JFrame frame) {
-
-    }
+//    private void editOrderDiscount(int supplierID, JFrame frame) {
+//
+//    }
 
     private void editItems(int supplierID, JFrame prevprev, JFrame prev) {
         JFrame frame = new JFrame("Edit Items");
@@ -2300,6 +2298,7 @@ public class SupplierManagerGUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
+        frame.pack();
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 2, 10, 10));
@@ -2456,7 +2455,12 @@ public class SupplierManagerGUI extends JFrame {
         JLabel type = new JLabel("Please select the ID of the supplier you want to show his order history:");
         c.add(type, BorderLayout.NORTH);
 
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Set all cells to be not editable
+            }
+        };
         model.addColumn("ID");
         model.addColumn("Name");
         // Add more columns as needed for additional supplier data
