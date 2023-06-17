@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrdersGUI extends JFrame {
     private OrderService orderService;
-    private MainController mainController;
     private Branch branch;
     private JFrame branchMenu;
     public OrdersGUI(Branch _branch, MainController _mainController, JFrame _branchMenu) {
@@ -36,7 +35,6 @@ public class OrdersGUI extends JFrame {
         JButton backButton = new JButton("Back To Branch Menu");
         orderService = new OrderService();
         branch = _branch;
-        mainController = _mainController;
         branchMenu = _branchMenu;
 //        branch.setBranchID(616);
 
@@ -101,7 +99,7 @@ public class OrdersGUI extends JFrame {
 
             JFrame orderHistoryUI = new JFrame("Branch Order History");
             setVisible(false);
-            printOrdersHistory(orderHistoryUI, branch.getBranchID());
+            printOrdersHistory(orderHistoryUI, this);
 //            orderHistoryUI.setVisible(true);
             orderHistoryUI.pack();
 
@@ -892,14 +890,14 @@ public class OrdersGUI extends JFrame {
 
 
     // Option 5 Print branch's orders history
-    public void printOrdersHistory(JFrame orderHistoryUI, int branchID)
+    public void printOrdersHistory(JFrame orderHistoryUI, JFrame backFrame)
     {
 
         HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branch.getBranchID());
         if(orders == null || orders.size() == 0)
         {
             JOptionPane.showMessageDialog(null, "There is not orders in this branch", "Error", JOptionPane.ERROR_MESSAGE);
-            setVisible(true);
+            backFrame.setVisible(true);
             return;
         }
 
@@ -1067,7 +1065,7 @@ public class OrdersGUI extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 orderHistoryUI.dispose();
-                setVisible(true);
+                backFrame.setVisible(true);
             }
         });
 

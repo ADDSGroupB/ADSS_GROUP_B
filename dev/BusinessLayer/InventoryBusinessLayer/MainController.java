@@ -68,7 +68,7 @@ public class MainController {
         double currPriceCategoryParent = 0;
         double currPriceCategorySub = 0;
         double currPriceCategorySubSub = 0;
-        double minPrice = Integer.MAX_VALUE;
+        double minPrice = priceBeforeDiscounts;
         // calc price after each discount :
         if (productDiscount != null && discountsDao.checkValidDiscount(productDiscount.getDiscountID()))
         {

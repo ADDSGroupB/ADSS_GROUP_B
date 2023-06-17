@@ -1,6 +1,7 @@
 package InterfaceLayer.GUI;
 
 import BusinessLayer.InventoryBusinessLayer.*;
+import ServiceLayer.SupplierServiceLayer.SupplierService;
 import Utillity.DateChooserPanel;
 
 import javax.swing.*;
@@ -18,13 +19,17 @@ import java.util.Scanner;
 
 public class StoreManagerGUI extends JFrame {
     private MainController mainController;
+    private SupplierService supplierService;
     public StoreManagerGUI(){
         this.mainController = new MainController();
+        supplierService = new SupplierService();
 
         setTitle("Store Manager Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 500);
-        setLayout(new GridLayout(3, 1, 10, 10));
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         JLabel titleLabel = new JLabel("Store Manager Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -40,9 +45,16 @@ public class StoreManagerGUI extends JFrame {
         });
         branchMenu.addActionListener(e -> showPickBranchMenu());
 
-        this.add(titleLabel);
-        this.add(createNewBranch);
-        this.add(branchMenu);
+        JButton printSuppliersButton = new JButton("Print Suppliers");
+        printSuppliersButton.addActionListener(e -> supplierService.printSuppliersGui());
+
+        panel.add(titleLabel);
+        panel.add(createNewBranch);
+        panel.add(branchMenu);
+        panel.add(printSuppliersButton);
+        getContentPane().add(panel);
+
+        pack();
         setLocationRelativeTo(null);
     }
 
@@ -160,9 +172,12 @@ public class StoreManagerGUI extends JFrame {
     }
 
     private void reportManager(Branch branch, JFrame branchMenu) {
+        ReportsGUI reportsGUI = new ReportsGUI(branch, mainController, branchMenu);
+        reportsGUI.setVisible(true);
     }
 
     private void orderHistory(Branch branch, JFrame branchMenu) {
+        new OrdersGUI(branch, new MainController(), branchMenu).printOrdersHistory(new JFrame("Branch Order History"), branchMenu);
     }
 
     private void productSalesHistory(Branch branch, JFrame branchMenu) {
@@ -354,7 +369,7 @@ public class StoreManagerGUI extends JFrame {
         addProductFrame.setVisible(true);
     }
     private void printItemsStore(Branch branch, JFrame branchMenu){
-        List<Item> storeItems = null;
+        List<Item> storeItems;
         try {
             storeItems = mainController.getItemsDao().getAllStoreItemsByBranchID(branch.getBranchID());
         } catch (SQLException ex) {
@@ -407,7 +422,7 @@ public class StoreManagerGUI extends JFrame {
         itemsInStore.setVisible(true);
     }
     private void printItemsStorage(Branch branch, JFrame branchMenu) {
-        List<Item> storageItems = null;
+        List<Item> storageItems;
         try {
             storageItems = mainController.getItemsDao().getAllStorageItemsByBranchID(branch.getBranchID());
         } catch (SQLException ex) {

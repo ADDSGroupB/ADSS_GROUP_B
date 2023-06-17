@@ -18,7 +18,6 @@ public interface iSupplierProductDAO {
     Response updateSupplierProductCatalogNumber(int supplierID, int productID, int catalogNumber);
     void printProductsBySupplierID(int supplierID);
 
-    // TODO: --------------------- Add this updates From CLI ------------------------------------
     Response updateSupplierProductPrice(int supplierID, int productID, double price);
     Response updateSupplierProductAmount(int supplierID, int productID, int amount);
     Response updateSupplierProductWeight(int supplierID, int productID, double weight);

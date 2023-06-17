@@ -24,9 +24,9 @@ public class CategoryGUI extends JFrame {
     public CategoryGUI(MainController _mainController, JFrame _storeKeeperMenu) {
         setTitle("Category Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(400, 300);
-        setLayout(new GridLayout(5, 1));
-        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -70,12 +70,15 @@ public class CategoryGUI extends JFrame {
         mainController = _mainController;
         storeKeeperMenu = _storeKeeperMenu;
 
-        add(addCategoryButton);
-        add(getCategoryButton);
-        add(printAllCategoriesButton);
-        add(exitButton);
+        panel.add(addCategoryButton);
+        panel.add(getCategoryButton);
+        panel.add(printAllCategoriesButton);
+        panel.add(exitButton);
+        getContentPane().add(panel);
 
         setVisible(true);
+        setLocationRelativeTo(null);
+        pack();
     }
 
     private void addCategory() {
@@ -170,7 +173,12 @@ public class CategoryGUI extends JFrame {
         JLabel titleLabel = new JLabel("The system includes the following categories:");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultTableModel productsTableModel = new DefaultTableModel();
+        DefaultTableModel productsTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         productsTableModel.addColumn("Category Name");
         productsTableModel.addColumn("Category ID");
         JTable productsTable = new JTable(productsTableModel);
@@ -188,10 +196,14 @@ public class CategoryGUI extends JFrame {
             }
         });
 
-        allCategories.setLayout(new BorderLayout());
-        allCategories.add(titleLabel, BorderLayout.NORTH);
-        allCategories.add(scrollPane, BorderLayout.CENTER);
-        allCategories.setLocationRelativeTo(null);
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
+
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        allCategories.getContentPane().add(panel);
         allCategories.setVisible(true);
+//        allCategories.pack();
+        allCategories.setLocationRelativeTo(null);
     }
 }

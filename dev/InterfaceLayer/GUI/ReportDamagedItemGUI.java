@@ -29,8 +29,13 @@ public class ReportDamagedItemGUI extends JFrame {
         setTitle("Report Damaged Item Menu");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new FlowLayout());
-        setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
+
+        JPanel productPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel southPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+
 
         // Create components
         productIdLabel = new JLabel("Product ID:");
@@ -45,13 +50,16 @@ public class ReportDamagedItemGUI extends JFrame {
         branchMenu = _branchMenu;
 
         // Add components to the frame
-        add(productIdLabel);
-        add(productIdField);
-        add(itemIdLabel);
-        add(itemIdField);
-        add(descriptionLabel);
-        add(new JScrollPane(descriptionTextField));
-        add(reportButton);
+        productPanel.add(productIdLabel);
+        productPanel.add(itemIdLabel);
+        productPanel.add(productIdField);
+        productPanel.add(itemIdField);
+        panel.add(productPanel, BorderLayout.NORTH);
+
+        southPanel.add(descriptionLabel);
+        southPanel.add(new JScrollPane(descriptionTextField));
+        panel.add(southPanel, BorderLayout.CENTER);
+        panel.add(reportButton, BorderLayout.SOUTH);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -70,6 +78,10 @@ public class ReportDamagedItemGUI extends JFrame {
                 }
             }
         });
+
+        getContentPane().add(panel);
+        pack();
+        setLocationRelativeTo(null);
     }
 
     private void reportDamagedItem() throws SQLException {

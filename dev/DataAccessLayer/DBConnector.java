@@ -16,7 +16,6 @@ public class DBConnector {
             catch (SQLException e) { System.out.println(e.getMessage()); }
 
         }
-        //TODO: Add branchID FOREIGN KEY in supplierOrder table and periodicOrder table.
         return connection;
     }
 
@@ -51,8 +50,6 @@ public class DBConnector {
             stmt.execute(query11);
             stmt.execute(query5);
             createTables();
-        } catch (SQLException e) {
-            throw e;
         }
     }
     public static void createTablesInventory()
@@ -331,8 +328,6 @@ public class DBConnector {
             stmt.execute(dropQuery9);
             stmt.execute(dropQuery10);
             createTablesInventory();
-        } catch (SQLException e) {
-            throw e;
         }
     }
 }

@@ -1,13 +1,13 @@
 package InterfaceLayer;
 
 import BusinessLayer.InventoryBusinessLayer.*;
-import BusinessLayer.SupplierBusinessLayer.Order;
 import DataAccessLayer.DBConnector;
 import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.CLI.StorekeeperCLI;
 import InterfaceLayer.CLI.StoreManagerCLI;
 import InterfaceLayer.CLI.SupplierManagerCLI;
 import InterfaceLayer.GUI.StoreKeeperGUI;
+import InterfaceLayer.GUI.StoreManagerGUI;
 import InterfaceLayer.GUI.SupplierManagerGUI;
 import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Pair;
@@ -72,10 +72,10 @@ public class Main {
                 supplierManagerGUI.setVisible(true);
 //                supplierManagerGUI.setVisible(true);
             }
-//            case "storemanager" -> {
-//                StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
-//                storeManagerGUI.Start();
-//            }
+            case "storemanager" -> {
+                StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
+                storeManagerGUI.setVisible(true);
+            }
             default -> System.out.printf("Argument 2 is invalid, given argument: %s should be: storekeeper / suppliermanager / storemanager", worker);
         }
     }

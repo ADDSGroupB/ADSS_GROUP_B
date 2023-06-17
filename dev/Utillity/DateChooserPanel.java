@@ -43,17 +43,9 @@ public class DateChooserPanel extends JPanel {
 
 
         // Action listeners to update dayComboBox when year or month changes
-        yearComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateDayComboBox();
-            }
-        });
+        yearComboBox.addActionListener(e -> updateDayComboBox());
 
-        monthComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateDayComboBox();
-            }
-        });
+        monthComboBox.addActionListener(e -> updateDayComboBox());
     }
 
     private void updateDayComboBox() {

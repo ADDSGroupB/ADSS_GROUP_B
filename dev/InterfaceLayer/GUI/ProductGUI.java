@@ -25,9 +25,11 @@ public class ProductGUI extends JFrame {
     public ProductGUI(MainController _mainController, JFrame _storeKeeperMenu) {
         setTitle("Product Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridLayout(6, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
         setSize(400, 300);
-        setLayout(new GridLayout(6, 1));
-        setLocationRelativeTo(null);
+        
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -73,24 +75,31 @@ public class ProductGUI extends JFrame {
         });
         JLabel titleLabel = new JLabel("Please choose one of the following options :");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        add(titleLabel);
+        panel.add(titleLabel);
 
         mainController = _mainController;
         storeKeeperMenu = _storeKeeperMenu;
 
-        add(addProductButton);
-        add(getCategoryButton);
-        add(getProductDetailsButton);
-        add(printAllProductsButton);
-        add(exitButton);
+        panel.add(addProductButton);
+        panel.add(getCategoryButton);
+        panel.add(getProductDetailsButton);
+        panel.add(printAllProductsButton);
+        panel.add(exitButton);
+        getContentPane().add(panel);
 
         setVisible(true);
+        pack();
+        setLocationRelativeTo(null);
     }
 
     private void addProduct() {
         setVisible(false);
         JFrame addProductFrame = new JFrame("Add New Product");
-        addProductFrame.setLayout(new GridLayout(7, 2));
+
+        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
+        
+        
 
         addProductFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -185,20 +194,21 @@ public class ProductGUI extends JFrame {
             setVisible(true);
         });
 
-        addProductFrame.add(nameLabel);
-        addProductFrame.add(nameField);
-        addProductFrame.add(manufacturerLabel);
-        addProductFrame.add(manufacturerField);
-        addProductFrame.add(weightLabel);
-        addProductFrame.add(weightField);
-        addProductFrame.add(parentLabel);
-        addProductFrame.add(parentField);
-        addProductFrame.add(subLabel);
-        addProductFrame.add(subField);
-        addProductFrame.add(subSubLabel);
-        addProductFrame.add(subSubField);
-        addProductFrame.add(new JLabel()); // Placeholder for spacing
-        addProductFrame.add(addButton);
+        panel.add(nameLabel);
+        panel.add(nameField);
+        panel.add(manufacturerLabel);
+        panel.add(manufacturerField);
+        panel.add(weightLabel);
+        panel.add(weightField);
+        panel.add(parentLabel);
+        panel.add(parentField);
+        panel.add(subLabel);
+        panel.add(subField);
+        panel.add(subSubLabel);
+        panel.add(subSubField);
+        panel.add(new JLabel()); // Placeholder for spacing
+        panel.add(addButton);
+        addProductFrame.getContentPane().add(panel);
 
         addProductFrame.pack();
         addProductFrame.setLocationRelativeTo(null);
@@ -208,7 +218,8 @@ public class ProductGUI extends JFrame {
     private void getCategory() {
         setVisible(false);
         JFrame getCategoryFrame = new JFrame("Get product categories by ID");
-        getCategoryFrame.setLayout(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         getCategoryFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -253,10 +264,13 @@ public class ProductGUI extends JFrame {
             getCategoryFrame.dispose();
             setVisible(true);
         });
-        getCategoryFrame.add(idLabel);
-        getCategoryFrame.add(idField);
-        getCategoryFrame.add(new JLabel());
-        getCategoryFrame.add(getCategories);
+        panel.add(idLabel);
+        panel.add(idField);
+        panel.add(new JLabel());
+        panel.add(getCategories);
+        getCategoryFrame.getContentPane().add(panel);
+
+        getCategoryFrame.setVisible(true);
         getCategoryFrame.pack();
         getCategoryFrame.setLocationRelativeTo(null);
         getCategoryFrame.setVisible(true);
@@ -265,7 +279,8 @@ public class ProductGUI extends JFrame {
     private void printProductByID() {
         setVisible(false);
         JFrame printProductFrame = new JFrame("Get product details by ID");
-        printProductFrame.setLayout(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         printProductFrame.addWindowListener(new WindowAdapter() {
             @Override
@@ -305,10 +320,14 @@ public class ProductGUI extends JFrame {
             printProductFrame.dispose();
             setVisible(true);
         });
-        printProductFrame.add(idLabel);
-        printProductFrame.add(idField);
-        printProductFrame.add(new JLabel());
-        printProductFrame.add(getProductDetails);
+        panel.add(idLabel);
+        panel.add(idField);
+        panel.add(new JLabel());
+        panel.add(getProductDetails);
+
+        printProductFrame.getContentPane().add(panel);
+
+        printProductFrame.setVisible(true);
         printProductFrame.pack();
         printProductFrame.setLocationRelativeTo(null);
         printProductFrame.setVisible(true);
@@ -332,7 +351,12 @@ public class ProductGUI extends JFrame {
         JLabel titleLabel = new JLabel("The system includes the following products:");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultTableModel productsTableModel = new DefaultTableModel();
+        DefaultTableModel productsTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         productsTableModel.addColumn("Name");
         productsTableModel.addColumn("Product ID");
         productsTableModel.addColumn("Manufacturer");
@@ -357,11 +381,16 @@ public class ProductGUI extends JFrame {
             }
         });
 
-        allProducts.setLayout(new BorderLayout());
-        allProducts.add(titleLabel, BorderLayout.NORTH);
-        allProducts.add(scrollPane, BorderLayout.CENTER);
-        allProducts.setLocationRelativeTo(null);
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        allProducts.getContentPane().add(panel);
+
         allProducts.setVisible(true);
+        allProducts.pack();
+        allProducts.setLocationRelativeTo(null);
     }
 }
 //

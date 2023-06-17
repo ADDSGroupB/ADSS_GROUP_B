@@ -78,7 +78,7 @@ public class ReportDaoImpl implements ReportDao {
                 if (identityDefectiveReportMap.containsKey(reportID)) continue;
                 int branchID = allReportTable.getInt("BranchID");
                 LocalDate reportDate = LocalDate.parse(allReportTable.getString("ReportDate"));
-                defectiveReportTable = stmt2.executeQuery("SELECT * FROM DefectiveReports WHERE ReportID = " + reportID);
+                defectiveReportTable = stmt2.executeQuery("SELECT * FROM DefectiveReport WHERE ReportID = " + reportID);
                 while (defectiveReportTable.next()) {
                     int itemID = defectiveReportTable.getInt("ItemID");
                     Item item = mainController.getItemsDao().getItemByID(itemID);
@@ -325,7 +325,7 @@ public class ReportDaoImpl implements ReportDao {
     public void addLineToDefectiveReport(int reportID, int itemID) throws SQLException {
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO DefectiveReports (ReportID, ItemID) VALUES(?, ?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO DefectiveReport (ReportID, ItemID) VALUES(?, ?)");
             preparedStatement.setInt(1, reportID);
             preparedStatement.setInt(2, itemID);
             preparedStatement.executeUpdate();

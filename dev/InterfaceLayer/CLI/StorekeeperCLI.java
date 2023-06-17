@@ -104,13 +104,19 @@ public class StorekeeperCLI {
                 System.out.println("Please enter an integer between 1-3 ");
                 mainMenuScanner.nextLine();
                 continue;}
-            switch (mainMenuChoice)
-            {
-                case 1:{
-                    StorekeeperUI();break;}
-                case 2:{SuppliersUI();break;}
-                case 3:{System.out.println("Exiting from the system");break;}
-                default:{System.out.println("Invalid choice, please try again");break;}
+            switch (mainMenuChoice) {
+                case 1 -> {
+                    StorekeeperUI();
+                }
+                case 2 -> {
+                    SuppliersUI();
+                }
+                case 3 -> {
+                    System.out.println("Exiting from the system");
+                }
+                default -> {
+                    System.out.println("Invalid choice, please try again");
+                }
             }
         }
     }
@@ -129,11 +135,10 @@ public class StorekeeperCLI {
                 InventoryScanner.nextLine();
                 continue;
             }
-            switch (InventoryChoice)
-            {
-                case 1:{
+            switch (InventoryChoice) {
+                case 1 -> {
                     System.out.println("Now you have to choose the number of the branch you want to work at : ");
-                    List<Branch> allBranches =  mainController.getBranchController().getAllBranchesController();
+                    List<Branch> allBranches = mainController.getBranchController().getAllBranchesController();
                     if (allBranches.size() == 0) {
                         System.out.println("There are currently no branches in the system, there is an option to create a new branch.");
                         break;
@@ -150,12 +155,19 @@ public class StorekeeperCLI {
                     }
                     Branch chosenBranch = mainController.getBranchController().getBranchID(branchID);
                     BranchUI(chosenBranch);
-                    break;
                 }
-                case 2:{ productUI();break; }
-                case 3:{ categoryUI();break; }
-                case 4:{ System.out.println("Exiting from the system"); break; }
-                default:{ System.out.println("Invalid choice, please try again"); break; }
+                case 2 -> {
+                    productUI();
+                }
+                case 3 -> {
+                    categoryUI();
+                }
+                case 4 -> {
+                    System.out.println("Exiting from the system");
+                }
+                default -> {
+                    System.out.println("Invalid choice, please try again");
+                }
             }
         }
     }
@@ -867,8 +879,7 @@ public class StorekeeperCLI {
                         System.out.println("Defective Items Report has not been created yet");
                         break;
                     }
-                    Map<Integer, DefectiveProductsReport> allDefectiveReports = new HashMap<>();
-                    allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
+                    Map<Integer, DefectiveProductsReport> allDefectiveReports = mainController.getReportDao().getAllDefectiveReports();
                     if (allDefectiveReports != null) {
                         List<Item> allItemsInReports = new ArrayList<>();
                         for (DefectiveProductsReport defectiveProductsReport : allDefectiveReports.values()) {

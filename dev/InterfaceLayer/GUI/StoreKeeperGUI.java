@@ -22,8 +22,10 @@ public class StoreKeeperGUI extends JFrame {
 
         setTitle("Store Keeper Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 500);
-        setLayout(new GridLayout(4, 1, 10, 10));
+        setSize(400, 300);
+
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         JLabel titleLabel = new JLabel("Store Keeper Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -35,10 +37,12 @@ public class StoreKeeperGUI extends JFrame {
         productMenu.addActionListener(e -> showProductMenu());
         categoryMenu.addActionListener(e -> showCategoryMenu());
 
-        this.add(titleLabel);
-        this.add(branchMenu);
-        this.add(productMenu);
-        this.add(categoryMenu);
+        panel.add(titleLabel);
+        panel.add(branchMenu);
+        panel.add(productMenu);
+        panel.add(categoryMenu);
+        getContentPane().add(panel);
+        pack();
         setLocationRelativeTo(null);
     }
 
@@ -60,11 +64,12 @@ public class StoreKeeperGUI extends JFrame {
                 setVisible(true);
             }
         });
-        chooseBranch.setSize(400, 500);
-        chooseBranch.setLayout(new GridLayout(numOfBranches + 1, 1, 10, 10));
+
+        JPanel panel = new JPanel(new GridLayout(numOfBranches + 1, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
         JLabel titleLabel = new JLabel("Choose branch:");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        chooseBranch.add(titleLabel);
+        panel.add(titleLabel);
         JButton[] branchesButtons = new JButton[numOfBranches];
         for (int i = 0; i < numOfBranches; i++) {
             branchesButtons[i] = new JButton("Branch " + (i + 1));
@@ -75,9 +80,13 @@ public class StoreKeeperGUI extends JFrame {
                 chooseBranch.setVisible(false);
                 showBranchMenu(mainController.getBranchController().getBranchID(chosenBranch));
             });
-            chooseBranch.add(branchesButtons[i]);
-            chooseBranch.setLocationRelativeTo(null);
+            panel.add(branchesButtons[i]);
+            chooseBranch.getContentPane().add(panel);
+            chooseBranch.setSize(400, 300);
             chooseBranch.setVisible(true);
+            chooseBranch.pack();
+            chooseBranch.setLocationRelativeTo(null);
+
         }
     }
 
@@ -90,56 +99,61 @@ public class StoreKeeperGUI extends JFrame {
                 setVisible(true);
             }
         });
-        branchMenu.setSize(400, 500);
-        branchMenu.setLayout(new GridLayout(7, 1, 10, 10));
-        branchMenu.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel(new GridLayout(7, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
+        
         JLabel titleLabel = new JLabel("Please choose one of the following options :");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        branchMenu.add(titleLabel);
+        panel.add(titleLabel);
 
         JButton newSaleButton = new JButton("New sale");
         newSaleButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             makeNewSale(branch, branchMenu);
         });
-        branchMenu.add(newSaleButton);
+        panel.add(newSaleButton);
 
         JButton updateDamagedItemButton = new JButton("Update damaged item");
         updateDamagedItemButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             updateDamagedItem(branch, branchMenu);
         });
-        branchMenu.add(updateDamagedItemButton);
+        panel.add(updateDamagedItemButton);
 
         JButton printItemsStoreButton = new JButton("Print all items in store");
         printItemsStoreButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             printItemsStore(branch, branchMenu);
         });
-        branchMenu.add(printItemsStoreButton);
+        panel.add(printItemsStoreButton);
 
         JButton printItemsStorageButton  = new JButton("Print all items in storage");
         printItemsStorageButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             printItemsStorage(branch, branchMenu);
         });
-        branchMenu.add(printItemsStorageButton);
+        panel.add(printItemsStorageButton);
 
         JButton ordersMenuButton = new JButton("Orders Menu");
         ordersMenuButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             ordersMenu(branch, branchMenu);
         });
-        branchMenu.add(ordersMenuButton);
+        panel.add(ordersMenuButton);
 
         JButton exitToInventoryMenuButton = new JButton("Exit to Inventory Menu");
         exitToInventoryMenuButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             this.setVisible(true);
         });
-        branchMenu.add(exitToInventoryMenuButton);
+        panel.add(exitToInventoryMenuButton);
+        branchMenu.getContentPane().add(panel);
 
+        branchMenu.setSize(400, 500);
         branchMenu.setVisible(true);
+        branchMenu.pack();
+        branchMenu.setLocationRelativeTo(null);
     }
 
     private void makeNewSale(Branch branch, JFrame branchMenu){
@@ -151,7 +165,7 @@ public class StoreKeeperGUI extends JFrame {
         reportDamagedItemGUI.setVisible(true);
     }
     private void printItemsStore(Branch branch, JFrame branchMenu){
-        List<Item> storeItems = null;
+        List<Item> storeItems;
         try {
             storeItems = mainController.getItemsDao().getAllStoreItemsByBranchID(branch.getBranchID());
         } catch (SQLException ex) {
@@ -169,7 +183,12 @@ public class StoreKeeperGUI extends JFrame {
         JLabel titleLabel = new JLabel("Branch Name: " + branch.getBranchName() + ", Branch ID: " + branch.getBranchID());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultTableModel itemsTableModel = new DefaultTableModel();
+        DefaultTableModel itemsTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         itemsTableModel.addColumn("Name");
         itemsTableModel.addColumn("Product ID");
         itemsTableModel.addColumn("Item ID");
@@ -204,7 +223,7 @@ public class StoreKeeperGUI extends JFrame {
         itemsInStore.setVisible(true);
     }
     private void printItemsStorage(Branch branch, JFrame branchMenu) {
-        List<Item> storageItems = null;
+        List<Item> storageItems;
         try {
             storageItems = mainController.getItemsDao().getAllStorageItemsByBranchID(branch.getBranchID());
         } catch (SQLException ex) {
@@ -222,7 +241,12 @@ public class StoreKeeperGUI extends JFrame {
         JLabel titleLabel = new JLabel("Branch Name: " + branch.getBranchName() + ", Branch ID: " + branch.getBranchID());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultTableModel itemsTableModel = new DefaultTableModel();
+        DefaultTableModel itemsTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         itemsTableModel.addColumn("Name");
         itemsTableModel.addColumn("Product ID");
         itemsTableModel.addColumn("Item ID");
