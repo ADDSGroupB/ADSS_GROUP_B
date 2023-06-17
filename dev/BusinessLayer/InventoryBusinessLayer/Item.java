@@ -65,6 +65,7 @@ public class Item {
     @Override
     public String toString() {
         String returnString = "";
+        returnString += "Name: " + product.getProductName() + " ";
         returnString += "Item ID : " + ItemID + " ";
         returnString += "\n" + "Branch ID : " + BranchID + " ";
         returnString += "\n" + "Product ID : " + ProductID + " ";

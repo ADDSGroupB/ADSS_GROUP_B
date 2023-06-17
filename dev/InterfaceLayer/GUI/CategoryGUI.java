@@ -3,6 +3,7 @@ package InterfaceLayer.GUI;
 import BusinessLayer.InventoryBusinessLayer.*;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,7 @@ public class CategoryGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setLayout(new GridLayout(5, 1));
+        setLocationRelativeTo(null);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -108,8 +110,15 @@ public class CategoryGUI extends JFrame {
 
     private void getCategoryByID() {
         int categoryID;
+        String inputDialog = JOptionPane.showInputDialog("Enter the ID of the category:");
+        if (inputDialog == null)
+            return;
+        if (inputDialog.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Category ID cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         try {
-            categoryID = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the category:"));
+            categoryID = Integer.parseInt(inputDialog);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Invalid numeric input. Please enter positive numbers only.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -143,6 +152,7 @@ public class CategoryGUI extends JFrame {
         JOptionPane.showMessageDialog(null, scrollPane, "Category Details", JOptionPane.INFORMATION_MESSAGE);
     }
     private void printAllCategories() {
+        setVisible(false);
         List<Category> categories = null;
         try {
             categories = mainController.getCategoryController().getAllCategories();
@@ -151,6 +161,7 @@ public class CategoryGUI extends JFrame {
         }
         if (categories == null) {
             JOptionPane.showMessageDialog(null, "We currently have no categories in the system", "Error", JOptionPane.ERROR_MESSAGE);
+            setVisible(true);
             return;
         }
         JFrame allCategories = new JFrame("All Categories");
@@ -158,13 +169,24 @@ public class CategoryGUI extends JFrame {
         allCategories.setSize(400, 500);
         JLabel titleLabel = new JLabel("The system includes the following categories:");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+
+        DefaultTableModel productsTableModel = new DefaultTableModel();
+        productsTableModel.addColumn("Category Name");
+        productsTableModel.addColumn("Category ID");
+        JTable productsTable = new JTable(productsTableModel);
+        JScrollPane scrollPane = new JScrollPane(productsTable);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
+
         for (Category category : categories) {
-            listModel.addElement(category.toString());
+            productsTableModel.addRow(new Object[]{category.getCategoryName(), category.getCategoryID()});
         }
-        JList<String> jListItems = new JList<>(listModel);
-        jListItems.setFont(new Font("Arial", Font.PLAIN, 12));
-        JScrollPane scrollPane = new JScrollPane(jListItems);
+
+        allCategories.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(true);
+            }
+        });
 
         allCategories.setLayout(new BorderLayout());
         allCategories.add(titleLabel, BorderLayout.NORTH);

@@ -30,6 +30,7 @@ public class ReportDamagedItemGUI extends JFrame {
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new FlowLayout());
+        setLocationRelativeTo(null);
 
         // Create components
         productIdLabel = new JLabel("Product ID:");
@@ -72,8 +73,21 @@ public class ReportDamagedItemGUI extends JFrame {
     }
 
     private void reportDamagedItem() throws SQLException {
-        int productID = Integer.parseInt(productIdField.getText());
-        int itemID = Integer.parseInt(itemIdField.getText());
+        if (itemIdField.getText().isEmpty() || productIdField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Fields cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int productID;
+        int itemID;
+
+        try {
+            productID = Integer.parseInt(productIdField.getText());
+            itemID = Integer.parseInt(itemIdField.getText());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Invalid numeric input. Please enter positive numbers only.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         Product productDef = mainController.getProductController().getProduct(productID);
         if (productDef != null) {

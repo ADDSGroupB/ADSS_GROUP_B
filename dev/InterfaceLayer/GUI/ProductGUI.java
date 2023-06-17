@@ -3,6 +3,7 @@ package InterfaceLayer.GUI;
 import BusinessLayer.InventoryBusinessLayer.*;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,6 +27,7 @@ public class ProductGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setLayout(new GridLayout(6, 1));
+        setLocationRelativeTo(null);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -119,6 +121,15 @@ public class ProductGUI extends JFrame {
         addButton.addActionListener(e -> {
             String newProductName = nameField.getText();
             String manufacturer = manufacturerField.getText();
+            if (newProductName.isEmpty() || manufacturer.isEmpty() || weightField.getText().isEmpty() || parentField.getText().isEmpty() || subField.getText().isEmpty() || subSubField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Fields cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(newProductName.matches(".*\\d.*") || manufacturer.matches(".*\\d.*")){
+                JOptionPane.showMessageDialog(null, "Invalid product name or manufacturer, these fields should not contain numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             double weight;
             int parentInt, subInt, subSubInt;
             try {
@@ -303,6 +314,7 @@ public class ProductGUI extends JFrame {
         printProductFrame.setVisible(true);
     }
     private void printAllProducts() {
+        setVisible(false);
         List<Product> products = null;
         try {
             products = mainController.getProductController().getAllProducts();
@@ -311,20 +323,39 @@ public class ProductGUI extends JFrame {
         }
         if (products == null) {
             JOptionPane.showMessageDialog(null, "We currently have no products in the system", "Error", JOptionPane.ERROR_MESSAGE);
+            setVisible(true);
             return;
         }
         JFrame allProducts = new JFrame("All Products");
         allProducts.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         allProducts.setSize(400, 500);
-        JLabel titleLabel = new JLabel("The system includes the following products :");
+        JLabel titleLabel = new JLabel("The system includes the following products:");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+
+        DefaultTableModel productsTableModel = new DefaultTableModel();
+        productsTableModel.addColumn("Name");
+        productsTableModel.addColumn("Product ID");
+        productsTableModel.addColumn("Manufacturer");
+        productsTableModel.addColumn("Weight");
+        productsTableModel.addColumn("Parent Category");
+        productsTableModel.addColumn("Sub Category");
+        productsTableModel.addColumn("Sub Sub Category");
+        JTable productsTable = new JTable(productsTableModel);
+        JScrollPane scrollPane = new JScrollPane(productsTable);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
+
         for (Product product : products) {
-            listModel.addElement(product.toString());
+            productsTableModel.addRow(new Object[]{product.getProductName(), product.getProductID(), product.getManufacturer(),
+                    product.getProductWeight(), product.getParentCategory().getCategoryName(),
+                    product.getSubCategory().getCategoryName(), product.getSubSubCategory().getCategoryName()});
         }
-        JList<String> jListItems = new JList<>(listModel);
-        jListItems.setFont(new Font("Arial", Font.PLAIN, 12));
-        JScrollPane scrollPane = new JScrollPane(jListItems);
+
+        allProducts.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(true);
+            }
+        });
 
         allProducts.setLayout(new BorderLayout());
         allProducts.add(titleLabel, BorderLayout.NORTH);

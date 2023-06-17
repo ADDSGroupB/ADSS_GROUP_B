@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class SalesGUI extends JFrame {
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new FlowLayout());
+        setLocationRelativeTo(null);
 
         // Create components
         productIdLabel = new JLabel("Product ID:");
@@ -47,6 +50,13 @@ public class SalesGUI extends JFrame {
 
         // Initialize the item list
         itemsInSale = new ArrayList<>();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                branchMenu.setVisible(true);
+            }
+        });
 
         // Add action listener to the Add button
         addButton.addActionListener(new ActionListener() {

@@ -146,12 +146,6 @@ public class SupplierProductDAO implements iSupplierProductDAO {
     public Response removeSupplierProduct(int supplierID, int productID) {
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM supplierProduct WHERE supplierID = ? AND productID = ?"))
         {
-//            HashMap<Integer, Double> discounts = discountPerAmountDAO.getProductDiscountByID(supplierID, productID);
-//            for (Map.Entry<Integer, Double> entry : discounts.entrySet())
-//            {
-//                Response response = discountPerAmountDAO.removeDiscount(supplierID, productID, entry.getKey());
-//                if(response.errorOccurred()) return response;
-//            }
             statement.setInt(1, supplierID);
             statement.setInt(2, productID);
             statement.executeUpdate();

@@ -1,6 +1,8 @@
 package InterfaceLayer;
 
 import BusinessLayer.InventoryBusinessLayer.*;
+import BusinessLayer.SupplierBusinessLayer.Order;
+import DataAccessLayer.DBConnector;
 import DataAccessLayer.InventoryDataAccessLayer.*;
 import InterfaceLayer.CLI.StorekeeperCLI;
 import InterfaceLayer.CLI.StoreManagerCLI;
@@ -9,42 +11,38 @@ import InterfaceLayer.GUI.StoreKeeperGUI;
 import InterfaceLayer.GUI.SupplierManagerGUI;
 import ServiceLayer.SupplierServiceLayer.*;
 import Utillity.Pair;
+import Utillity.Response;
 
 import javax.swing.*;
 import java.io.File;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void main(String[] args) throws SQLException {
-        switch (args[0].toLowerCase())
-        {
-            case "cli" -> workersCLI(args[1]);
-            case "gui" -> workersGUI(args[1]);
-            default -> System.out.printf("Argument 1 is invalid, given argument: %s should be: cli / gui", args[1]);
-        }
-//        System.exit(0);
-    }
-
-    private static void workersGUI(String worker) throws SQLException {
+        DBConnector.connect();
         int choice = JOptionPane.showConfirmDialog(null, "Do you want to load data?", "Confirmation", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION)
         {
             File file = new File("res/superlee.db");
-            if(!file.exists()) {
-                MainController mainController = new MainController();
-                OrderService orderService = new OrderService();
-                LoadDataInventory(mainController);
-                loadDataSupplier();
+            if(!file.exists())
+                JOptionPane.showMessageDialog(null,"Loading Data", "Loading Data", JOptionPane.INFORMATION_MESSAGE);
+            else {
+                JOptionPane.showMessageDialog(null,"You already have db file with loaded data, it will be overwrite right now", "Loading Data", JOptionPane.ERROR_MESSAGE);
+                DBConnector.deleteRecordsOfInventoryTables();
+                DBConnector.deleteRecordsOfTables();
             }
-            else
-                JOptionPane.showMessageDialog(null,"You already have loaded data in your system", "No branches error", JOptionPane.ERROR_MESSAGE);
+            MainController mainController = new MainController();
+            OrderService orderService = new OrderService();
+            LoadDataInventory(mainController);
+            loadDataSupplier();
         }
+        startDailyTask();
         MainController mainController = new MainController();
         OrderService orderService = new OrderService();
         mainController.getItemsDao().checkExpiredItemsInAllBranches();
@@ -55,6 +53,15 @@ public class Main {
         for (Branch branch : allBranches) {
             mainController.getItemsDao().fromStorageToStore(branch);
         }
+        switch (args[0].toLowerCase())
+        {
+            case "cli" -> workersCLI(args[1]);
+            case "gui" -> workersGUI(args[1]);
+            default -> System.out.printf("Argument 1 is invalid, given argument: %s should be: cli / gui", args[1]);
+        }
+    }
+
+    private static void workersGUI(String worker) throws SQLException {
         switch (worker.toLowerCase()) {
             case "storekeeper" -> {
                 StoreKeeperGUI storekeeperGUI = new StoreKeeperGUI();
@@ -74,32 +81,6 @@ public class Main {
     }
 
     private static void workersCLI(String worker) throws SQLException {
-
-        int choice = JOptionPane.showConfirmDialog(null, "Do you want to load data?", "Confirmation", JOptionPane.YES_NO_OPTION);
-        if (choice == JOptionPane.YES_OPTION)
-        {
-            File file = new File("res/superlee.db");
-            if(!file.exists()) {
-                MainController mainController = new MainController();
-                OrderService orderService = new OrderService();
-                System.out.println("Initializing the information in the system... ");
-                LoadDataInventory(mainController);
-                loadDataSupplier();
-            }
-            else System.out.println("You already have loaded data in your system");
-        }
-        else
-            System.out.println("Initializes the system without information... ");
-        MainController mainController = new MainController();
-        OrderService orderService = new OrderService();
-        mainController.getItemsDao().checkExpiredItemsInAllBranches();
-        List<Branch> allBranches = mainController.getBranchesDao().getAllBranches();
-        if (allBranches.size() > 0) {
-            mainController.getItemsDao().checkAllOrdersForToday(orderService, allBranches);
-        }
-        for (Branch branch : allBranches) {
-            mainController.getItemsDao().fromStorageToStore(branch);
-        }
         switch (worker.toLowerCase())
         {
             case "storekeeper" ->
@@ -120,52 +101,61 @@ public class Main {
             default -> System.out.printf("Argument 2 is invalid, given argument: %s should be: storekeeper / suppliermanager / storemanager", worker);
         }
     }
-    public static void loadDataSupplier() {
-//        Product p1 = productsDao.addProduct("Milk 3%", "Tara", 500, 1, 2, 7);
-//        productMinAmountDao.addNewProductToAllBranches(1);
-//        Product p2 = productsDao.addProduct("Cottage 5%", "Tnova", 250, 1, 3, 8);
-//        productMinAmountDao.addNewProductToAllBranches(2);
-//        Product p3 = productsDao.addProduct("White Onion", "VegAndFruits", 20, 10, 11, 14);
-//        productMinAmountDao.addNewProductToAllBranches(3);
-//        Product p4 = productsDao.addProduct("Green Onion", "VegAndFruits", 10, 10, 11, 13);
-//        productMinAmountDao.addNewProductToAllBranches(4);
-//        Product p5 = productsDao.addProduct("Red Potato", "VegAndFruits", 10, 10, 12, 15);
-//        productMinAmountDao.addNewProductToAllBranches(5);
-//        Product p6 = productsDao.addProduct("Red Apple", "VegAndFruits", 10, 16, 17, 18);
-//        productMinAmountDao.addNewProductToAllBranches(6);
-//        Product p7 = productsDao.addProduct("Green Apple", "VegAndFruits", 10, 16, 17, 18);
-//        productMinAmountDao.addNewProductToAllBranches(7);
-//        Product p8 = productsDao.addProduct("Cottage 9%", "Tara", 250, 1, 3, 9);
-//        productMinAmountDao.addNewProductToAllBranches(8);
-//        Product p9 =  productsDao.addProduct("Milk 9%", "Tnova", 500, 1, 2, 9);
-//        productMinAmountDao.addNewProductToAllBranches(9);
-//        Product p10 = productsDao.addProduct("Milk 1%", "Tnova", 500, 1, 2, 6);
-//        productMinAmountDao.addNewProductToAllBranches(10);
-//        Product p11 = productsDao.addProduct("Milk 5%", "Tnova", 500, 1, 2, 8);
-//        productMinAmountDao.addNewProductToAllBranches(11);
-//        Product p12 = productsDao.addProduct("Cottage 3%", "Tara", 250, 1, 3, 7);
-//        productMinAmountDao.addNewProductToAllBranches(12);
-//        Product p13 = productsDao.addProduct("Cottage 1%", "Tara", 250, 1, 3, 6);
-//        productMinAmountDao.addNewProductToAllBranches(13);
-//        Product p14 = productsDao.addProduct("Cream Cheese 3%", "Tnova", 350, 1, 4, 7);
-//        productMinAmountDao.addNewProductToAllBranches(14);
-//        Product p15 = productsDao.addProduct("Cream Cheese 1%", "Tnova", 350, 1, 4, 6);
-//        productMinAmountDao.addNewProductToAllBranches(15);
-//        Product p16 = productsDao.addProduct("Cream Cheese 5%", "Tnova", 350, 1, 4, 8);
-//        productMinAmountDao.addNewProductToAllBranches(16);
-//        Product p17 = productsDao.addProduct("Milk 3%", "Tnova", 500, 1, 2, 7);
-//        productMinAmountDao.addNewProductToAllBranches(17);
-//        Product p18 = productsDao.addProduct("Coca Cola Zero 0.5 Liter", "CocaCola", 500, 22, 24, 23);
-//        productMinAmountDao.addNewProductToAllBranches(18);
-//        Product p19 = productsDao.addProduct("Coca Cola Zero 1 Liter", "CocaCola", 1000, 22, 24, 25);
-//        productMinAmountDao.addNewProductToAllBranches(19);
-//        Product p20 = productsDao.addProduct("Coca Cola Zero 1.5 Liter", "CocaCola", 1500, 22, 24, 26);
-//        productMinAmountDao.addNewProductToAllBranches(20);
-//        Product p21 = productsDao.addProduct("Banana And Strawberry 1 Liter", "Spring", 1000, 22, 27, 25);
-//        productMinAmountDao.addNewProductToAllBranches(21);
-//        Product p22 = productsDao.addProduct("Orange juice 1 Liter", "Spring", 1000, 22, 27, 25);
-//        productMinAmountDao.addNewProductToAllBranches(22);
 
+    private static void startDailyTask()
+    {
+        java.util.Timer timerPeriodicOrder = new java.util.Timer();
+        // Schedule the task to execute every day at 10:00am
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.getTimeInMillis() < System.currentTimeMillis())
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        timerPeriodicOrder.scheduleAtFixedRate(new OrderService(), calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        java.util.Timer timerForShortageOrder = new Timer();
+        TimerTask otherTask = new TimerTask() {
+            @Override
+            public void run()  {
+                autoShortage();
+            }
+        };
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 20);
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        if (calendar2.getTimeInMillis() < System.currentTimeMillis())
+            calendar2.add(Calendar.DAY_OF_MONTH, 1);
+        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            timerPeriodicOrder.cancel();
+            timerForShortageOrder.cancel();
+            DBConnector.disconnect();
+        }));
+    }
+    public static void autoShortage()
+    {
+        try {
+            MainController mainController = new MainController();
+            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
+            HashMap<Integer, Integer> shortage;
+            for(Branch branch: branches) {
+                shortage = mainController.getItemsDao().fromStorageToStore(branch);
+                Response response = (new OrderService().createOrderByShortage(branch.getBranchID(), shortage));
+                if (!response.errorOccurred())
+                {
+                    for (Integer productID : shortage.keySet())
+                    {
+                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while run function autoShortage in Cli: " + e.getMessage());
+        }
+    }
+    public static void loadDataSupplier() {
         SupplierService supplierService = new SupplierService();
         //  supplier1   //
         ArrayList<DayOfWeek> deliveryDays1 = new ArrayList<>();

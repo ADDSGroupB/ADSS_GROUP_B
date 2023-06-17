@@ -4,29 +4,22 @@ import BusinessLayer.InventoryBusinessLayer.Branch;
 import BusinessLayer.InventoryBusinessLayer.Item;
 import BusinessLayer.InventoryBusinessLayer.MainController;
 import BusinessLayer.InventoryBusinessLayer.Product;
-import DataAccessLayer.DBConnector;
-import ServiceLayer.SupplierServiceLayer.OrderService;
-import Utillity.Response;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
-import java.util.*;
 import java.util.List;
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
 
 public class StoreKeeperGUI extends JFrame {
     private MainController mainController;
-    private OrderService orderService;
     public StoreKeeperGUI(){
         this.mainController = new MainController();
-        orderService = new OrderService();
-        startDailyTask();
+
         setTitle("Store Keeper Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 500);
@@ -46,6 +39,7 @@ public class StoreKeeperGUI extends JFrame {
         this.add(branchMenu);
         this.add(productMenu);
         this.add(categoryMenu);
+        setLocationRelativeTo(null);
     }
 
     private void showPickBranchMenu() {
@@ -82,6 +76,7 @@ public class StoreKeeperGUI extends JFrame {
                 showBranchMenu(mainController.getBranchController().getBranchID(chosenBranch));
             });
             chooseBranch.add(branchesButtons[i]);
+            chooseBranch.setLocationRelativeTo(null);
             chooseBranch.setVisible(true);
         }
     }
@@ -97,6 +92,7 @@ public class StoreKeeperGUI extends JFrame {
         });
         branchMenu.setSize(400, 500);
         branchMenu.setLayout(new GridLayout(7, 1, 10, 10));
+        branchMenu.setLocationRelativeTo(null);
         JLabel titleLabel = new JLabel("Please choose one of the following options :");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
         branchMenu.add(titleLabel);
@@ -117,13 +113,15 @@ public class StoreKeeperGUI extends JFrame {
 
         JButton printItemsStoreButton = new JButton("Print all items in store");
         printItemsStoreButton.addActionListener(e -> {
-            printItemsStore(branch);
+            branchMenu.setVisible(false);
+            printItemsStore(branch, branchMenu);
         });
         branchMenu.add(printItemsStoreButton);
 
         JButton printItemsStorageButton  = new JButton("Print all items in storage");
         printItemsStorageButton.addActionListener(e -> {
-            printItemsStorage(branch);
+            branchMenu.setVisible(false);
+            printItemsStorage(branch, branchMenu);
         });
         branchMenu.add(printItemsStorageButton);
 
@@ -138,7 +136,7 @@ public class StoreKeeperGUI extends JFrame {
         exitToInventoryMenuButton.addActionListener(e -> {
             branchMenu.setVisible(false);
             this.setVisible(true);
-            });
+        });
         branchMenu.add(exitToInventoryMenuButton);
 
         branchMenu.setVisible(true);
@@ -152,7 +150,7 @@ public class StoreKeeperGUI extends JFrame {
         ReportDamagedItemGUI reportDamagedItemGUI = new ReportDamagedItemGUI(branch, mainController, branchMenu);
         reportDamagedItemGUI.setVisible(true);
     }
-    private void printItemsStore(Branch branch){
+    private void printItemsStore(Branch branch, JFrame branchMenu){
         List<Item> storeItems = null;
         try {
             storeItems = mainController.getItemsDao().getAllStoreItemsByBranchID(branch.getBranchID());
@@ -162,29 +160,50 @@ public class StoreKeeperGUI extends JFrame {
         if (storeItems.size()==0)
         {
             JOptionPane.showMessageDialog(null,"We currently have no items in the store.", "No items error", JOptionPane.ERROR_MESSAGE);
+            branchMenu.setVisible(true);
             return;
         }
         JFrame itemsInStore = new JFrame("Items In Store");
         itemsInStore.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         itemsInStore.setSize(400, 500);
-        JLabel titleLabel = new JLabel("Branch Name :" + branch.getBranchName() + ", Branch ID : " + branch.getBranchID());
+        JLabel titleLabel = new JLabel("Branch Name: " + branch.getBranchName() + ", Branch ID: " + branch.getBranchID());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (Item item : storeItems) {
-            listModel.addElement(item.toString());
-        }
-        JList<String> jListItems = new JList<>(listModel);
-        jListItems.setFont(new Font("Arial", Font.PLAIN, 12));
-        JScrollPane scrollPane = new JScrollPane(jListItems);
+        DefaultTableModel itemsTableModel = new DefaultTableModel();
+        itemsTableModel.addColumn("Name");
+        itemsTableModel.addColumn("Product ID");
+        itemsTableModel.addColumn("Item ID");
+        itemsTableModel.addColumn("Supplier ID");
+        itemsTableModel.addColumn("Expired Date");
+        itemsTableModel.addColumn("Price From Supplier");
+        itemsTableModel.addColumn("Price In Branch");
+        itemsTableModel.addColumn("Price After Discount");
+        itemsTableModel.addColumn("Status");
+        itemsTableModel.addColumn("Defective Discription");
+        itemsTableModel.addColumn("Arrival Date");
+        JTable itemsTable = new JTable(itemsTableModel);
+        JScrollPane scrollPane = new JScrollPane(itemsTable);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
 
+        for (Item item : storeItems) {
+            itemsTableModel.addRow(new Object[]{item.getProduct().getProductName(), item.getProductID(), item.getItemID(),
+                    item.getSupplierID(), item.getExpiredDate(), item.getPriceFromSupplier(), item.getPriceInBranch(),
+                    item.getPriceAfterDiscount(), item.getStatusType(), item.getDefectiveDiscription(), item.getArrivalDate()});
+        }
+
+        itemsInStore.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                branchMenu.setVisible(true);
+            }
+        });
         itemsInStore.setLayout(new BorderLayout());
         itemsInStore.add(titleLabel, BorderLayout.NORTH);
         itemsInStore.add(scrollPane, BorderLayout.CENTER);
         itemsInStore.setLocationRelativeTo(null);
         itemsInStore.setVisible(true);
     }
-    private void printItemsStorage(Branch branch) {
+    private void printItemsStorage(Branch branch, JFrame branchMenu) {
         List<Item> storageItems = null;
         try {
             storageItems = mainController.getItemsDao().getAllStorageItemsByBranchID(branch.getBranchID());
@@ -193,22 +212,44 @@ public class StoreKeeperGUI extends JFrame {
         }
         if (storageItems.size()==0)
         {
-            JOptionPane.showMessageDialog(null,"We currently have no items in the store.", "No items error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,"We currently have no items in the storage.", "No items error", JOptionPane.ERROR_MESSAGE);
+            branchMenu.setVisible(true);
             return;
         }
-        JFrame itemsInStorage = new JFrame("Items In Store");
+        JFrame itemsInStorage = new JFrame("Items In Storage");
         itemsInStorage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         itemsInStorage.setSize(400, 500);
-        JLabel titleLabel = new JLabel("Branch Name :" + branch.getBranchName() + ", Branch ID : " + branch.getBranchID());
+        JLabel titleLabel = new JLabel("Branch Name: " + branch.getBranchName() + ", Branch ID: " + branch.getBranchID());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+        DefaultTableModel itemsTableModel = new DefaultTableModel();
+        itemsTableModel.addColumn("Name");
+        itemsTableModel.addColumn("Product ID");
+        itemsTableModel.addColumn("Item ID");
+        itemsTableModel.addColumn("Supplier ID");
+        itemsTableModel.addColumn("Expired Date");
+        itemsTableModel.addColumn("Price From Supplier");
+        itemsTableModel.addColumn("Price In Branch");
+        itemsTableModel.addColumn("Price After Discount");
+        itemsTableModel.addColumn("Status");
+        itemsTableModel.addColumn("Defective Discription");
+        itemsTableModel.addColumn("Arrival Date");
+        JTable itemsTable = new JTable(itemsTableModel);
+        JScrollPane scrollPane = new JScrollPane(itemsTable);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
+
         for (Item item : storageItems) {
-            listModel.addElement(item.toString());
+            itemsTableModel.addRow(new Object[]{item.getProduct().getProductName(), item.getProductID(), item.getItemID(),
+                    item.getSupplierID(), item.getExpiredDate(), item.getPriceFromSupplier(), item.getPriceInBranch(),
+                    item.getPriceAfterDiscount(), item.getStatusType(), item.getDefectiveDiscription(), item.getArrivalDate()});
         }
-        JList<String> jListItems = new JList<>(listModel);
-        jListItems.setFont(new Font("Arial", Font.PLAIN, 12));
-        JScrollPane scrollPane = new JScrollPane(jListItems);
+
+        itemsInStorage.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                branchMenu.setVisible(true);
+            }
+        });
 
         itemsInStorage.setLayout(new BorderLayout());
         itemsInStorage.add(titleLabel, BorderLayout.NORTH);
@@ -230,59 +271,5 @@ public class StoreKeeperGUI extends JFrame {
         this.setVisible(false);
         CategoryGUI categoryGUI = new CategoryGUI(mainController, this);
         categoryGUI.setVisible(true);
-    }
-
-    private void startDailyTask()
-    {
-        java.util.Timer timerPeriodicOrder = new java.util.Timer();
-        // Schedule the task to execute every day at 10:00am
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        if (calendar.getTimeInMillis() < System.currentTimeMillis())
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-        timerPeriodicOrder.scheduleAtFixedRate(orderService, calendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-        java.util.Timer timerForShortageOrder = new Timer();
-        TimerTask otherTask = new TimerTask() {
-            @Override
-            public void run()  {
-                autoShortage();
-            }
-        };
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 20);
-        calendar2.set(Calendar.MINUTE, 0);
-        calendar2.set(Calendar.SECOND, 0);
-        if (calendar2.getTimeInMillis() < System.currentTimeMillis())
-            calendar2.add(Calendar.DAY_OF_MONTH, 1);
-        timerForShortageOrder.scheduleAtFixedRate(otherTask, calendar2.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            timerPeriodicOrder.cancel();
-            timerForShortageOrder.cancel();
-            DBConnector.disconnect();
-        }));
-    }
-
-    public void autoShortage()
-    {
-        try {
-            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
-            HashMap<Integer, Integer> shortage;
-            for(Branch branch: branches) {
-                shortage = mainController.getItemsDao().fromStorageToStore(branch);
-                Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
-                if (!response.errorOccurred())
-                {
-                    for (Integer productID : shortage.keySet())
-                    {
-                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error while run function autoShortage in GUI: " + e.getMessage(), "Order Errors", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

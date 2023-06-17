@@ -27,28 +27,6 @@ public class DBConnector {
     }
 
     public static void deleteRecordsOfTables() throws SQLException {
-//        AgreementDAO agreementDAO = new AgreementDAO();
-//        ContactDAO contactDAO = new ContactDAO();
-//        DeliveryDaysDAO deliveryDaysDAO = new DeliveryDaysDAO();
-//        DiscountDAO discountDAO = new DiscountDAO();
-//        DiscountPerAmountDAO discountPerAmountDAO = new DiscountPerAmountDAO();
-//        ItemsInOrderDAO itemsInOrderDAO = new ItemsInOrderDAO();
-//        ItemsInPeriodicOrderDAO itemsInPeriodicOrderDAO = new ItemsInPeriodicOrderDAO();
-//        PeriodicOrderDAO periodicOrderDAO = new PeriodicOrderDAO();
-//        SupplierDAO supplierDAO = new SupplierDAO();
-//        SupplierOrderDAO supplierOrderDAO = new SupplierOrderDAO();
-//        SupplierProductDAO supplierProductDAO = new SupplierProductDAO();
-//        agreementDAO.reset();
-//        contactDAO.reset();
-//        deliveryDaysDAO.reset();
-//        discountDAO.reset();
-//        discountPerAmountDAO.reset();
-//        itemsInOrderDAO.reset();
-//        itemsInPeriodicOrderDAO.reset();
-//        periodicOrderDAO.reset();
-//        supplierDAO.reset();
-//        supplierOrderDAO.reset();
-
         String query1 = "DROP TABLE IF EXISTS supplier";
         String query2 = "DROP TABLE IF EXISTS contact";
         String query3 = "DROP TABLE IF EXISTS agreement";

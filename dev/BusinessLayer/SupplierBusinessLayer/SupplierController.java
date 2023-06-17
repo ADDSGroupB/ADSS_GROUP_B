@@ -491,12 +491,13 @@ public class SupplierController {
         for(Supplier supplier : suppliers.values()) {
             String supplyTime = supplier.getAgreement().getSupplyTime() == -1 ? "By Days" : String.valueOf(supplier.getAgreement().getSupplyTime());
             StringBuilder deliveryDays = new StringBuilder();
-            if (supplier.getAgreement().getSupplyTime() == -1)
+            if (supplier.getAgreement().getSupplyTime() == -1) {
                 for (DayOfWeek day : supplier.getAgreement().getSupplyDays())
                     deliveryDays.append(day.toString()).append(", ");
+                deliveryDays.setLength(deliveryDays.length() - 2);
+            }
             else
                 deliveryDays.append("By Amount of days");
-            deliveryDays.setLength(deliveryDays.length() - 2);
             supplierTableModel.addRow(new Object[]{supplier.getSupplierId(), supplier.getName(), supplier.getBankAccount(), supplier.getContactPhoneNumber(), supplier.getAgreement().getSupplyMethod(), supplyTime, deliveryDays });
         }
 
@@ -534,7 +535,8 @@ public class SupplierController {
 //                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
                             showProductsFrame.add(chosenProductsScrollPane);
 
-                            Map<Integer, SupplierProduct> supplierProducts = suppliers.get(supplierID).getSupplyingProducts();
+                            Map<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(supplierID);
+                            chosenProductsTableModel.setRowCount(0);
                             for (SupplierProduct supplierProduct : supplierProducts.values())
                                 chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight() });
                             showProductsFrame.setPreferredSize(new Dimension(400, 300));
@@ -587,9 +589,10 @@ public class SupplierController {
 //                            chosenProductsScrollPane.setPreferredSize(new Dimension(chosenProductsScrollPane.getPreferredSize().width, 200));
                             showProductsFrame.add(chosenProductsScrollPane);
 
-                            Map<Integer, SupplierProduct> supplierProducts = suppliers.get(supplierID).getSupplyingProducts();
+                            Map<Integer, SupplierProduct> supplierProducts = supplierProductDAO.getAllSupplierProductsByID(supplierID);
+                            chosenProductsTableModel.setRowCount(0);
                             for (SupplierProduct supplierProduct : supplierProducts.values())
-                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight()});
+                                chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight() });
                             showProductsFrame.setPreferredSize(new Dimension(400, 300));
                             showProductsFrame.setVisible(true);
                             showProductsFrame.pack();

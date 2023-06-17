@@ -5,6 +5,7 @@ import BusinessLayer.InventoryBusinessLayer.MainController;
 import BusinessLayer.SupplierBusinessLayer.Order;
 import BusinessLayer.SupplierBusinessLayer.PeriodicOrder;
 import BusinessLayer.SupplierBusinessLayer.SupplierProduct;
+import InterfaceLayer.Main;
 import ServiceLayer.SupplierServiceLayer.OrderService;
 import Utillity.Response;
 
@@ -92,7 +93,7 @@ public class OrdersGUI extends JFrame {
         });
 
         executeShortageOrdersButton.addActionListener(e -> {
-            if(LocalTime.now().isAfter(LocalTime.of(10, 0))) autoShortage();
+            if(LocalTime.now().isAfter(LocalTime.of(20, 0))) Main.autoShortage();
             else JOptionPane.showMessageDialog(null, "Shortage Orders Will Execute Automatically at 8PM", "Error", JOptionPane.ERROR_MESSAGE);
         });
 
@@ -101,7 +102,7 @@ public class OrdersGUI extends JFrame {
             JFrame orderHistoryUI = new JFrame("Branch Order History");
             setVisible(false);
             printOrdersHistory(orderHistoryUI, branch.getBranchID());
-            orderHistoryUI.setVisible(true);
+//            orderHistoryUI.setVisible(true);
             orderHistoryUI.pack();
 
         });
@@ -891,8 +892,16 @@ public class OrdersGUI extends JFrame {
 
 
     // Option 5 Print branch's orders history
-    private void printOrdersHistory(JFrame orderHistoryUI, int branchID)
+    public void printOrdersHistory(JFrame orderHistoryUI, int branchID)
     {
+
+        HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branch.getBranchID());
+        if(orders == null || orders.size() == 0)
+        {
+            JOptionPane.showMessageDialog(null, "There is not orders in this branch", "Error", JOptionPane.ERROR_MESSAGE);
+            setVisible(true);
+            return;
+        }
 
         orderHistoryUI.setSize(800, 600);
         orderHistoryUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -931,21 +940,9 @@ public class OrdersGUI extends JFrame {
 
         orderHistoryUI.getContentPane().add(orderHistoryPanel);
 
-
-
-        HashMap<Integer, Order> orders = orderService.getOrdersToBranch(branch.getBranchID());
-        if(orders == null || orders.size() == 0)
-        {
-            JOptionPane.showMessageDialog(null, "There is not orders in this branch", "Error", JOptionPane.ERROR_MESSAGE);
-            orderHistoryUI.setVisible(false);
-            setVisible(true);
-        }
-        else
-        {
-            for(Order order : orders.values())
-                ordersTableModel.addRow(new Object[] { order.getOrderID(), order.getSupplierId(), order.getSupplierName(), order.getContactPhoneNumber(), order.getCreationDate(), order.getDeliveryDate(), order.isCollected(), order.getTotalPriceBeforeDiscount(), order.getTotalPriceAfterDiscount() });
-            ordersTableModel.fireTableDataChanged();
-        }
+        for(Order order : orders.values())
+            ordersTableModel.addRow(new Object[] { order.getOrderID(), order.getSupplierId(), order.getSupplierName(), order.getContactPhoneNumber(), order.getCreationDate(), order.getDeliveryDate(), order.isCollected(), order.getTotalPriceBeforeDiscount(), order.getTotalPriceAfterDiscount() });
+        ordersTableModel.fireTableDataChanged();
 
 
         ordersTable.addMouseListener(new MouseAdapter() {
@@ -1084,27 +1081,6 @@ public class OrdersGUI extends JFrame {
 
         // Reset combo box
         if(combo != null) combo.setSelectedIndex(-1);
-    }
-
-    public void autoShortage()
-    {
-        try {
-            List<Branch> branches = mainController.getBranchesDao().getAllBranches();
-            HashMap<Integer, Integer> shortage;
-            for(Branch branch: branches) {
-                shortage = mainController.getItemsDao().fromStorageToStore(branch);
-                Response response = orderService.createOrderByShortage(branch.getBranchID(), shortage);
-                if (!response.errorOccurred())
-                {
-                    for (Integer productID : shortage.keySet())
-                    {
-                        mainController.getProductMinAmountDao().UpdateOrderStatusToProductInBranch(productID, branch.getBranchID(),"Invited");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error while run function autoShortage in GUI: " + e.getMessage(), "Orders For Today", JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 }
 
