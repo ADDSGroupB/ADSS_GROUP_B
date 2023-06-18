@@ -22,13 +22,14 @@ public class StoreKeeperGUI extends JFrame {
 
         setTitle("Store Keeper Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(300, 190);
 
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         JLabel titleLabel = new JLabel("Store Keeper Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JButton branchMenu = new JButton("Branch Menu");
         JButton productMenu = new JButton("Product Menu");
@@ -42,7 +43,7 @@ public class StoreKeeperGUI extends JFrame {
         panel.add(productMenu);
         panel.add(categoryMenu);
         getContentPane().add(panel);
-        pack();
+//        pack();
         setLocationRelativeTo(null);
     }
 

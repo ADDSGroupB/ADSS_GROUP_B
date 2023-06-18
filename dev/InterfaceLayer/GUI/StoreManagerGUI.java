@@ -26,13 +26,14 @@ public class StoreManagerGUI extends JFrame {
 
         setTitle("Store Manager Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 500);
+        setSize(300, 190);
 
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
         JLabel titleLabel = new JLabel("Store Manager Menu");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JButton createNewBranch = new JButton("Create New Branch");
         JButton branchMenu = new JButton("Branch Menu");
@@ -54,7 +55,7 @@ public class StoreManagerGUI extends JFrame {
         panel.add(printSuppliersButton);
         getContentPane().add(panel);
 
-        pack();
+//        pack();
         setLocationRelativeTo(null);
     }
 

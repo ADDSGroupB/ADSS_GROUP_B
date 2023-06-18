@@ -903,7 +903,7 @@ public class OrdersGUI extends JFrame {
 
         orderHistoryUI.setSize(800, 600);
         orderHistoryUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        orderHistoryUI.setLocationRelativeTo(null);
+
 
         JPanel orderHistoryPanel = new JPanel(new BorderLayout(10, 10));
         orderHistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -957,8 +957,7 @@ public class OrdersGUI extends JFrame {
                         {
                             orderHistoryUI.setVisible(false);
                             JFrame showProductsFrame = new JFrame("Products On Order "+ ordersTable.getValueAt(selectedRow, 0));
-                            showProductsFrame.setLocationRelativeTo(null);
-                            showProductsFrame.setPreferredSize(new Dimension(400, 300));
+                            showProductsFrame.setSize(new Dimension(400, 300));
                             DefaultTableModel chosenProductsTableModel = new DefaultTableModel(){
                                 @Override
                                 public boolean isCellEditable(int row, int column) {
@@ -987,6 +986,7 @@ public class OrdersGUI extends JFrame {
                             for (SupplierProduct supplierProduct : supplierProducts.values())
                                 chosenProductsTableModel.addRow(new Object[]{supplierProduct.getName(), supplierProduct.getProductID(), supplierProduct.getCatalogID(), supplierProduct.getPrice(), supplierProduct.getAmount(), supplierProduct.getManufacturer(), supplierProduct.getExpirationDays(), supplierProduct.getWeight(), orderProducts.get(orderProducts.indexOf(supplierProduct)).getAmount()});
                             showProductsFrame.setVisible(true);
+                            showProductsFrame.setLocationRelativeTo(null);
                             showProductsFrame.addWindowListener(new WindowAdapter() {
                                 @Override
                                 public void windowClosing(WindowEvent e) {
@@ -1068,6 +1068,9 @@ public class OrdersGUI extends JFrame {
                 backFrame.setVisible(true);
             }
         });
+
+        orderHistoryUI.setLocationRelativeTo(null);
+        orderHistoryUI.setVisible(true);
 
     }
 

@@ -58,6 +58,7 @@ public class SupplierManagerGUI extends JFrame {
 
         JLabel titleLabel = new JLabel("Supplier Manager");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JButton addSupplierButton = new JButton("Add new Supplier");
         addSupplierButton.addActionListener(e -> {
@@ -2230,8 +2231,8 @@ public class SupplierManagerGUI extends JFrame {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout()); // Set the layout to FlowLayout
-        buttonPanel.add(showOrders);
         buttonPanel.add(backButton); // Add both buttons to the panel
+        buttonPanel.add(showOrders);
 
         c.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel to the south side of the layout
 
