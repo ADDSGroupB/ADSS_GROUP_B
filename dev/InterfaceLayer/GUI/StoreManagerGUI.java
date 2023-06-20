@@ -107,7 +107,7 @@ public class StoreManagerGUI extends JFrame {
             }
         });
         branchMenu.setSize(400, 500);
-        branchMenu.setLayout(new GridLayout(9, 1, 10, 10));
+        branchMenu.setLayout(new GridLayout(8, 1, 10, 10));
         branchMenu.setLocationRelativeTo(null);
         JLabel titleLabel = new JLabel("Please choose one of the following options :");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
@@ -141,13 +141,6 @@ public class StoreManagerGUI extends JFrame {
         });
         branchMenu.add(printItemsStorageButton);
 
-        JButton productSalesHistoryButton  = new JButton("Print product sales history");
-        productSalesHistoryButton.addActionListener(e -> {
-            branchMenu.setVisible(false);
-            productSalesHistory(branch, branchMenu);
-        });
-        branchMenu.add(productSalesHistoryButton);
-
         JButton orderHistoryButton  = new JButton("Print branch's order history");
         orderHistoryButton.addActionListener(e -> {
             branchMenu.setVisible(false);
@@ -179,9 +172,6 @@ public class StoreManagerGUI extends JFrame {
 
     private void orderHistory(Branch branch, JFrame branchMenu) {
         new OrdersGUI(branch, new MainController(), branchMenu).printOrdersHistory(new JFrame("Branch Order History"), branchMenu);
-    }
-
-    private void productSalesHistory(Branch branch, JFrame branchMenu) {
     }
 
     private void discountForCategory(Branch branch, JFrame branchMenu) {
