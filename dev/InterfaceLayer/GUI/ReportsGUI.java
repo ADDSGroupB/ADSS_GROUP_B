@@ -137,10 +137,11 @@ public class ReportsGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10 ,10));
 
-        JPanel productPanel = new JPanel(new GridLayout(1, 4, 10, 10));
+        JPanel productPanel = new JPanel(new GridLayout(2, 3, 10, 10));
         JPanel southPanel = new JPanel(new GridLayout(1, 2, 10, 10));
 
         JLabel productIdLabel = new JLabel("Product ID:");
+        JLabel amountLabel = new JLabel("Amount: ");
         JTextField productIdField = new JTextField(10);
         JSpinner productAmountSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 999999999, 1));
         JButton addButton = new JButton("Add");
@@ -148,6 +149,8 @@ public class ReportsGUI extends JFrame {
         JButton finishButton = new JButton("Finish");
 
         productPanel.add(productIdLabel);
+        productPanel.add(amountLabel);
+        productPanel.add(new JLabel());
         productPanel.add(productIdField);
         productPanel.add(productAmountSpinner);
         productPanel.add(addButton);
@@ -158,8 +161,8 @@ public class ReportsGUI extends JFrame {
         panel.add(southPanel, BorderLayout.SOUTH);
 
         createMissingReport.getContentPane().add(panel);
-        createMissingReport.setLocationRelativeTo(null);
         createMissingReport.pack();
+        createMissingReport.setLocationRelativeTo(null);
         createMissingReport.setVisible(true);
 
         StringBuilder reportDetails = new StringBuilder();
@@ -422,8 +425,8 @@ public class ReportsGUI extends JFrame {
         panel.add(southPanel, BorderLayout.SOUTH);
 
         createWeeklyReport.getContentPane().add(panel);
-        createWeeklyReport.setLocationRelativeTo(null);
         createWeeklyReport.pack();
+        createWeeklyReport.setLocationRelativeTo(null);
         createWeeklyReport.setVisible(true);
 
         StringBuilder reportDetails = new StringBuilder();
