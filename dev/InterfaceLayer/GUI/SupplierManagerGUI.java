@@ -89,7 +89,7 @@ public class SupplierManagerGUI extends JFrame {
         });
 
         JButton backButton = new JButton("EXIT");
-        backButton.addActionListener(e -> dispose());
+        backButton.addActionListener(e -> System.exit(0));
 
         panel.add(titleLabel);
         panel.add(addSupplierButton);
