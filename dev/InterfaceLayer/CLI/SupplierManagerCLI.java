@@ -35,142 +35,6 @@ public class SupplierManagerCLI {
         supplierManagerCLI();
     }
 
-//    public void loadDataSupplier() {
-////        Product p1 = productsDao.addProduct("Milk 3%", "Tara", 500, 1, 2, 7);
-////        productMinAmountDao.addNewProductToAllBranches(1);
-////        Product p2 = productsDao.addProduct("Cottage 5%", "Tnova", 250, 1, 3, 8);
-////        productMinAmountDao.addNewProductToAllBranches(2);
-////        Product p3 = productsDao.addProduct("White Onion", "VegAndFruits", 20, 10, 11, 14);
-////        productMinAmountDao.addNewProductToAllBranches(3);
-////        Product p4 = productsDao.addProduct("Green Onion", "VegAndFruits", 10, 10, 11, 13);
-////        productMinAmountDao.addNewProductToAllBranches(4);
-////        Product p5 = productsDao.addProduct("Red Potato", "VegAndFruits", 10, 10, 12, 15);
-////        productMinAmountDao.addNewProductToAllBranches(5);
-////        Product p6 = productsDao.addProduct("Red Apple", "VegAndFruits", 10, 16, 17, 18);
-////        productMinAmountDao.addNewProductToAllBranches(6);
-////        Product p7 = productsDao.addProduct("Green Apple", "VegAndFruits", 10, 16, 17, 18);
-////        productMinAmountDao.addNewProductToAllBranches(7);
-////        Product p8 = productsDao.addProduct("Cottage 9%", "Tara", 250, 1, 3, 9);
-////        productMinAmountDao.addNewProductToAllBranches(8);
-////        Product p9 =  productsDao.addProduct("Milk 9%", "Tnova", 500, 1, 2, 9);
-////        productMinAmountDao.addNewProductToAllBranches(9);
-////        Product p10 = productsDao.addProduct("Milk 1%", "Tnova", 500, 1, 2, 6);
-////        productMinAmountDao.addNewProductToAllBranches(10);
-////        Product p11 = productsDao.addProduct("Milk 5%", "Tnova", 500, 1, 2, 8);
-////        productMinAmountDao.addNewProductToAllBranches(11);
-////        Product p12 = productsDao.addProduct("Cottage 3%", "Tara", 250, 1, 3, 7);
-////        productMinAmountDao.addNewProductToAllBranches(12);
-////        Product p13 = productsDao.addProduct("Cottage 1%", "Tara", 250, 1, 3, 6);
-////        productMinAmountDao.addNewProductToAllBranches(13);
-////        Product p14 = productsDao.addProduct("Cream Cheese 3%", "Tnova", 350, 1, 4, 7);
-////        productMinAmountDao.addNewProductToAllBranches(14);
-////        Product p15 = productsDao.addProduct("Cream Cheese 1%", "Tnova", 350, 1, 4, 6);
-////        productMinAmountDao.addNewProductToAllBranches(15);
-////        Product p16 = productsDao.addProduct("Cream Cheese 5%", "Tnova", 350, 1, 4, 8);
-////        productMinAmountDao.addNewProductToAllBranches(16);
-////        Product p17 = productsDao.addProduct("Milk 3%", "Tnova", 500, 1, 2, 7);
-////        productMinAmountDao.addNewProductToAllBranches(17);
-////        Product p18 = productsDao.addProduct("Coca Cola Zero 0.5 Liter", "CocaCola", 500, 22, 24, 23);
-////        productMinAmountDao.addNewProductToAllBranches(18);
-////        Product p19 = productsDao.addProduct("Coca Cola Zero 1 Liter", "CocaCola", 1000, 22, 24, 25);
-////        productMinAmountDao.addNewProductToAllBranches(19);
-////        Product p20 = productsDao.addProduct("Coca Cola Zero 1.5 Liter", "CocaCola", 1500, 22, 24, 26);
-////        productMinAmountDao.addNewProductToAllBranches(20);
-////        Product p21 = productsDao.addProduct("Banana And Strawberry 1 Liter", "Spring", 1000, 22, 27, 25);
-////        productMinAmountDao.addNewProductToAllBranches(21);
-////        Product p22 = productsDao.addProduct("Orange juice 1 Liter", "Spring", 1000, 22, 27, 25);
-////        productMinAmountDao.addNewProductToAllBranches(22);
-//
-//        //  supplier1   //
-//        ArrayList<DayOfWeek> deliveryDays1 = new ArrayList<>();
-//        deliveryDays1.add(DayOfWeek.MONDAY);
-//        deliveryDays1.add(DayOfWeek.FRIDAY);
-//        HashMap<Integer, SupplierProductService> supllyingProducts1 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount1 = new HashMap<>();
-//        discountPerAmount1.put(10, 15.0);
-//        supllyingProducts1.put(1, new SupplierProductService("Milk 3%", 1, 7, 6.9, 100, discountPerAmount1, "Tara", 14, 500.0));
-//        supllyingProducts1.put(2, new SupplierProductService("Cottage 5%", 2, 8, 7.9, 150, discountPerAmount1, "Tnova", 14, 250.0));
-//        supllyingProducts1.put(3, new SupplierProductService("White Onion", 3, 14, 12.9, 50, discountPerAmount1, "VegAndFruits", 14, 20.0));
-//        supllyingProducts1.put(4, new SupplierProductService("Green Onion", 4, 13, 11.9, 50, discountPerAmount1, "VegAndFruits", 14, 10.0));
-//        supllyingProducts1.put(5, new SupplierProductService("Red Potato", 5, 15, 14.9, 50, discountPerAmount1, "VegAndFruits", 14, 10.0));
-//        supllyingProducts1.put(6, new SupplierProductService("Red Apple", 6, 18, 16.9, 50, discountPerAmount1, "VegAndFruits", 14, 10.0));
-//        supllyingProducts1.put(7, new SupplierProductService("Green Apple", 7, 18, 16.9, 50, discountPerAmount1, "VegAndFruits", 14, 10.0));
-//        supllyingProducts1.put(8, new SupplierProductService("Cottage 9%", 8, 9, 8.9, 150, discountPerAmount1, "Tara", 14, 250.0));
-//        supllyingProducts1.put(9, new SupplierProductService("Milk 9%", 9, 9, 8.9, 100, discountPerAmount1, "Tnova", 14, 500.0));
-//        supllyingProducts1.put(10, new SupplierProductService("Milk 1%", 10, 6, 5.9, 100, discountPerAmount1, "Tnova", 14, 500.0));
-//        ServiceAgreement agreement1 = new ServiceAgreement("Cash", true, deliveryDays1, supllyingProducts1, "By Days", 0);
-//        ArrayList<ServiceContact> contacts1 = new ArrayList<>();
-//        contacts1.add(new ServiceContact("Itamar Barami", "itamar@gmail.com", "052-3801919"));
-//        supplierService.addSupplier("Gal Halifa", "Beit Ezra", "123456", agreement1, contacts1);
-//
-//        //  supplier2   //
-//        ArrayList<DayOfWeek> deliveryDays2 = new ArrayList<>();
-//        HashMap<Integer, SupplierProductService> supllyingProducts2 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount2 = new HashMap<>();
-////        discountPerAmount2.put(10, 15.0);
-////        discountPerAmount2.put(30, 20.0);
-//        supllyingProducts2.put(7, new SupplierProductService("Green Apple", 7, 18, 16.9, 50, discountPerAmount2, "VegAndFruits", 14, 10.0));
-//        supllyingProducts2.put(8, new SupplierProductService("Cottage 9%", 8, 9, 8.9, 150, discountPerAmount2, "Tara", 14, 250.0));
-//        supllyingProducts2.put(9, new SupplierProductService("Milk 9%", 9, 9, 8.9, 100, discountPerAmount2, "Tnova", 14, 500.0));
-//        supllyingProducts2.put(10, new SupplierProductService("Milk 1%", 10, 6, 5.9, 100, discountPerAmount2, "Tnova", 14, 500.0));
-//        supllyingProducts2.put(11, new SupplierProductService("Milk 5%", 11, 8, 7.9, 100, discountPerAmount2, "Tnova", 14, 500.0));
-//        supllyingProducts2.put(12, new SupplierProductService("Cottage 3%", 12, 7, 6.9, 150, discountPerAmount2, "Tara", 14, 250.0));
-//        supllyingProducts2.put(13, new SupplierProductService("Cottage 1%", 13, 6, 5.9, 150, discountPerAmount2, "Tara", 14, 250.0));
-//        supllyingProducts2.put(14, new SupplierProductService("Cream Cheese 3%", 14, 7, 6.9, 100, discountPerAmount2, "Tnova", 14, 350.0));
-//        supllyingProducts2.put(15, new SupplierProductService("Cream Cheese 1%", 1, 4, 5.9, 100, discountPerAmount2, "Tnova", 14, 350.0));
-//        ServiceAgreement agreement2 = new ServiceAgreement("net 30 EOM", true, deliveryDays2, supllyingProducts2, "ByOrder", 3);
-//        ArrayList<ServiceContact> contacts2 = new ArrayList<>();
-//        contacts2.add(new ServiceContact("Miki daniarov", "miki@gmail.com", "054-2453536"));
-//        supplierService.addSupplier("Mor Shuker", "Rehovot", "205155", agreement2, contacts2);
-//
-//        //  supplier3   //
-//        ArrayList<DayOfWeek> deliveryDays3 = new ArrayList<>();
-//        deliveryDays3.add(DayOfWeek.SUNDAY);
-//        deliveryDays3.add(DayOfWeek.MONDAY);
-//        HashMap<Integer, SupplierProductService> supllyingProducts3 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount3 = new HashMap<>();
-//        Pair<Integer, Double> totalDiscountPerAmount3 =new Pair<>(30,5.0);
-//        Pair<Double, Double> totalDiscountPerPrice3 =new Pair<>(200.0,20.0);
-//        discountPerAmount3.put(30, 20.0);
-//        supllyingProducts3.put(11, new SupplierProductService("Milk 5%", 11, 8, 7.9, 100, discountPerAmount3, "Tnova", 14, 500.0));
-//        supllyingProducts3.put(12, new SupplierProductService("Cottage 3%", 12, 7, 6.9, 150, discountPerAmount3, "Tara", 14, 250.0));
-//        supllyingProducts3.put(13, new SupplierProductService("Cottage 1%", 13, 6, 5.9, 150, discountPerAmount3, "Tara", 14, 250.0));
-//        supllyingProducts3.put(14, new SupplierProductService("Cream Cheese 3%", 14, 7, 6.9, 100, discountPerAmount3, "Tnova", 14, 350.0));
-//        supllyingProducts3.put(15, new SupplierProductService("Cream Cheese 1%", 1, 4, 5.9, 100, discountPerAmount3, "Tnova", 14, 350.0));
-//        supllyingProducts3.put(16, new SupplierProductService("Cream Cheese 5%", 1, 4, 7.9, 100, discountPerAmount3, "Tnova", 14, 350.0));
-//        supllyingProducts3.put(17, new SupplierProductService("Milk 3%", 1, 2, 7, 100, discountPerAmount3, "Tnova", 14, 500.0));
-//        supllyingProducts3.put(18, new SupplierProductService("Coca Cola Zero 0.5 Liter", 22, 24, 23, 100, discountPerAmount3, "CocaCola", 14, 500.0));
-//        ServiceAgreement agreement3 = new ServiceAgreement("TransitToAccount", true, deliveryDays3, supllyingProducts3, totalDiscountPerAmount3, totalDiscountPerPrice3, "ByDays", 0);
-//        ArrayList<ServiceContact> contacts3 = new ArrayList<>();
-//        contacts3.add(new ServiceContact("Noa Aviv", "noa@gmail.com", "050-5838687"));
-//        supplierService.addSupplier("Itay Gershon", "Beit ezra", "121212", agreement3, contacts3);
-//
-//
-//        //  supplier4   //
-//        ArrayList<DayOfWeek> deliveryDays4 = new ArrayList<>();
-//        deliveryDays4.add(DayOfWeek.SUNDAY);
-//        deliveryDays4.add(DayOfWeek.WEDNESDAY);
-//        deliveryDays4.add(DayOfWeek.THURSDAY);
-//        HashMap<Integer, SupplierProductService> supllyingProducts4 = new HashMap<>();
-//        HashMap<Integer, Double> discountPerAmount4 = new HashMap<>();
-//        Pair<Integer, Double> totalDiscountPerAmount4 =new Pair<>(30,5.0);
-//        Pair<Double, Double> totalDiscountPerPrice4 =new Pair<>(200.0,20.0);
-//        discountPerAmount4.put(10, 20.0);
-//        supllyingProducts4.put(15, new SupplierProductService("Cream Cheese 1%", 1, 4, 5.9, 100, discountPerAmount4, "Tnova", 14, 350.0));
-//        supllyingProducts4.put(16, new SupplierProductService("Cream Cheese 5%", 1, 4, 7.9, 100, discountPerAmount4, "Tnova", 14, 350.0));
-//        supllyingProducts4.put(17, new SupplierProductService("Milk 3%", 1, 2, 7, 100, discountPerAmount4, "Tnova", 14, 500.0));
-//        supllyingProducts4.put(18, new SupplierProductService("Coca Cola Zero 0.5 Liter", 22, 24, 23, 100, discountPerAmount4, "CocaCola", 14, 500.0));
-//        supllyingProducts4.put(19, new SupplierProductService("Coca Cola Zero 1 Liter", 22, 24, 25, 100, discountPerAmount4, "CocaCola", 14, 1000.0));
-//        supllyingProducts4.put(20, new SupplierProductService("Coca Cola Zero 1.5 Liter", 22, 24, 26, 100, discountPerAmount4, "CocaCola", 14, 1500.0));
-//        supllyingProducts4.put(21, new SupplierProductService("Banana And Strawberry 1 Liter", 22, 27, 25, 100, discountPerAmount4, "Spring", 14, 1000.0));
-//        supllyingProducts4.put(22, new SupplierProductService("Orange juice 1 Liter", 22, 27, 25, 100, discountPerAmount4, "Spring", 14, 1000.0));
-//        ServiceAgreement agreement4 = new ServiceAgreement("TransitToAccount", true, deliveryDays4, supllyingProducts4, totalDiscountPerAmount4, totalDiscountPerPrice4, "ByDays", 0);
-//        ArrayList<ServiceContact> contacts4 = new ArrayList<>();
-//        contacts4.add(new ServiceContact("Dan Weizmann", "dan@gmail.com", "050-5839494"));
-//        supplierService.addSupplier("Guy Biton", "Beer Sheva", "7891234", agreement4, contacts4);
-//    }
-
-
     private void supplierManagerCLI() {
         int action =0;
         while (action != 6)
@@ -181,7 +45,7 @@ public class SupplierManagerCLI {
                     "3. Edit Supplier's information \n" +
                     "4. Print suppliers \n" +
                     "5. Show Supplier Order History \n" +
-                    "6. Back To Main Menu");
+                    "6. Exit");
             try
             {
                 action = reader.nextInt();
@@ -199,7 +63,7 @@ public class SupplierManagerCLI {
                 case 3 -> editSupplier();
                 case 4 -> printSuppliers();
                 case 5 -> supplierOrderHistory();
-                case 6 -> { return; }
+                case 6 -> { System.out.println("Exiting from the system"); System.exit(0); }
                 default -> System.out.println("Please enter an integer between 1-6 ");
             }
         }

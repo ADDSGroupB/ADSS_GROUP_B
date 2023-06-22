@@ -53,6 +53,11 @@ public class Main {
         for (Branch branch : allBranches) {
             mainController.getItemsDao().fromStorageToStore(branch);
         }
+        if(args.length == 0)
+        {
+            System.out.println("You must enter arguments");
+            return;
+        }
         switch (args[0].toLowerCase())
         {
             case "cli" -> workersCLI(args[1]);
@@ -62,27 +67,27 @@ public class Main {
     }
 
     private static void workersGUI(String worker) throws SQLException {
-        StoreKeeperGUI storekeeperGUI = new StoreKeeperGUI();
-        storekeeperGUI.setVisible(true);
-        SupplierManagerGUI supplierManagerGUI = new SupplierManagerGUI();
-        supplierManagerGUI.setVisible(true);
-        StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
-        storeManagerGUI.setVisible(true);
-//        switch (worker.toLowerCase()) {
-//            case "storekeeper" -> {
-//                StoreKeeperGUI storekeeperGUI = new StoreKeeperGUI();
-//                storekeeperGUI.setVisible(true);
-//            }
-//            case "suppliermanager" -> {
-//                SupplierManagerGUI supplierManagerGUI = new SupplierManagerGUI();
-//                supplierManagerGUI.setVisible(true);
-//            }
-//            case "storemanager" -> {
-//                StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
-//                storeManagerGUI.setVisible(true);
-//            }
-//            default -> System.out.printf("Argument 2 is invalid, given argument: %s should be: storekeeper / suppliermanager / storemanager", worker);
-//        }
+//        StoreKeeperGUI storekeeperGUI = new StoreKeeperGUI();
+//        storekeeperGUI.setVisible(true);
+//        SupplierManagerGUI supplierManagerGUI = new SupplierManagerGUI();
+//        supplierManagerGUI.setVisible(true);
+//        StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
+//        storeManagerGUI.setVisible(true);
+        switch (worker.toLowerCase()) {
+            case "storekeeper" -> {
+                StoreKeeperGUI storekeeperGUI = new StoreKeeperGUI();
+                storekeeperGUI.setVisible(true);
+            }
+            case "suppliermanager" -> {
+                SupplierManagerGUI supplierManagerGUI = new SupplierManagerGUI();
+                supplierManagerGUI.setVisible(true);
+            }
+            case "storemanager" -> {
+                StoreManagerGUI storeManagerGUI = new StoreManagerGUI();
+                storeManagerGUI.setVisible(true);
+            }
+            default -> System.out.printf("Argument 2 is invalid, given argument: %s should be: storekeeper / suppliermanager / storemanager", worker);
+        }
     }
 
     private static void workersCLI(String worker) throws SQLException {

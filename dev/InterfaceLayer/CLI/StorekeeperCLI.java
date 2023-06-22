@@ -164,6 +164,7 @@ public class StorekeeperCLI {
                 }
                 case 4 -> {
                     System.out.println("Exiting from the system");
+                    System.exit(0);
                 }
                 default -> {
                     System.out.println("Invalid choice, please try again");

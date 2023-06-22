@@ -46,6 +46,7 @@ public class StoreManagerCLI {
             {
                 case 1 -> branchMenu();
                 case 2 -> supplierMenu();
+                case 3 -> { System.out.println("Exiting from the system"); System.exit(0); }
                 default -> System.out.println("Please Enter a valid number (1-3)");
             }
         }
